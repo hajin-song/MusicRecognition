@@ -1,0 +1,14 @@
+const webpack = require('webpack');
+const path = require('path');
+
+module.exports = {
+  entry: "./src/app.js",
+  output: {
+   filename: './public/[name].bundle.js'
+  },
+  module: {
+   loaders: [
+    { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'}
+   ]
+  }
+}

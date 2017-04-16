@@ -1,0 +1,21 @@
+{
+  "name": "omr",
+  "authors": [
+    "Hajin Song <hSong6230@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "jquery-form": "^4.2.0"
+  }
+}

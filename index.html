@@ -1,0 +1,23 @@
+<!DOCTYPE>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>OMR</title>
+  <script src="/jquery/dist/jquery.min.js"></script>
+  <script src="/jquery-form/dist/jquery.form.min.js"></script>
+  <script src="/main.bundle.js"></script>
+ <body>
+  <form id="form" action="/" method="POST" enctype='multipart/form-data'>
+   <div>
+    <input type="file" name="musicSheet" id="musicSheet" />
+   </div>
+   <div>
+    <input type="text" name="musicSheetRow" id="musicSheetRow" />
+   </div>
+   <div>
+    <canvas id="image" />
+   </div>
+   <input type="submit" value="Submit"/>
+  </form>
+ </body>
+</html>
