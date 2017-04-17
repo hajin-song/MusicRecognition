@@ -9,7 +9,7 @@ def __calculateStaveFactor(np_array):
     current_chain = 0
     segments = 0
     for cell in np_array:
-        if cell <= 140:
+        if cell <= 200:
             current_chain += 1
             blacks += 1
         else:
@@ -26,10 +26,6 @@ def __isStave(blacks, longest_chain, segments, row_length):
 
 
 def __whiteOutRow(img_as_np, stave_as_np, row_index, stave_type = 0):
-    #print img_as_np[row_index - 1]
-    img_as_np[row_index] = 255
-    stave_type = 0
-    #print row_index, stave_type
     if stave_type == 3:
         for cell_index, cell in np.ndenumerate(stave_as_np[row_index]):
             if stave_as_np[row_index-1][cell_index] > 200 and stave_as_np[row_index+1][cell_index] > 200:
@@ -44,8 +40,9 @@ def __whiteOutRow(img_as_np, stave_as_np, row_index, stave_type = 0):
                 img_as_np[row_index][cell_index] = 255
     else:
         for cell_index, cell in np.ndenumerate(stave_as_np[row_index]):
-            if stave_as_np[row_index-1][cell_index] > 200:
+            if stave_as_np[row_index-1][cell_index] > 200 and stave_as_np[row_index+1][cell_index] > 200:
                 img_as_np[row_index][cell_index] = 255
+
 
 def setStaveRange(staveGroups):
     first_group = min(staveGroups.keys())
@@ -73,27 +70,26 @@ def cropStaves(img_name = "../images/gs.jpg"):
         img = cv2.imread(img_name)
 
     img_np = np.asarray(img)
-    img_np_stave = img_np.copy()
-    for row in img_np_stave:
+
+    for row in img_np:
         whites = row > 200
-        blacks = row <= 200
-        #print row
-        #print whites
+        black = row <= 200
+        row[black] = 0
         row[whites] = 255
-        row[blacks] = 0
-    cv2.imwrite('res3.png', img_np_stave)
-    w, h = img_np_stave.shape
+
+    w, h = img_np.shape
+
     stave_factors = {}
-    print img_np_stave.shape
 
     stave_groups = defaultdict(dict)
     current_stave_group = 0
+
     stave= {}
     stave['rows'] = []
 
     stave_group = {}
     stave_group['staves'] = []
-    for row_index, row in enumerate(img_np_stave):
+    for row_index, row in enumerate(img_np):
         stave_factors[row_index] = {}
         blacks, consecutive, segments = __calculateStaveFactor(row)
         stave_factors[row_index]['blacks'] = blacks
@@ -101,7 +97,23 @@ def cropStaves(img_name = "../images/gs.jpg"):
         stave_factors[row_index]['segments'] = segments
         factor = __isStave(blacks, consecutive, segments, w)
         stave_factors[row_index]['factor'] = factor
-        if factor > 0.01:
+        stave_factors[row_index]['is_stave'] = False
+        if factor > 0.05:
+            stave_factors[row_index]['is_stave'] = True
+
+    for row_index, row in enumerate(img_np):
+        current_row = stave_factors[row_index]
+        if row_index == 0 or row_index == len(img_np) - 1 or current_row['is_stave']: continue
+        prev_row = stave_factors[row_index - 1]
+        next_row = stave_factors[row_index + 1]
+        if prev_row['is_stave'] and next_row['is_stave']:
+            current_row['is_stave'] = True
+        elif prev_row['is_stave'] or next_row['is_stave']:
+            if (current_row['factor']) > 0.01:
+                current_row['is_stave'] = True
+
+    for row_index, row in enumerate(img_np):
+        if stave_factors[row_index]['is_stave']:
             stave['rows'].append(row_index)
         else:
             if len(stave['rows']) > 0:
@@ -113,7 +125,24 @@ def cropStaves(img_name = "../images/gs.jpg"):
                     stave_group = {}
                     stave_group['staves'] = []
                     current_stave_group += 1
+
+
+    for stave_group in stave_groups:
+        print stave_groups[stave_group]
+        for stave in stave_groups[stave_group]['staves']:
+            first = min(stave['rows'])
+            last = max(stave['rows'])
+            for row in stave['rows']:
+                stave_type = 0
+                if first == last:
+                    stave_type = 3
+                elif row == first:
+                    stave_type = 1
+                elif row == last:
+                    stave_type = 2
+                __whiteOutRow(img_np, img_np, row, stave_type)
         #print row_index, stave_factors[row_index]['factor']
-    #print stave_factors
+
+    cv2.imwrite('image_without_staves.png', img_np)
     print stave_groups
     return img_np, stave_groups
