@@ -15,8 +15,6 @@ NOTETYPE = [FLAT, SHARP, NORMAL, HALF, WHOLE]
 COLOR = [(0,0,255), (0, 255, 0), (255, 0, 0),  (0, 255,255), (255, 0, 255), (120, 120, 120), (90, 180, 120), (10, 10, 10) ]
 THRESHOLD = 0.7
 
-symbols = defaultdict(lambda: defaultdict(dict))
-
 def __removeDetected(img, row, col, box_width, box_height):
     top = -1
     bottom = -1
@@ -34,48 +32,44 @@ def __removeDetected(img, row, col, box_width, box_height):
                 img[row + height][col + width] = 255
     return bottom, top
 
+def detectSymbols(original, marked, template):
+    symbols = defaultdict(lambda: defaultdict(dict))
 
-img, stave_groups = staveProcessor.cropStaves("../images/gs.jpg")
-img_rgb = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    for index, note in enumerate(NOTETYPE):
+        #print index
+        w, h = note.shape[::-1]
+        #print img.shape
+        res = cv2.matchTemplate(original, note, cv2.TM_CCOEFF_NORMED)
 
-original_img = img.copy()
+        loc = np.where( res >= THRESHOLD)
+        for pt in zip(*loc[::-1]):
+            #print index, pt
+            symbols[pt[0]][pt[1]]["noteType"] = index
+            if index > 1:
+                bottom, top = __removeDetected(original, pt[1], pt[0], w, h)
+                symbols[pt[0]][pt[1]]["bottom"] = bottom
+                symbols[pt[0]][pt[1]]["top"] = top
+                cv2.rectangle(marked, pt, (pt[0] + w, pt[1] + h), COLOR[index], 1)
+    return symbols
+
+def main():
+    img, stave_groups = staveProcessor.cropStaves("../images/thousand.jpg")
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    original_img = img.copy()
+
+    symbols = detectSymbols(img, img_rgb, original_img)
 
 
-print stave_groups
-
-
-index = 0
-for index, note in enumerate(NOTETYPE):
-    #print index
-    w, h = note.shape[::-1]
-    #print img.shape
-    res = cv2.matchTemplate(img, note,cv2.TM_CCOEFF_NORMED)
-
-    loc = np.where( res >= THRESHOLD)
-    for pt in zip(*loc[::-1]):
-        #print index, pt
-        symbols[pt[0]][pt[1]]["noteType"] = index
-        if index > 1:
-            bottom, top = __removeDetected(img, pt[1], pt[0], w, h)
-            symbols[pt[0]][pt[1]]["bottom"] = bottom
-            symbols[pt[0]][pt[1]]["top"] = top
-            cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), COLOR[index], 1)
-
+    for stave_group in stave_groups:
+        print stave_groups[stave_group]
+        current = stave_groups[stave_group]
+        for stave in current['staves']:
+            pixel = 255
+            for row in stave['rows']:
+                cv2.line(img_rgb, (0, row), (700, row), (pixel,0, 0))
+                pixel -= 69
+        #cv2.line(img_rgb, (0, current['highest']), (700, current['highest']), (0,0,0))
+    cv2.imwrite('res.png', img)
+    cv2.imwrite('res2.png', img_rgb)
+main()
 #symbols = sorted(symbols.iterkeys())
-
-sortedX  = sorted(symbols.iterkeys())
-
-for x in sortedX:
-    print x, symbols[x]
-    sortedY = sorted(symbols[x].iterkeys())
-    for y in sortedY:
-        imageType = symbols[x][y]["noteType"]
-        if imageType == 2:
-            w, h = NOTETYPE[imageType].shape[::-1]
-            noteProcessor.classifyTail(y, x, w, h, img_rgb)
-
-
-cv2.imwrite('res.png', img)
-
-
-cv2.imwrite('res2.png', img_rgb)
