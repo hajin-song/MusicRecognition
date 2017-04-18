@@ -1,3 +1,5 @@
+var PythonShell = require('python-shell');
+var fs = require('fs');
 var express = require('express');
 var multer = require('multer');
 var path = require('path');
@@ -27,7 +29,20 @@ app.get('/', function(req, res){
 
 app.post('/', upload.single('musicSheet'), function(req, res, next){
  console.log(req.body);
- res.send("HI");
+
+ var options = {
+   mode: 'text',
+   pythonOptions: ['-u'],
+   scriptPath: 'python',
+   args: ['thousand.jpg', 'value2', 'value3']
+ };
+
+ PythonShell.run('staveProcessor.py', options, function (err, results) {
+   if (err) throw err;
+   // results is an array consisting of messages collected during execution
+   console.log('results: %j', results);
+   res.send("Finished");
+ });
 });
 
 app.listen(3000, function() {

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,37 +73,119 @@
 "use strict";
 
 
-$(document).ready(function () {
-  $("#musicSheet").on("change", function (e) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+
+function __findPos(obj) {
+  var curleft = 0,
+      curtop = 0;
+  if (obj.offsetParent) {
+    do {
+      curleft += obj.offsetLeft;
+      curtop += obj.offsetTop;
+    } while (obj = obj.offsetParent);
+    return { x: curleft, y: curtop };
+  }
+  return undefined;
+};
+
+function __getPoint(e) {
+  console.log(this);
+  var pos = __findPos(this);
+  var x = e.pageX - pos.x;
+  var y = e.pageY - pos.y;
+  return [x, y];
+}
+
+function initialiseCropper(imageID) {
+  var imageDOM = $('#' + imageID);
+  imageDOM.on('src-updated', function (e) {
+    imageDOM.cropper({
+      crop: function crop(e) {
+        // Output the result data for cropping image.
+        console.log(e.x, e.y);
+        console.log(e.width, e.height);
+        console.log(e.scaleX, e.scaleY);
+      }
+    });
+  });
+}
+
+exports.initialiseCropper = initialiseCropper;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+function __reloadCropperImage(imageSource, imageID) {
+  var img = new Image();
+  var imageDOM = $("#" + imageID);
+  imageDOM.attr('src', imageSource);
+  imageDOM.cropper({
+    crop: function crop(e) {
+      // Output the result data for cropping image.
+      console.log(e.x, e.y);
+      console.log(e.width, e.height);
+      console.log(e.scaleX, e.scaleY);
+    }
+  });
+  $(".cropper-canvas img").attr('src', imageSource);
+  $(".cropper-view-box img").attr('src', imageSource);
+  var imageData = $("#image").cropper('getImageData');
+  var canvasData = $("#image").cropper('getCanvasData');
+  console.log(imageData);
+  console.log(canvasData);
+}
+
+function initialiseCanvasPreview(inputID, imageID) {
+  $("#" + inputID).on("change", function (e) {
+    $("#image-preview").html("");
+    $("#image-preview").append($('<img id="image" style="max-width:100%;"></img>'));
     var reader = new FileReader();
     reader.onload = function (e) {
-      var img = new Image();
-      img.src = e.target.result;
-      img.onload = function () {
-        var width = img.naturalWidth;
-        var height = img.naturalHeight;
-        var imageDOM = $("#image")[0];
-        imageDOM.width = width;
-        imageDOM.height = height;
-        imageDOM.getContext('2d').drawImage(img, 0, 0, width, height);
-      };
+      __reloadCropperImage(e.target.result, imageID);
     };
     reader.readAsDataURL(this.files[0]);
   });
+};
 
-  $("#image").on("click", function (e) {
-    var pos = findPos(this);
-    var x = e.pageX - pos.x;
-    var y = e.pageY - pos.y;
-    $("#musicSheetRow").val($("#musicSheetRow").val() + "," + y);
-    console.log(x, y);
-  });
+function loadImageFromServer() {
+  __reloadCropperImage("/sheet_without_staves.png", "image");
+}
+
+exports.initialiseCanvasPreview = initialiseCanvasPreview;
+exports.loadImageFromServer = loadImageFromServer;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _preview = __webpack_require__(1);
+
+var _canvasCropper = __webpack_require__(0);
+
+$(document).ready(function () {
+  (0, _preview.initialiseCanvasPreview)("musicSheet", "image");
+  (0, _canvasCropper.initialiseCropper)("image");
 
   $("#form").on("submit", function (e) {
     e.preventDefault();
     $(this).ajaxSubmit({
       success: function success(res) {
+        console.log("?!?!?!");
         console.log(res);
+        (0, _preview.loadImageFromServer)();
       },
       error: function error(err) {
         console.log(err);
@@ -111,19 +193,6 @@ $(document).ready(function () {
     });
     console.log(":D");
   });
-
-  var findPos = function findPos(obj) {
-    var curleft = 0,
-        curtop = 0;
-    if (obj.offsetParent) {
-      do {
-        curleft += obj.offsetLeft;
-        curtop += obj.offsetTop;
-      } while (obj = obj.offsetParent);
-      return { x: curleft, y: curtop };
-    }
-    return undefined;
-  };
 });
 
 /***/ })

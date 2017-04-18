@@ -1,3 +1,4 @@
+import sys
 import cv2
 import numpy as np
 import scipy.misc
@@ -62,7 +63,10 @@ def setStaveRange(staveGroups):
             current["lowest"] = max(current["staves"]) + abs(max(current["staves"]) - min(staveGroups[staveGroup+1]["staves"]))/2
             current["highest"] = min(current["staves"]) - abs(min(current["staves"]) - max(staveGroups[staveGroup-1]["staves"]))/2
 
-def cropStaves(img_name = "../images/gs.jpg"):
+def cropStaves():
+    file_name = sys.argv[1]
+    img_name = "./images/" + file_name
+
     try:
         img = cv2.imread(img_name)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -143,6 +147,8 @@ def cropStaves(img_name = "../images/gs.jpg"):
                 __whiteOutRow(img_np, img_np, row, stave_type)
         #print row_index, stave_factors[row_index]['factor']
 
-    cv2.imwrite('image_without_staves.png', img_np)
+    cv2.imwrite("./public/sheet_without_staves.png", img_np)
     print stave_groups
     return img_np, stave_groups
+
+cropStaves()
