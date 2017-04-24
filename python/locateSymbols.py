@@ -1,18 +1,18 @@
+import sys
 import cv2
 import numpy as np
-import staveProcessor
 import noteProcessor
 from collections import defaultdict
 
 
-NORMAL = cv2.imread('./templates/symbol-note.png', 0) #symbol
-HALF = cv2.imread('./templates/symbol-half.png', 0)
-WHOLE = cv2.imread('./templates/symbol-whole.png', 0)
-DOT = cv2.imread('./templates/symbol-dot.png', 0) #symbol
-FLAT = cv2.imread('./templates/symbol-flat.png', 0)
-SHARP = cv2.imread('./templates/symbol-sharp.png', 0)
+NORMAL = cv2.imread('./image/symbol-note.png', 0) #symbol
+#HALF = cv2.imread('./image/symbol-half.png', 0)
+#WHOLE = cv2.imread('./imageimage/symbol-whole.png', 0)
+#DOT = cv2.imread('./image/symbol-dot.png', 0) #symbol
+#FLAT = cv2.imread('./image/symbol-flat.png', 0)
+#SHARP = cv2.imread('./image/symbol-sharp.png', 0)
 
-NOTETYPE = [FLAT, SHARP, NORMAL, HALF, WHOLE]
+NOTETYPE = []
 COLOR = [(255,0,0), (0, 255, 0), (0, 0, 255),  (0, 255,255), (255, 0, 255), (120, 120, 120), (90, 180, 120), (10, 10, 10) ]
 THRESHOLD = 0.7
 
@@ -61,21 +61,22 @@ def detectSymbols(original, marked):
     return symbols
 
 def main():
-    img, stave_groups = staveProcessor.cropStaves("../images/house-page-001.jpg")
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    normal = sys.argv[1].split(',')
+    half = sys.argv[2].split(',')
+    whole = sys.argv[3].split(',')
 
+    img = cv2.imread('./public/sheet_without_staves.png', 0)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    symbol_range = img[int(normal[1]):int(normal[3]), int(normal[0]):int(normal[2])]
+    cv2.imwrite('blrgh.png', symbol_range)
+    NOTETYPE.append(img[int(normal[1]):int(normal[3]), int(normal[0]):int(normal[2])])
+    NOTETYPE.append(img[int(half[1]):int(half[3]), int(half[0]):int(half[2])])
+    NOTETYPE.append(img[int(whole[1]):int(whole[3]), int(whole[0]):int(whole[2])])
     symbols = detectSymbols(img, img_rgb)
 
     w, h = img.shape[::-1]
 
-    for stave_group in stave_groups:
-        current = stave_groups[stave_group]
-        for stave in current['staves']:
-            pixel = 255
-            for row in stave['rows']:
-                cv2.line(img_rgb, (0, row), (w, row), (pixel,0, 0))
-        #cv2.line(img_rgb, (0, current['highest']), (700, current['highest']), (0,0,0))
-    cv2.imwrite('image_after_process.png', img)
-    cv2.imwrite('image_marked.png', img_rgb)
+    cv2.imwrite('./public/image_after_process.png', img)
+    cv2.imwrite('./public/image_marked.png', img_rgb)
 main()
 #symbols = sorted(symbols.iterkeys())

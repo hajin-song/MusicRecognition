@@ -7,14 +7,18 @@ var bodyParser = require('body-parser');
 
 var app = express();
 
-app.use(bodyParser.json());
 
+app.use(bodyParser.urlencoded({
+ extended: true
+}));
+app.use(bodyParser.json());
 var storage = multer.diskStorage({
  destination: function(req, file, callback){
   callback(null, './images');
  },
  filename: function(req, file, callback){
-  callback(null, file.originalname);
+  console.log(file);
+  callback(null, "original_sheet.png");
  }
 });
 
@@ -29,12 +33,11 @@ app.get('/', function(req, res){
 
 app.post('/', upload.single('musicSheet'), function(req, res, next){
  console.log(req.body);
-
  var options = {
    mode: 'text',
    pythonOptions: ['-u'],
    scriptPath: 'python',
-   args: ['thousand.jpg', 'value2', 'value3']
+   args: ['original_sheet.png']
  };
 
  PythonShell.run('staveProcessor.py', options, function (err, results) {
@@ -43,6 +46,26 @@ app.post('/', upload.single('musicSheet'), function(req, res, next){
    console.log('results: %j', results);
    res.send("Finished");
  });
+});
+
+app.post('/detect', function(req,res){
+ console.log(req.body);
+ console.log(req);
+ //let coordinates = req.body.normalNote
+ console.log(req.body)
+ var options = {
+   mode: 'text',
+   pythonOptions: ['-u'],
+   scriptPath: 'python',
+   args: [req.body.normalNote, req.body.halfNote, req.body.wholeNote]
+ };
+ PythonShell.run('locateSymbols.py', options, function (err, results) {
+   if (err) throw err;
+   // results is an array consisting of messages collected during execution
+   console.log('results: %j', results);
+   res.send("Finished");
+ });
+ res.send("Finished");
 });
 
 app.listen(3000, function() {

@@ -5,17 +5,16 @@ function __reloadCropperImage(imageSource, imageID){
  imageDOM.cropper({
    crop: function(e) {
      // Output the result data for cropping image.
-     console.log(e.x, e.y);
-     console.log(e.width, e.height);
-     console.log(e.scaleX, e.scaleY);
+     $("#crop-x").val(e.x);
+     $("#crop-y").val(e.y);
+     $("#crop-width").val(e.width);
+     $("#crop-height").val(e.height);
    }
  });
  $(".cropper-canvas img").attr('src', imageSource);
  $(".cropper-view-box img").attr('src', imageSource);
  var imageData = $("#image").cropper('getImageData');
  var canvasData = $("#image").cropper('getCanvasData');
- console.log(imageData)
- console.log(canvasData);
 }
 
 function initialiseCanvasPreview(inputID, imageID){
@@ -30,8 +29,8 @@ function initialiseCanvasPreview(inputID, imageID){
  });
 };
 
-function loadImageFromServer(){
- __reloadCropperImage("/sheet_without_staves.png", "image");
+function loadImageFromServer(img_name){
+ __reloadCropperImage("/" + img_name, "image");
 }
 
 export { initialiseCanvasPreview, loadImageFromServer }

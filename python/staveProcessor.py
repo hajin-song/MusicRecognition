@@ -66,7 +66,6 @@ def setStaveRange(staveGroups):
 def cropStaves():
     file_name = sys.argv[1]
     img_name = "./images/" + file_name
-
     try:
         img = cv2.imread(img_name)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -94,6 +93,7 @@ def cropStaves():
     stave_group = {}
     stave_group['staves'] = []
     for row_index, row in enumerate(img_np):
+        print row_index
         stave_factors[row_index] = {}
         blacks, consecutive, segments = __calculateStaveFactor(row)
         stave_factors[row_index]['blacks'] = blacks
@@ -102,6 +102,7 @@ def cropStaves():
         factor = __isStave(blacks, consecutive, segments, w)
         stave_factors[row_index]['factor'] = factor
         stave_factors[row_index]['is_stave'] = False
+        print factor
         if factor > 0.05:
             stave_factors[row_index]['is_stave'] = True
 

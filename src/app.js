@@ -1,21 +1,15 @@
-import { initialiseCanvasPreview, loadImageFromServer } from './preview';
-import { initialiseCropper } from './canvasCropper';
+import React from 'react';
+import MusicSheet from 'omrComponents/SheetView/MusicSheet'
+import Form from 'omrComponents/SheetForm/SheetForm';
 
-$(document).ready(()=>{
- initialiseCanvasPreview("musicSheet", "image");
- initialiseCropper("image");
-
-
- $("#form").on("submit", function(e){
-  e.preventDefault();
-  $(this).ajaxSubmit({
-   success:function(res){
-    console.log("?!?!?!");
-    console.log(res);
-    loadImageFromServer();
-   },
-   error: function(err){ console.log(err); }
-  });
-  console.log(":D");
- });
-});
+class App extends React.Component{
+ render() {
+   return (
+    <div className="container-fluid">
+     <MusicSheet />
+     <Form />
+    </div>
+   )
+ }
+}
+export default App;

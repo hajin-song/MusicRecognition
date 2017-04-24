@@ -21,6 +21,34 @@ function __getPoint(e){
 }
 
 function initialiseCropper(imageID){
+ $("#crop-note").on("click", function(e){
+  let xMin = parseInt($("#crop-x").val());
+  let yMin = parseInt($("#crop-y").val());
+  let xMax = xMin + parseInt($("#crop-width").val());
+  let yMax = yMin + parseInt($("#crop-height").val());
+  $("#normalNote").val([xMin, yMin, xMax, yMax].join(','));
+ });
+ $("#crop-half").on("click", function(e){
+  let xMin = parseInt($("#crop-x").val());
+  let yMin = parseInt($("#crop-y").val());
+  let xMax = xMin + parseInt($("#crop-width").val());
+  let yMax = yMin + parseInt($("#crop-height").val());
+  $("#halfNote").val([xMin, yMin, xMax, yMax].join(','));
+ });
+ $("#crop-whole").on("click", function(e){
+  let xMin = parseInt($("#crop-x").val());
+  let yMin = parseInt($("#crop-y").val());
+  let xMax = xMin + parseInt($("#crop-width").val());
+  let yMax = yMin + parseInt($("#crop-height").val());
+  $("#wholteNote").val([xMin, yMin, xMax, yMax].join(','));
+ });
+ $("#crop-content").on("click", function(e){
+  let xMin = parseInt($("#crop-x").val());
+  let yMin = parseInt($("#crop-y").val());
+  let xMax = xMin + parseInt($("#crop-width").val());
+  let yMax = yMin + parseInt($("#crop-height").val());
+  $("#musicSheetCanvas").val([xMin, yMin, xMax, yMax].join(','));
+ });
  let imageDOM = $('#' + imageID);
  imageDOM.on('src-updated', function(e){
   imageDOM.cropper({
