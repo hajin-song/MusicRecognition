@@ -16,6 +16,11 @@
   ],
   "dependencies": {
     "jquery": "^3.2.1",
-    "jquery-form": "^4.2.0"
+    "jquery-form": "^4.2.0",
+    "cropper": "^2.3.4"
+  },
+  "devDependencies": {
+    "jquery": "^3.2.1",
+    "bootstrap": "^3.3.7"
   }
 }

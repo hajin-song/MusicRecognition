@@ -13,7 +13,14 @@
     "path": "^0.12.7",
     "webpack": "^2.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-preset-react": "^6.24.1",
+    "prop-types": "^15.5.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-redux": "^5.0.4",
+    "redux": "^3.6.0"
+  },
   "scripts": {
     "bundle": "webpack --progress --watch --color"
   },

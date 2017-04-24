@@ -5,19 +5,14 @@
   <title>OMR</title>
   <script src="/jquery/dist/jquery.min.js"></script>
   <script src="/jquery-form/dist/jquery.form.min.js"></script>
+  <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="/cropper/dist/cropper.min.js"></script>
   <script src="/main.bundle.js"></script>
+
+  <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css"></link>
+  <link rel="stylesheet" href="/cropper/dist/cropper.min.css"></link>
  <body>
-  <form id="form" action="/" method="POST" enctype='multipart/form-data'>
-   <div>
-    <input type="file" name="musicSheet" id="musicSheet" />
-   </div>
-   <div>
-    <input type="text" name="musicSheetRow" id="musicSheetRow" />
-   </div>
-   <div>
-    <canvas id="image" />
-   </div>
-   <input type="submit" value="Submit"/>
-  </form>
+  <main id='app'>
+  </main>
  </body>
 </html>
