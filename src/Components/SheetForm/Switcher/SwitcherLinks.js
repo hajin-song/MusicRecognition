@@ -2,7 +2,7 @@ import React from 'react';
 
 import SheetActions from 'omrActions/MusicSheet';
 
-import Link from 'omrComponents/SheetForm/Link';
+import Link from 'omrComponents/Common/Link';
 
 import PropTypes from 'prop-types';
 

@@ -10985,17 +10985,12 @@ var sheetReducer = function sheetReducer() {
 
   switch (action.type) {
     case _MusicSheet2.default.UPLOAD_SHEET:
-      console.log("UPLOADING SHEET");
-      console.log(action.sheet);
       return Object.assign({}, state, { sheet: action.sheet, current: action.sheet });
     case _MusicSheet2.default.ORIGINAL_SHEET:
-      console.log("TO ORIGINAL");
       return Object.assign({}, state, { current: action.sheet });
     case _MusicSheet2.default.UNSTAVED_SHEET:
-      console.log("TO UNSTAVED_SHEET");
       return Object.assign({}, state, { current: "sheet_without_staves.png" });
     case _MusicSheet2.default.DETECTED_SHEET:
-      console.log("TO DETECTED_SHEET");
       return Object.assign({}, state, { current: "image_marked.png" });
     default:
       return state;
@@ -11015,9 +11010,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _SheetCrop = __webpack_require__(101);
+var _Symbols = __webpack_require__(242);
 
-var _SheetCrop2 = _interopRequireDefault(_SheetCrop);
+var _Symbols2 = _interopRequireDefault(_Symbols);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11026,11 +11021,11 @@ var symbolReducer = function symbolReducer() {
   var action = arguments[1];
 
   switch (action) {
-    case _SheetCrop2.default.CROP_NORMAL_NOTE:
+    case _Symbols2.default.CROP_NORMAL_NOTE:
       return Object.assign({}, state, { normal: action.cropPane });
-    case _SheetCrop2.default.CROP_HALF_NOTE:
+    case _Symbols2.default.CROP_HALF_NOTE:
       return Object.assign({}, state, { half: action.cropPane });
-    case _SheetCrop2.default.CROP_WHOLE_NOTE:
+    case _Symbols2.default.CROP_WHOLE_NOTE:
       return Object.assign({}, state, { whole: action.cropPane });
     default:
       return state;
@@ -11127,22 +11122,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 101 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var CROP_NORMAL_NOTE = 'CROP_NORMAL_NOTE';
-var CROP_HALF_NOTE = 'CROP_HALF_NOTE';
-var CROP_WHOLE_NOTE = 'CROP_WHOLE_NOTE';
-
-exports.default = { CROP_NORMAL_NOTE: CROP_NORMAL_NOTE, CROP_HALF_NOTE: CROP_HALF_NOTE, CROP_WHOLE_NOTE: CROP_WHOLE_NOTE };
-
-/***/ }),
+/* 101 */,
 /* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11153,30 +11133,51 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _react = __webpack_require__(12);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _DetectorActions = __webpack_require__(243);
+
+var _DetectorActions2 = _interopRequireDefault(_DetectorActions);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Detector = function Detector() {
-  return _react2.default.createElement(
-    "div",
-    { className: "col-xs-3" },
-    _react2.default.createElement(
-      "form",
-      { id: "form-detect", action: "/detect", method: "POST" },
-      _react2.default.createElement(
-        "div",
-        null,
-        _react2.default.createElement("input", { type: "text", name: "normalNote", id: "normalNote" }),
-        _react2.default.createElement("input", { type: "text", name: "halfNote", id: "halfNote" }),
-        _react2.default.createElement("input", { type: "text", name: "wholteNote", id: "wholteNote" })
-      ),
-      _react2.default.createElement("input", { type: "submit", value: "Submit" })
-    )
-  );
-};
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Detector = function (_React$Component) {
+  _inherits(Detector, _React$Component);
+
+  function Detector() {
+    _classCallCheck(this, Detector);
+
+    return _possibleConstructorReturn(this, (Detector.__proto__ || Object.getPrototypeOf(Detector)).apply(this, arguments));
+  }
+
+  _createClass(Detector, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: 'col-xs-3' },
+        _react2.default.createElement(
+          'form',
+          { id: 'form-detect', action: '/detect', method: 'POST' },
+          _react2.default.createElement(_DetectorActions2.default, null),
+          _react2.default.createElement('input', { type: 'submit', value: 'Submit' })
+        )
+      );
+    }
+  }]);
+
+  return Detector;
+}(_react2.default.Component);
 
 exports.default = Detector;
 
@@ -11213,8 +11214,7 @@ var SheetForm = function SheetForm(_ref) {
   var onClick = _ref.onClick;
   return _react2.default.createElement(
     'div',
-    { className: 'row', style: { height: '10vh' }
-    },
+    { className: 'row', style: { height: '10vh' } },
     _react2.default.createElement(_Uploader2.default, null),
     _react2.default.createElement(_Switcher2.default, null),
     _react2.default.createElement(_Detector2.default, null)
@@ -11330,6 +11330,10 @@ var _react = __webpack_require__(12);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _Cropper = __webpack_require__(241);
+
+var _Cropper2 = _interopRequireDefault(_Cropper);
+
 var _propTypes = __webpack_require__(22);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -11360,7 +11364,17 @@ var Cropper = function (_React$Component) {
       var img = new Image();
       var imageDOM = $("#image");
       imageDOM.attr('src', imageSource);
-      imageDOM.cropper();
+      imageDOM.cropper({
+        crop: function crop(e) {
+          store.dispatch({
+            type: _Cropper2.default.CROP_PANE_CHANGED,
+            x: e.x,
+            y: e.y,
+            width: e.width,
+            height: e.height
+          });
+        }
+      });
       $(".cropper-canvas img").attr('src', imageSource);
       $(".cropper-view-box img").attr('src', imageSource);
       var imageData = $("#image").cropper('getImageData');
@@ -11421,10 +11435,6 @@ Object.defineProperty(exports, "__esModule", {
 var _react = __webpack_require__(12);
 
 var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = __webpack_require__(22);
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _Cropper = __webpack_require__(105);
 
@@ -24826,9 +24836,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _MusicSheet = __webpack_require__(55);
+var _Cropper = __webpack_require__(241);
 
-var _MusicSheet2 = _interopRequireDefault(_MusicSheet);
+var _Cropper2 = _interopRequireDefault(_Cropper);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24837,8 +24847,8 @@ var cropperReducer = function cropperReducer() {
   var action = arguments[1];
 
   switch (action.type) {
-    case _MusicSheet2.default.CROP_PANE_CHANGED:
-      return Object.assign(null, {}, {
+    case _Cropper2.default.CROP_PANE_CHANGED:
+      return Object.assign({}, state, {
         x: action.x,
         y: action.y,
         height: action.height,
@@ -24866,9 +24876,9 @@ var _react = __webpack_require__(12);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _SwitcherLink = __webpack_require__(235);
+var _SwitcherLinks = __webpack_require__(239);
 
-var _SwitcherLink2 = _interopRequireDefault(_SwitcherLink);
+var _SwitcherLinks2 = _interopRequireDefault(_SwitcherLinks);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24876,14 +24886,18 @@ var Switcher = function Switcher() {
   return _react2.default.createElement(
     'div',
     { className: 'col-xs-3' },
-    _react2.default.createElement(_SwitcherLink2.default, null)
+    _react2.default.createElement(_SwitcherLinks2.default, null)
   );
 };
 
 exports.default = Switcher;
 
 /***/ }),
-/* 235 */
+/* 235 */,
+/* 236 */,
+/* 237 */,
+/* 238 */,
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24903,7 +24917,7 @@ var _MusicSheet = __webpack_require__(55);
 
 var _MusicSheet2 = _interopRequireDefault(_MusicSheet);
 
-var _Link = __webpack_require__(236);
+var _Link = __webpack_require__(240);
 
 var _Link2 = _interopRequireDefault(_Link);
 
@@ -24981,7 +24995,7 @@ SwitcherLink.contextTypes = {
 exports.default = SwitcherLink;
 
 /***/ }),
-/* 236 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25017,6 +25031,137 @@ Link.propTypes = {
 };
 
 exports.default = Link;
+
+/***/ }),
+/* 241 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var CROP_PANE_CHANGED = 'CROP_PANE_CHANGED';
+
+exports.default = { CROP_PANE_CHANGED: CROP_PANE_CHANGED };
+
+/***/ }),
+/* 242 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var CROP_NORMAL_NOTE = 'CROP_NORMAL_NOTE';
+var CROP_HALF_NOTE = 'CROP_HALF_NOTE';
+var CROP_WHOLE_NOTE = 'CROP_WHOLE_NOTE';
+
+exports.default = { CROP_NORMAL_NOTE: CROP_NORMAL_NOTE, CROP_HALF_NOTE: CROP_HALF_NOTE, CROP_WHOLE_NOTE: CROP_WHOLE_NOTE };
+
+/***/ }),
+/* 243 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(12);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(22);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _Symbols = __webpack_require__(242);
+
+var _Symbols2 = _interopRequireDefault(_Symbols);
+
+var _Link = __webpack_require__(240);
+
+var _Link2 = _interopRequireDefault(_Link);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DetectorActions = function (_React$Component) {
+  _inherits(DetectorActions, _React$Component);
+
+  function DetectorActions() {
+    _classCallCheck(this, DetectorActions);
+
+    return _possibleConstructorReturn(this, (DetectorActions.__proto__ || Object.getPrototypeOf(DetectorActions)).apply(this, arguments));
+  }
+
+  _createClass(DetectorActions, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      var store = this.context.store;
+
+      this.unsubscribe = store.subscribe(function () {
+        return _this2.forceUpdate();
+      });
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this.unsubscribe();
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var store = this.context.store;
+
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(_Link2.default, { text: 'Normal', onClick: function onClick() {
+            store.dispatch({
+              type: _Symbols2.default.CROP_NORMAL_NOTE,
+              cropPane: store.getState().crop
+            });
+          } }),
+        _react2.default.createElement(_Link2.default, { text: 'Half', onClick: function onClick() {
+            store.dispatch({
+              type: _Symbols2.default.CROP_HALF_NOTE,
+              cropPane: store.getState().crop
+            });
+          } }),
+        _react2.default.createElement(_Link2.default, { text: 'Whole', onClick: function onClick() {
+            store.dispatch({
+              type: _Symbols2.default.CROP_WHOLE_NOTE,
+              cropPane: store.getState().crop
+            });
+          } })
+      );
+    }
+  }]);
+
+  return DetectorActions;
+}(_react2.default.Component);
+
+DetectorActions.contextTypes = {
+  store: _propTypes2.default.object
+};
+
+exports.default = DetectorActions;
 
 /***/ })
 /******/ ]);

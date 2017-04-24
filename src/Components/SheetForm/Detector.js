@@ -1,16 +1,18 @@
 import React from 'react';
 
-const Detector = () => (
- <div className="col-xs-3">
-  <form id="form-detect" action="/detect" method="POST">
-   <div>
-    <input type="text" name="normalNote" id="normalNote" />
-    <input type="text" name="halfNote" id="halfNote" />
-    <input type="text" name="wholteNote" id="wholteNote" />
+import DetectorActions from 'omrComponents/SheetForm/Detector/DetectorActions';
+
+class Detector extends React.Component{
+ render(){
+  return (
+   <div className="col-xs-3">
+    <form id="form-detect" action="/detect" method="POST">
+     <DetectorActions />
+     <input type="submit" value="Submit"/>
+    </form>
    </div>
-   <input type="submit" value="Submit"/>
-  </form>
- </div>
-)
+  )
+ }
+}
 
 export default Detector;

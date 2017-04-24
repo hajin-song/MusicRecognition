@@ -1,4 +1,4 @@
-import SymbolActions from 'omrActions/SheetCrop';
+import SymbolActions from 'omrActions/Symbols';
 
 const symbolReducer = (state = {normal: {}, half: {}, whole: {} }, action) => {
  switch(action) {

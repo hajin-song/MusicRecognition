@@ -5,13 +5,11 @@ import Switcher from 'omrComponents/SheetForm/Switcher';
 import Detector from 'omrComponents/SheetForm/Detector';
 
 const SheetForm = ({ onClick }) => (
- <div className="row" style={{height: '10vh' }}
-  >
+ <div className="row" style={{height: '10vh' }}>
   <Uploader />
   <Switcher />
   <Detector />
  </div>
 )
-
 
 export default SheetForm;

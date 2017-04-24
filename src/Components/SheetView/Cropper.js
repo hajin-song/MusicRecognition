@@ -1,5 +1,7 @@
 import React from 'react';
+import CropperActions from 'omrActions/Cropper';
 import { PropTypes } from 'prop-types';
+
 class Cropper extends React.Component{
  constructor() {
   super();
@@ -10,7 +12,17 @@ class Cropper extends React.Component{
   let img = new Image();
   let imageDOM = $("#image");
   imageDOM.attr('src', imageSource)
-  imageDOM.cropper();
+  imageDOM.cropper({
+   crop: function(e) {
+    store.dispatch({
+     type: CropperActions.CROP_PANE_CHANGED,
+     x: e.x,
+     y: e.y,
+     width: e.width,
+     height: e.height
+    });
+   }
+  });
   $(".cropper-canvas img").attr('src', imageSource);
   $(".cropper-view-box img").attr('src', imageSource);
   var imageData = $("#image").cropper('getImageData');
