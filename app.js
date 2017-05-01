@@ -1,9 +1,13 @@
-var PythonShell = require('python-shell');
-var fs = require('fs');
-var express = require('express');
-var multer = require('multer');
-var path = require('path');
-var bodyParser = require('body-parser');
+const PythonShell = require('python-shell');
+const fs = require('fs');
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const bodyParser = require('body-parser');
+const uuid = require('node-uuid');
+const mkdirp = require('mkdirp');
+
+var session = require('client-sessions');
 
 var app = express();
 
@@ -11,14 +15,17 @@ var app = express();
 app.use(bodyParser.urlencoded({
  extended: true
 }));
+
 app.use(bodyParser.json());
+
 var storage = multer.diskStorage({
  destination: function(req, file, callback){
-  callback(null, './images');
+  console.log(req.session);
+  mkdirp('./public/' +  req.session.uniqueString);
+  callback(null, './public/' + req.session.uniqueString + "/");
  },
  filename: function(req, file, callback){
-  console.log(file);
-  callback(null, "original_sheet.png");
+  callback(null, "original.png");
  }
 });
 
@@ -27,17 +34,28 @@ var upload = multer({ storage: storage});
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 
+app.use(session({
+ cookieName: 'session',
+ secret: uuid.v4(),
+ duration: 30 * 60 * 1000,
+ activeDuration: 5 * 60 * 1000
+}));
+
 app.get('/', function(req, res){
+ req.session.uniqueString = uuid.v1();
  res.sendFile(path.join(__dirname + '/index.html'));
 });
 
+app.get('/session', function(req, res){
+ res.send(req.session);
+});
+
 app.post('/', upload.single('musicSheet'), function(req, res, next){
- console.log(req.body);
  var options = {
    mode: 'text',
    pythonOptions: ['-u'],
    scriptPath: 'python',
-   args: ['original_sheet.png']
+   args: [req.session.uniqueString, 'original.png']
  };
 
  PythonShell.run('staveProcessor.py', options, function (err, results) {
@@ -50,25 +68,21 @@ app.post('/', upload.single('musicSheet'), function(req, res, next){
 
 app.post('/detect', function(req,res){
  console.log(req.body);
- console.log(req);
  //let coordinates = req.body.normalNote
- console.log(req.body)
+
  var options = {
    mode: 'text',
    pythonOptions: ['-u'],
    scriptPath: 'python',
-   args: [req.body.normalNote, req.body.halfNote, req.body.wholeNote]
+   args: [req.body.normal, req.body.half, req.body.whole, req.session.uniqueString, "sheet_without_staves.png"]
  };
  PythonShell.run('locateSymbols.py', options, function (err, results) {
    if (err) throw err;
    // results is an array consisting of messages collected during execution
-   console.log('results: %j', results);
    res.send("Finished");
  });
- res.send("Finished");
 });
 
 app.listen(3000, function() {
- console.log('Listening on port 3000..');
-
+ console.log("Laucnhing application... listening on port 3000")
 });

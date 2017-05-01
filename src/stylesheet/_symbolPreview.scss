@@ -1,0 +1,19 @@
+.symbol-container{
+ background-color: white;
+ position: absolute;
+ height: 100%;
+ width: 200px;
+ z-index: 1;
+}
+
+.symbol{
+ padding: 5px 10px;
+ text-align: center;
+ &__image{
+  width: 100%;
+  height: auto;
+ }
+ &__name{
+  font-weight: bold;
+ }
+}

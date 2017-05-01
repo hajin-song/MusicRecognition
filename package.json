@@ -8,18 +8,28 @@
     "babel-loader": "^6.4.1",
     "babel-preset-es2015": "^6.24.0",
     "body-parser": "^1.17.1",
+    "cropperjs": "^1.0.0-rc",
     "express": "^4.15.2",
+    "mkdirp": "^0.5.1",
     "multer": "^1.3.0",
+    "node-uuid": "^1.4.8",
     "path": "^0.12.7",
+    "stream": "0.0.2",
     "webpack": "^2.2.1"
   },
   "devDependencies": {
     "babel-preset-react": "^6.24.1",
+    "client-sessions": "^0.8.0",
+    "css-loader": "^0.28.0",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "node-sass": "^4.5.2",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-redux": "^5.0.4",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "sass-loader": "^6.0.3",
+    "style-loader": "^0.16.1"
   },
   "scripts": {
     "bundle": "webpack --progress --watch --color"
