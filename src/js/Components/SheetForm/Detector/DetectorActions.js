@@ -39,6 +39,20 @@ class DetectorActions extends React.Component{
       cropImage: store.getState().crop.cropper.getCroppedCanvas().toDataURL('image/jpeg')
      })
     }}/>
+    <Link text="Flat" onClick={()=>{
+     store.dispatch({
+      type: SymbolActions.CROP_FLAT,
+      cropPane: store.getState().crop.cropper.getData(),
+      cropImage: store.getState().crop.cropper.getCroppedCanvas().toDataURL('image/jpeg')
+     })
+    }}/>
+    <Link text="Sharp" onClick={()=>{
+     store.dispatch({
+      type: SymbolActions.CROP_SHARP,
+      cropPane: store.getState().crop.cropper.getData(),
+      cropImage: store.getState().crop.cropper.getCroppedCanvas().toDataURL('image/jpeg')
+     })
+    }}/>
    </div>
   );
  }

@@ -74,7 +74,7 @@ app.post('/detect', function(req,res){
    mode: 'text',
    pythonOptions: ['-u'],
    scriptPath: 'python',
-   args: [req.body.normal, req.body.half, req.body.whole, req.session.uniqueString, "sheet_without_staves.png"]
+   args: [req.body.normal, req.body.half, req.body.whole, req.body.flat, req.body.sharp, req.session.uniqueString, "sheet_without_staves.png"]
  };
  PythonShell.run('locateSymbols.py', options, function (err, results) {
    if (err) throw err;

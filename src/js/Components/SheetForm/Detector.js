@@ -11,6 +11,8 @@ class Detector extends React.Component{
    data["normal"] = state.symbols.normal.coordinates;
    data["half"] = state.symbols.half.coordinates;
    data["whole"] = state.symbols.whole.coordinates;
+   data["flat"] = state.symbols.flat.coordinates;
+   data["sharp"] = state.symbols.sharp.coordinates;
    $.post('/detect', data, (res)=>{
     console.log(res);
    });

@@ -7,7 +7,9 @@ const mapStateToProps = (state) => {
  return {
   normal: state.symbols.normal,
   half: state.symbols.half,
-  whole: state.symbols.whole
+  whole: state.symbols.whole,
+  flat: state.symbols.flat,
+  sharp: state.symbols.sharp
  }
 }
 
@@ -17,11 +19,13 @@ const mapDispatchToProps = (dispatch) => {
  }
 }
 
-const Symbols = ({normal, half, whole}) => (
+const Symbols = ({normal, half, whole, flat, sharp}) => (
  <div id='symbols' className='symbol-container'>
   <Symbol name="normal" image={normal.image} />
   <Symbol name="half" image={half.image} />
   <Symbol name="whole" image={whole.image} />
+  <Symbol name="flat" image={flat.image} />
+  <Symbol name="sharp" image={sharp.image} />
  </div>
 )
 

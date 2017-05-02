@@ -6884,8 +6884,10 @@ Object.defineProperty(exports, "__esModule", {
 var CROP_NORMAL_NOTE = 'CROP_NORMAL_NOTE';
 var CROP_HALF_NOTE = 'CROP_HALF_NOTE';
 var CROP_WHOLE_NOTE = 'CROP_WHOLE_NOTE';
+var CROP_FLAT = 'CROP_FLAT';
+var CROP_SHARP = 'CROP_SHARP';
 
-exports.default = { CROP_NORMAL_NOTE: CROP_NORMAL_NOTE, CROP_HALF_NOTE: CROP_HALF_NOTE, CROP_WHOLE_NOTE: CROP_WHOLE_NOTE };
+exports.default = { CROP_NORMAL_NOTE: CROP_NORMAL_NOTE, CROP_HALF_NOTE: CROP_HALF_NOTE, CROP_WHOLE_NOTE: CROP_WHOLE_NOTE, CROP_FLAT: CROP_FLAT, CROP_SHARP: CROP_SHARP };
 
 /***/ }),
 /* 59 */
@@ -11186,6 +11188,8 @@ var Detector = function (_React$Component) {
         data["normal"] = state.symbols.normal.coordinates;
         data["half"] = state.symbols.half.coordinates;
         data["whole"] = state.symbols.whole.coordinates;
+        data["flat"] = state.symbols.flat.coordinates;
+        data["sharp"] = state.symbols.sharp.coordinates;
         $.post('/detect', data, function (res) {
           console.log(res);
         });
@@ -11303,6 +11307,20 @@ var DetectorActions = function (_React$Component) {
         _react2.default.createElement(_Link2.default, { text: 'Whole', onClick: function onClick() {
             store.dispatch({
               type: _Symbols2.default.CROP_WHOLE_NOTE,
+              cropPane: store.getState().crop.cropper.getData(),
+              cropImage: store.getState().crop.cropper.getCroppedCanvas().toDataURL('image/jpeg')
+            });
+          } }),
+        _react2.default.createElement(_Link2.default, { text: 'Flat', onClick: function onClick() {
+            store.dispatch({
+              type: _Symbols2.default.CROP_FLAT,
+              cropPane: store.getState().crop.cropper.getData(),
+              cropImage: store.getState().crop.cropper.getCroppedCanvas().toDataURL('image/jpeg')
+            });
+          } }),
+        _react2.default.createElement(_Link2.default, { text: 'Sharp', onClick: function onClick() {
+            store.dispatch({
+              type: _Symbols2.default.CROP_SHARP,
               cropPane: store.getState().crop.cropper.getData(),
               cropImage: store.getState().crop.cropper.getCroppedCanvas().toDataURL('image/jpeg')
             });
@@ -11778,7 +11796,9 @@ var mapStateToProps = function mapStateToProps(state) {
   return {
     normal: state.symbols.normal,
     half: state.symbols.half,
-    whole: state.symbols.whole
+    whole: state.symbols.whole,
+    flat: state.symbols.flat,
+    sharp: state.symbols.sharp
   };
 };
 
@@ -11789,13 +11809,17 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 var Symbols = function Symbols(_ref) {
   var normal = _ref.normal,
       half = _ref.half,
-      whole = _ref.whole;
+      whole = _ref.whole,
+      flat = _ref.flat,
+      sharp = _ref.sharp;
   return _react2.default.createElement(
     'div',
     { id: 'symbols', className: 'symbol-container' },
     _react2.default.createElement(_Symbol3.default, { name: 'normal', image: normal.image }),
     _react2.default.createElement(_Symbol3.default, { name: 'half', image: half.image }),
-    _react2.default.createElement(_Symbol3.default, { name: 'whole', image: whole.image })
+    _react2.default.createElement(_Symbol3.default, { name: 'whole', image: whole.image }),
+    _react2.default.createElement(_Symbol3.default, { name: 'flat', image: flat.image }),
+    _react2.default.createElement(_Symbol3.default, { name: 'sharp', image: sharp.image })
   );
 };
 
@@ -11922,7 +11946,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var initialState = {
   normal: { coordinates: {}, image: "" },
   half: { coordinates: {}, image: "" },
-  whole: { coordinates: {}, image: "" }
+  whole: { coordinates: {}, image: "" },
+  sharp: { coordinates: {}, image: "" },
+  flat: { coordinates: {}, image: "" }
 };
 
 var getCoordinate = function getCoordinate(box) {
@@ -11944,6 +11970,10 @@ var symbolReducer = function symbolReducer() {
       return Object.assign({}, state, { half: { coordinates: getCoordinate(action.cropPane), image: action.cropImage } });
     case _Symbols2.default.CROP_WHOLE_NOTE:
       return Object.assign({}, state, { whole: { coordinates: getCoordinate(action.cropPane), image: action.cropImage } });
+    case _Symbols2.default.CROP_FLAT:
+      return Object.assign({}, state, { flat: { coordinates: getCoordinate(action.cropPane), image: action.cropImage } });
+    case _Symbols2.default.CROP_SHARP:
+      return Object.assign({}, state, { sharp: { coordinates: getCoordinate(action.cropPane), image: action.cropImage } });
     default:
       return state;
   }

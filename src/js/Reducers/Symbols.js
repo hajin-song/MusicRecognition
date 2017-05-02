@@ -3,7 +3,9 @@ import SymbolActions from 'omrActions/Symbols';
 const initialState = {
  normal: { coordinates: {}, image: "" },
  half: { coordinates: {}, image: "" },
- whole: {coordinates: {}, image: "" }
+ whole: {coordinates: {}, image: "" },
+ sharp: { coordinates: {}, image: "" },
+ flat: { coordinates: {}, image: "" }
 };
 
 const getCoordinate = (box) => {
@@ -22,6 +24,10 @@ const symbolReducer = (state = initialState, action) => {
    return Object.assign( {}, state, { half: { coordinates: getCoordinate(action.cropPane), image: action.cropImage } });
   case SymbolActions.CROP_WHOLE_NOTE:
    return Object.assign( {}, state, { whole: { coordinates: getCoordinate(action.cropPane), image: action.cropImage } });
+  case SymbolActions.CROP_FLAT:
+   return Object.assign( {}, state, { flat: { coordinates: getCoordinate(action.cropPane), image: action.cropImage } });
+  case SymbolActions.CROP_SHARP:
+   return Object.assign( {}, state, { sharp: { coordinates: getCoordinate(action.cropPane), image: action.cropImage } });
   default:
    return state;
  }
