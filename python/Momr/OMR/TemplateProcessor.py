@@ -1,8 +1,9 @@
-import cv2;
+import sys
+import cv2
 import numpy as np
+import scipy.misc
 from collections import defaultdict
-
-THRESHOLD = 0.7
+from Momr.OMR.constants import *
 
 def __remove_detected(img, row, col, box_width, box_height):
     top = -1
@@ -10,7 +11,7 @@ def __remove_detected(img, row, col, box_width, box_height):
     for height in range(0, box_height):
         cur_width = 0
         for width in range(0, box_width):
-            if img[row + height][col + width] != 255:
+            if img[row + height][col + width] != COLOR_WHITE:
                 cur_width += 1
         if cur_width > 1:
             if bottom == -1:
@@ -18,7 +19,7 @@ def __remove_detected(img, row, col, box_width, box_height):
             else:
                 top = row + height
             for width in range(0, box_width):
-                img[row + height][col + width] = 255
+                img[row + height][col + width] = COLOR_WHITE
     return bottom, top
 
 def detect_symbols(original, marked, template, color):
@@ -35,7 +36,7 @@ def detect_symbols(original, marked, template, color):
 
     for index, pt in enumerate(zip(*loc[::-1])):
         bottom, top = __remove_detected(original, pt[1], pt[0], w, h)
-        cv2.rectangle(marked, (pt[0], pt[1]), (pt[0] + w, pt[1] + h), color, 1)
         symbols[pt[0]][pt[1]]["bottom"] = bottom
         symbols[pt[0]][pt[1]]["top"] = top
+
     return symbols

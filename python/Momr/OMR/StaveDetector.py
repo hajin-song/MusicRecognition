@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import scipy.misc
 from collections import defaultdict
+from Momr.OMR.constants import *
 
 def calculate_stave_factor(np_array):
     blacks = 0
@@ -10,7 +11,7 @@ def calculate_stave_factor(np_array):
     current_chain = 0
     segments = 0
     for cell in np_array:
-        if cell <= 200:
+        if cell <= COLOR_THRSHOLD_BLACK:
             current_chain += 1
             blacks += 1
         else:
@@ -29,20 +30,20 @@ def is_stave(blacks, longest_chain, segments, row_length):
 def remove_stave_row(img_as_np, stave_as_np, row_index, stave_type = 0):
     if stave_type == 3:
         for cell_index, cell in np.ndenumerate(stave_as_np[row_index]):
-            if stave_as_np[row_index-1][cell_index] > 200 and stave_as_np[row_index+1][cell_index] > 200:
-                img_as_np[row_index][cell_index] = 255
+            if stave_as_np[row_index-1][cell_index] > COLOR_THRSHOLD_BLACK and stave_as_np[row_index+1][cell_index] > COLOR_THRSHOLD_BLACK:
+                img_as_np[row_index][cell_index] = COLOR_WHITE
     elif stave_type == 1:
         for cell_index, cell in np.ndenumerate(stave_as_np[row_index]):
-            if stave_as_np[row_index-1][cell_index] > 200:
-                img_as_np[row_index][cell_index] = 255
+            if stave_as_np[row_index-1][cell_index] > COLOR_THRSHOLD_BLACK:
+                img_as_np[row_index][cell_index] = COLOR_WHITE
     elif stave_type == 2:
         for cell_index, cell in np.ndenumerate(stave_as_np[row_index]):
-            if stave_as_np[row_index+1][cell_index] > 200:
-                img_as_np[row_index][cell_index] = 255
+            if stave_as_np[row_index+1][cell_index] > COLOR_THRSHOLD_BLACK:
+                img_as_np[row_index][cell_index] = COLOR_WHITE
     else:
         for cell_index, cell in np.ndenumerate(stave_as_np[row_index]):
-            if stave_as_np[row_index-1][cell_index] > 200 and stave_as_np[row_index+1][cell_index] > 200:
-                img_as_np[row_index][cell_index] = 255
+            if stave_as_np[row_index-1][cell_index] > COLOR_THRSHOLD_BLACK and stave_as_np[row_index+1][cell_index] > COLOR_THRSHOLD_BLACK:
+                img_as_np[row_index][cell_index] = COLOR_WHITE
 
 
 def set_stave_range(stave_groups):
