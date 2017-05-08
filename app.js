@@ -69,7 +69,7 @@ app.post('/', upload.single('musicSheet'), function(req, res, next){
 app.post('/detect', function(req,res){
  console.log(req.body);
  //let coordinates = req.body.normalNote
-
+ 
  var options = {
    mode: 'text',
    pythonOptions: ['-u'],
@@ -78,8 +78,9 @@ app.post('/detect', function(req,res){
  };
  PythonShell.run('locateSymbols.py', options, function (err, results) {
    if (err) throw err;
+   console.log('results: %j', results);
    // results is an array consisting of messages collected during execution
-   res.send("Finished");
+   res.send(results);
  });
 });
 

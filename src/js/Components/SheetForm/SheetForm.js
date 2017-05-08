@@ -7,7 +7,6 @@ import Detector from 'omrComponents/SheetForm/Detector';
 const SheetForm = ({ onClick }) => (
  <div id="sheet-form" className="row">
   <Uploader />
-  <Switcher />
   <Detector />
  </div>
 )

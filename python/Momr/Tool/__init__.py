@@ -3,7 +3,7 @@ import numpy as np
 
 PUBLIC_PATH = "./public/"
 
-def open_image(session_token, file_name):
+def openImage(session_token, file_name):
     image_name = PUBLIC_PATH + session_token + "/" + file_name
     try:
         img = cv2.imread(img_name)

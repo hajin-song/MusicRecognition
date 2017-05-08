@@ -11373,7 +11373,6 @@ var SheetForm = function SheetForm(_ref) {
     'div',
     { id: 'sheet-form', className: 'row' },
     _react2.default.createElement(_Uploader2.default, null),
-    _react2.default.createElement(_Switcher2.default, null),
     _react2.default.createElement(_Detector2.default, null)
   );
 };

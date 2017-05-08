@@ -36,7 +36,9 @@ def detect_symbols(original, marked, template, color):
 
     for index, pt in enumerate(zip(*loc[::-1])):
         bottom, top = __remove_detected(original, pt[1], pt[0], w, h)
-        symbols[pt[0]][pt[1]]["bottom"] = bottom
-        symbols[pt[0]][pt[1]]["top"] = top
+        x_key = str(pt[0])
+        y_key = str(pt[1])
+        symbols[x_key][y_key]["bottom"] = bottom
+        symbols[x_key][y_key]["top"] = top
 
     return symbols
