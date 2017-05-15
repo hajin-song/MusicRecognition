@@ -66,6 +66,22 @@ app.post('/', upload.single('musicSheet'), function(req, res, next){
  });
 });
 
+app.post('/update', function(req, res){
+ var options = {
+   mode: 'text',
+   pythonOptions: ['-u'],
+   scriptPath: 'python',
+   args: [req.body.data, req.session.uniqueString, req.body.target]
+ };
+ console.log(req.body.data);
+ PythonShell.run('dataUpdator.py', options, function (err, results) {
+   if (err) throw err;
+   console.log('results: %j', results);
+   // results is an array consisting of messages collected during execution
+   res.send(results);
+ });
+});
+
 app.post('/detect', function(req,res){
  console.log(req.body);
  //let coordinates = req.body.normalNote

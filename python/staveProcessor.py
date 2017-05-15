@@ -3,7 +3,6 @@ import cv2
 import numpy as np
 import scipy.misc
 from collections import defaultdict
-import json
 import pickle
 
 from Momr.Objects.Stave import Stave
@@ -11,35 +10,27 @@ from Momr.Objects.Stave import Stave
 from Momr.OMR import RowProcessor
 from Momr.Tool import Image
 
-def __RemoveDuplicateSections(staveGroups):
-    result = []
-    for staveGroup in staveGroups:
-        if staveGroup not in result:
-            result.append(staveGroup)
-        else:
-            index = result.index(staveGroup)
-            target = result[index]
-            if staveGroup.isSuperSet(target) == 1:
-                result[index] = staveGroup
-
-    return result
-
 
 def __processRow(img, row_index, test):
-    #print row_index
-    row = img[row_index]
-    #print row_index
+    """Calculate Stave Factor of each row. """
     staveLine = {}
-    staveLine["staveFactor"] = RowProcessor.calculateStaveFactor(row)
+    row = img[row_index]
+    staveLine["staveFactor"] = RowProcessor.calculateStaveFactor(img[row_index])
     staveLine['isStave'] = False
     return staveLine
 
 def __bundleStaves(dictStaveFactors, avgStaveDistance):
+    """
+    Bundles each stave row in a group of 5, using average distance between
+    stave lines as threshold value.
+    """
     lstStave= []
     dictStaveGroup = { "stave": [] }
     dictStaveGroups = defaultdict(dict)
 
     countStaveGroup = 0
+
+    # Look for multi-lien stave rows
     staveRows = []
     for index, row in enumerate(dictStaveFactors.keys()):
         if dictStaveFactors[row]['isStave']:
@@ -48,6 +39,8 @@ def __bundleStaves(dictStaveFactors, avgStaveDistance):
             if len(lstStave) > 0:
                 staveRows.append(lstStave)
                 lstStave = []
+
+    # keep track of previous stave line to check for threshold
     prev = 0
     for stave in staveRows:
         first = stave[0]
@@ -67,6 +60,7 @@ def __bundleStaves(dictStaveFactors, avgStaveDistance):
 
     staves = []
 
+    # Set stave group height range
     for staveGroup in dictStaveGroups:
         current = dictStaveGroups[staveGroup]
         y0 = current[0][-1]
@@ -76,6 +70,13 @@ def __bundleStaves(dictStaveFactors, avgStaveDistance):
     return staves
 
 def __findSectionDividers(img, staves):
+    """
+    Find where the stave groups are separated on.
+    By definition, a separator is a black line striking through the stave row
+    vertically.
+    Since note detections are not done at this stage, users can manually merge
+    separators at Frontend
+    """
     h, w = img.shape
 
     for stave in staves:
@@ -85,15 +86,18 @@ def __findSectionDividers(img, staves):
             if all(img[y0:y1, x:x+1] <= 200) and img[y0:y1, x:x+1][0] <= 200:
                 img[y0:y1, x:x+1] = 255
                 stave.sections.append(x)
-    return
-
 
 def cropStaves():
+    # sessionId = Unique string for user's session
     sessionId = sys.argv[1]
-    FieldName = sys.argv[2]
+    # FileName = File to process
+    FileName = sys.argv[2]
 
-    img = Image.openImage(sessionId, FieldName)
+    img = Image.openImage(sessionId, FileName)
+    # Blur image - easier processing
     ret,img = cv2.threshold(img, 200, 255,cv2.THRESH_BINARY)
+
+    # imgColor used for debugging purposes
     imgColor = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     npImg = np.asarray(img)
     npImgStaveMarked = np.asarray(imgColor.copy())
@@ -176,6 +180,5 @@ def cropStaves():
     Image.saveImage(sessionId, "testerrr.png", imgColor)
     Image.saveImage(sessionId, "sheet_section_marked.png", npImgStaveMarked)
     pickle.dump(staves, output)
-
 
 cropStaves()

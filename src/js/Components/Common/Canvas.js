@@ -2,17 +2,22 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
 
+import SheetActions from 'omrActions/Sheet';
+
 class Canvas extends React.Component{
  componentDidMount(){
   this.clickedStaves = [];
   var self = this;
+  const { store } = this.context;
+  var state = store.getState();
   $("#image-actions").on('click', function(e){
-   if(e.ctrlKey){
-    if(self.__containsObject(self.area, self.clickedStaves)){
-     self.clickedStaves.push(self.area);
-     console.log(self.clickedStaves);
-    }
-    return;
+   if(e.ctrlKey && typeof self.area != "undefined"){
+    let actionStaveClicked = {
+     "type": SheetActions.STAVE_CLICKED_CONTROL,
+     "area": self.area
+    };
+    store.dispatch(actionStaveClicked);
+
    }else{
     return;
    }
@@ -21,22 +26,26 @@ class Canvas extends React.Component{
    let coord = self.__getMousePos(e);
    let stave = self.__getStave(coord.x, coord.y);
 
-   if(typeof self.area != "undefined" && !self.__containsObject(self.area, self.clickedStaves) && typeof stave === "undefined"){
+   let curAreaIndex = $.objectIndex(self.area, self.props.clickedStaves);
+
+   if(typeof self.area != "undefined" && curAreaIndex == -1 && typeof stave === "undefined"){
     self.__removeStaveHighlight(self.area.stave, self.area.section);
-    self.area = undefined;
    }
+
    if(typeof stave != "undefined"){
     var canvasAction = document.getElementById('image-actions');
     var contextAction = canvasAction.getContext('2d');
 
     let section = self.__getStaveSection(stave, coord.x);
     var area = { stave: stave, section: section };
-    if(typeof self.area != "undefined" && !self.__containsObject(self.area, self.clickedStaves) && self.area != area){
+    if(typeof self.area != "undefined" && curAreaIndex == -1 && self.area != area){
      self.__removeStaveHighlight(self.area.stave, self.area.section);
     }
 
     self.__addStaveHighlight(stave, section);
     self.area = area;
+   }else{
+    self.area = undefined;
    }
   });
  }
@@ -44,9 +53,12 @@ class Canvas extends React.Component{
   const { store } = this.context;
   console.log(store.getState());
 
-  console.log("mounted...");
   console.log(this.props.src);
-
+  console.log(this.props.clickedStaves);
+  var self = this;
+  this.props.clickedStaves.map((stave) => {
+   self.__addStaveHighlight(stave.stave, stave.section);
+  });
   var canvas = document.getElementById('image');
   var canvasAction = document.getElementById('image-actions');
   var context = canvas.getContext('2d');
@@ -113,12 +125,7 @@ class Canvas extends React.Component{
   );
   $('#image-actions').css('cursor', '');
  }
- __containsObject(obj, list) {
-  let contains = list.filter((area) => {
-   return area.stave.y0 == obj.stave.y0 && area.stave.y1 == obj.stave.y1 && area.section[0] == obj.section[0] && area.section[1] == obj.section[1]
-  });
-  return contains.length != 0;
- }
+
  render() {
   return (
    <div className="sheet__canvas">

@@ -1,7 +1,6 @@
 import sys
 import cv2
 import numpy as np
-import json
 import pickle
 
 from collections import defaultdict
@@ -87,7 +86,6 @@ def __allocate_note_to_stave(staves, detected_symbols):
         for index, stave_x_0 in enumerate(current.sections[:-1]):
             stave_x_1 = current.sections[index+1]
         current.addNote(str(stave_x_0), symbol)
-
 
 def __process_tail_type(staves, image, test):
     for stave in staves:

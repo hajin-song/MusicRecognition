@@ -1,9 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 
-import SheetActions from 'omrActions/MusicSheet';
-import AppACtions from 'omrActions/App';
-import MusicSheet from 'omrActions/MusicSheet';
+import SheetActions from 'omrActions/Sheet';
 
 class Uploader extends React.Component{
  componentDidMount() {
@@ -16,12 +14,12 @@ class Uploader extends React.Component{
    $(this).ajaxSubmit({
     success: function(res){
      let actionuploadedImage = {
-      "type": MusicSheet.UPLOAD_SHEET
+      "type": SheetActions.UPLOAD_SHEET
      };
      store.dispatch(actionuploadedImage);
       $.get("/session", (data) => {
        let actionUpdateStave = {
-        "type": AppACtions.GET_STAVE_GROUPS,
+        "type": SheetActions.GET_STAVE_GROUPS,
         "staveGroup": JSON.parse(data["staveGroup"])
        };
        store.dispatch(actionUpdateStave);
