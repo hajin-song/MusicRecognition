@@ -1,5 +1,5 @@
 import React from 'react';
-import SheetContainer from 'omrComponents/SheetView/SheetContainer'
+import SheetContainer from 'omrComponents/SheetStave/Container'
 import Form from 'omrComponents/SheetForm/SheetForm';
 
 class App extends React.Component{
@@ -7,7 +7,6 @@ class App extends React.Component{
    return (
     <div className="container-fluid">
      <SheetContainer />
-     <Form />
     </div>
    )
  }

@@ -61,7 +61,7 @@ app.post('/', upload.single('musicSheet'), function(req, res, next){
  PythonShell.run('staveProcessor.py', options, function (err, results) {
    if (err) throw err;
    // results is an array consisting of messages collected during execution
-   console.log('results: %j', results);
+   req.session.staveGroup = "[" + results.join(',') + "]";
    res.send("Finished");
  });
 });
@@ -69,7 +69,7 @@ app.post('/', upload.single('musicSheet'), function(req, res, next){
 app.post('/detect', function(req,res){
  console.log(req.body);
  //let coordinates = req.body.normalNote
- 
+
  var options = {
    mode: 'text',
    pythonOptions: ['-u'],

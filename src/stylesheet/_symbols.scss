@@ -1,0 +1,18 @@
+.symbol{
+ width: 100%;
+ position:relative;
+ &__image{
+  visibility: hidden;
+  position: absolute;
+  padding: 5px 0;
+  color: red;
+  background-color: red;
+ }
+ &:hover{
+  background-color: black;
+  cursor: pointer;
+  .symbol__image{
+   visibility: visible;
+  }
+ }
+}

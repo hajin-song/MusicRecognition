@@ -9,9 +9,10 @@ import App from './app.js';
 import sheet from 'omrReducers/Sheet';
 import symbols from 'omrReducers/Symbols';
 import crop from 'omrReducers/Cropper';
-import session from 'omrReducers/Session';
+import app from 'omrReducers/App';
+import mode from 'omrReducers/Mode';
 
-import SessionAction from 'omrActions/Session';
+import AppActions from 'omrActions/App';
 
 $(document).ready(()=>{
  $.get("/session", (data) => {
@@ -19,15 +20,18 @@ $(document).ready(()=>{
    sheet,
    symbols,
    crop,
-   session
+   app,
+   mode
   });
 
   const store = createStore(Reducer, {});
 
   store.dispatch({
-   type: SessionAction.INIT_SESSION,
+   type: AppActions.INIT_SESSION,
    uniquePath: data.uniqueString
   })
+
+  console.log(store.getState().sheet);
 
   render(
    <Provider store={store}>

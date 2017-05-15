@@ -1,6 +1,8 @@
-@import './symbolPreview.scss';
+@import './symbolPreview';
+@import './symbols';
+@import './canvas';
 
-#image-preview{
+#staves{
  position: relative;
  height: 90vh;
 }
@@ -11,4 +13,8 @@
 
 #sheet-form{
  height: 10vh;
+}
+
+#staves > div{
+ display: none
 }

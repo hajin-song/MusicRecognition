@@ -5,7 +5,7 @@ import scipy.misc
 from collections import defaultdict
 from Momr.OMR.constants import *
 
-def __remove_detected(img, row, col, box_width, box_height):
+def remove_detected(img, row, col, box_width, box_height):
     top = -1
     bottom = -1
     for height in range(0, box_height):
@@ -35,10 +35,9 @@ def detect_symbols(original, marked, template, color):
     loc = np.where(res >= THRESHOLD)
 
     for index, pt in enumerate(zip(*loc[::-1])):
-        bottom, top = __remove_detected(original, pt[1], pt[0], w, h)
+        #bottom, top = __remove_detected(original, pt[1], pt[0], w, h)
         x_key = str(pt[0])
         y_key = str(pt[1])
-        symbols[x_key][y_key]["bottom"] = bottom
-        symbols[x_key][y_key]["top"] = top
+        symbols[x_key][y_key] = {}
 
     return symbols
