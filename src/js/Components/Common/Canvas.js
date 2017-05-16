@@ -2,62 +2,48 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
 
-import SheetActions from 'omrActions/Sheet';
-
 class Canvas extends React.Component{
  componentDidMount(){
   this.clickedStaves = [];
-  var self = this;
-  const { store } = this.context;
-  var state = store.getState();
-  $("#image-actions").on('click', function(e){
-   if(e.ctrlKey && typeof self.area != "undefined"){
-    let actionStaveClicked = {
-     "type": SheetActions.STAVE_CLICKED_CONTROL,
-     "area": self.area
-    };
-    store.dispatch(actionStaveClicked);
 
+  $("#image-actions").on('click', (e) => {
+   if(e.ctrlKey && typeof this.area != "undefined"){
+    this.props.staveSelect(this.area);
    }else{
     return;
    }
   });
-  $("#image-actions").on('mousemove', function(e){
-   let coord = self.__getMousePos(e);
-   let stave = self.__getStave(coord.x, coord.y);
 
-   let curAreaIndex = $.objectIndex(self.area, self.props.clickedStaves);
+  $("#image-actions").on('mousemove', (e) => {
+   let coord = this.__getMousePos(e);
+   let stave = this.__getStave(coord.x, coord.y);
 
-   if(typeof self.area != "undefined" && curAreaIndex == -1 && typeof stave === "undefined"){
-    self.__removeStaveHighlight(self.area.stave, self.area.section);
+   let curAreaIndex = $.objectIndex(this.area, this.props.clickedStaves);
+
+   if(typeof this.area != "undefined" && curAreaIndex == -1 && typeof stave === "undefined"){
+    this.__removeStaveHighlight(this.area.stave, this.area.section);
    }
 
    if(typeof stave != "undefined"){
     var canvasAction = document.getElementById('image-actions');
     var contextAction = canvasAction.getContext('2d');
 
-    let section = self.__getStaveSection(stave, coord.x);
+    let section = this.__getStaveSection(stave, coord.x);
     var area = { stave: stave, section: section };
-    if(typeof self.area != "undefined" && curAreaIndex == -1 && self.area != area){
-     self.__removeStaveHighlight(self.area.stave, self.area.section);
+    if(typeof this.area != "undefined" && curAreaIndex == -1 && this.area != area){
+     this.__removeStaveHighlight(this.area.stave, this.area.section);
     }
 
-    self.__addStaveHighlight(stave, section);
-    self.area = area;
+    this.__addStaveHighlight(stave, section);
+    this.area = area;
    }else{
-    self.area = undefined;
+    this.area = undefined;
    }
   });
  }
  componentDidUpdate(prevProps, prevState){
-  const { store } = this.context;
-  console.log(store.getState());
-
-  console.log(this.props.src);
-  console.log(this.props.clickedStaves);
-  var self = this;
   this.props.clickedStaves.map((stave) => {
-   self.__addStaveHighlight(stave.stave, stave.section);
+   this.__addStaveHighlight(stave.stave, stave.section);
   });
   var canvas = document.getElementById('image');
   var canvasAction = document.getElementById('image-actions');
@@ -136,15 +122,10 @@ class Canvas extends React.Component{
  }
 }
 
-
 Canvas.propTypes = {
  src: PropTypes.string,
- staves: PropTypes.arrayOf(PropTypes.object)
+ staves: PropTypes.arrayOf(PropTypes.object),
+ staveSelect: PropTypes.func,
 }
-
-Canvas.contextTypes = {
- store: PropTypes.object
-}
-
 
 export default Canvas

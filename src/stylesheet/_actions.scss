@@ -1,4 +1,6 @@
 .actions{
+ display: flex;
+ flex-direction: column;
  &__action{
   margin: 10px 5px;
  }

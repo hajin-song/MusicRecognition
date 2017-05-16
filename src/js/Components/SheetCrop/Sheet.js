@@ -6,13 +6,13 @@ import CroppableCanvas from 'omrComponents/Common/CroppableCanvas';
 
 const mapStateToProps = (state) => {
  return {
-  sheet: state.session.uniquePath + "/" + state.sheet.current,
+  sheet: state.app.uniquePath + "/" + state.sheet.current,
   original: state.sheet.sheet
  }
 }
 
 const Sheet = ({sheet, original }) => (
- <CroppableCanvas src={sheet} name={original.name} />
+ <CroppableCanvas src={sheet} name={original} />
 );
 
 export default connect(mapStateToProps)(Sheet);

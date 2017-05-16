@@ -20,10 +20,14 @@ class Actions extends React.Component{
   return(
    <div className="col-xs-3 sheet__actions actions">
     <Action className="actions__action" text="Merge Section" onClick={() => {
-      console.log(store.getState());
       store.dispatch({ type: SheetActions.MERGE_STAVE_SECTIONS });
      }
-    }/>;
+    }/>
+    <Action className="actions__action" text="To Detect" onClick={() => {
+      $('#staves').css('display', 'none');
+      $('#crop').css('display', 'block');
+     }
+    }/>
    </div>
   );
  }

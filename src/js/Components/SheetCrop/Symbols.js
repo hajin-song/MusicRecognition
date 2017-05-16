@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import Symbol from 'omrComponents/Common/Symbol';
+import Symbol from 'omrComponents/SheetCrop/Symbol';
 import SymbolActions from 'omrActions/Symbols';
 
 class Symbols extends React.Component{
@@ -17,7 +17,7 @@ class Symbols extends React.Component{
  render(){
   const { store } = this.context;
   return(
-   <div id='symbols' className='symbol-container'>
+   <div id='symbols' className='col-xs-3 sheet__symbols'>
     <Symbol name="normal" image={store.getState().symbols.normal.image} onClick={
      () => {
       store.dispatch({
