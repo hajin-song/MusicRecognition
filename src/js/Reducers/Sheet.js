@@ -39,7 +39,49 @@ function handleStaveSectionMerge(staveList, currentStaveGroup){
  return [newStaveGroup, newStave];
 }
 
-const sheetReducer = (state = { sheet: {}, current: "", uniquePath: "", clickedStaves: [], staveGroup: [] }, action) => {
+function initialiser(){
+ return {
+  sheet: {},
+  current: "",
+  uniquePath: "",
+  clickedStaves: [],
+  staveGroup: [],
+  currentStave: {
+   sections: [],
+   stave: {
+    notes: []
+   }
+  },
+  resultSheet: {
+   time: "4/4",
+   keySig: []
+  }
+ }
+}
+
+function processNote(staveGroup){
+ let pitches = ['e', 'f', 'g', 'a', 'b', 'c', 'd']
+ for (var staveIndex = 0; staveIndex < staveGroup.length; staveIndex++) {
+    var stave = staveGroup[staveIndex];
+    for (var sectionIndex = 0 ; sectionIndex < stave.notes.length ; sectionIndex++){
+     var notes = stave.notes[sectionIndex].notes;
+     for(var noteIndex = 0 ; noteIndex < notes.length ; noteIndex++){
+      var curPitch = notes[noteIndex].pitch;
+      var curTailType = notes[noteIndex].tail_type;
+      var curNoteType = notes[noteIndex].note_type;
+      notes[noteIndex].pitch = pitches[curPitch % 7] + '/'+ (4 + (parseInt(curPitch/7)));
+      if(curTailType == 0){
+       notes[noteIndex]["duration"] = 'q';
+      }else{
+       notes[noteIndex]["duration"] = '8';
+      }
+     }
+    }
+   }
+ return staveGroup;
+}
+
+const sheetReducer = (state = initialiser(), action) => {
  switch(action.type) {
   case SheetActions.UPLOAD_SHEET:
    return Object.assign( {}, state, { sheet: action.sheet, current:  "original.png" });
@@ -48,6 +90,7 @@ const sheetReducer = (state = { sheet: {}, current: "", uniquePath: "", clickedS
   case SheetActions.DETECTED_SHEET:
    return Object.assign( {}, state, { current: "image_marked.png" });
   case SheetActions.GET_STAVE_GROUPS:
+   console.log(processNote(action.staveGroup));
    return Object.assign( {}, state, { staveGroup: action.staveGroup });
   case SheetActions.STAVE_CLICKED_CONTROL:
    return Object.assign( {}, state, { clickedStaves: handleStaveClick(action.area, state.clickedStaves) });
@@ -57,12 +100,12 @@ const sheetReducer = (state = { sheet: {}, current: "", uniquePath: "", clickedS
    var data = {};
    data["data"] = JSON.stringify(result[1]);
    data["target"] = "stave.pkl";
-   console.log(data);
    $.post('/update', data, (res)=>{
-    console.log(res);
    });
 
    return Object.assign( {}, state, { staveGroup: result[0], clickedStaves: [] });;
+  case SheetActions.STAVE_CLICKED:
+   return Object.assign( {}, state, { currentStave: action.area });
   default:
    return state;
  }

@@ -16,7 +16,14 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps =(dispatch) => {
  return ({
-  staveSelect: (area) => { dispatch({  "type": SheetActions.STAVE_CLICKED_CONTROL, "area": area })},
+  staveSelect: (area, ctrl) => {
+   if(ctrl){
+    dispatch({  "type": SheetActions.STAVE_CLICKED_CONTROL, "area": area });
+   } else {
+     dispatch({  "type": SheetActions.STAVE_CLICKED, "area": area });
+     $('#stave-viewer').modal('show');
+   }
+  },
 
  });
 }

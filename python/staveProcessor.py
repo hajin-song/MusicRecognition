@@ -150,6 +150,25 @@ def cropStaves():
     # Find the dividers at each stave group
     __findSectionDividers(npImg, staves)
 
+    for index, stave in enumerate(staves):
+        if index == 0:
+            distance = staves[index+1].y0 - stave.y1
+            stave.true_y1 = stave.y1 + distance/2
+            stave.true_y0 = stave.y0 - distance/2
+            if stave.true_y0 < 0: stave.true_y0 = 0
+        elif index == len(staves) -1:
+            distance = stave.y0 - staves[index-1].y1
+            stave.true_y1 = stave.y1 + distance/2
+            stave.true_y0 = stave.y0 - distance/2
+            if stave.true_y1 >= h: stave.true_y1 = h - 1
+        else:
+            distance_top =  stave.y0 - staves[index-1].y1
+            distance_bot = staves[index+1].y0 - stave.y1
+            stave.true_y1 = stave.y1 + distance_bot/2
+            stave.true_y0 = stave.y0 - distance_top/2
+            if stave.true_y0 < 0: stave.true_y0 = 0
+            if stave.true_y1 >= h: stave.true_y1 = h - 1
+
     for stave in staves:
         y0 = stave.y0
         y1 = stave.y1

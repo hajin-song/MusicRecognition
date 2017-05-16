@@ -2,10 +2,18 @@
 @import './symbols';
 @import './canvas';
 @import "./actions";
+@import "./stave";
+
+body{
+ overflow: hidden;
+ width: 100vw;
+ height: 100vh;
+}
 
 #staves, #crop{
- position: relative;
- height: 90vh;
+ position: absolute;
+ height: 100%;
+ width: 100%;
 }
 
 #image{
@@ -16,8 +24,13 @@
  height: 10vh;
 }
 
+#stave{
+ z-index: 0;
+}
 #crop{
- display: none;
+ left: 100%;
+ z-index: 1;
+ background-color: white;
  #image-crop{
   max-width: 100%;
  }

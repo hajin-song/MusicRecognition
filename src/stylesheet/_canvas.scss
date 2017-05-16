@@ -1,10 +1,10 @@
 #staves{
  display: flex;
- canvas{
+ .sheet__canvas canvas{
   border: 1px solid black;
   position: absolute;
  }
- canvas#image-actions{
+ .sheet__canvas canvas#image-actions{
   opacity: 0.4;
  }
 }
@@ -22,5 +22,11 @@
   align-items: center;
   height: 100%;
   width: 100%;
+ }
+}
+
+.sheet__canvas--crop{
+ img{
+  max-width: 100%;
  }
 }

@@ -17,6 +17,7 @@ THRESHOLD = 0.7
 def __match_template(image, templates, test, test_color):
     detected_symbols = []
     for index, note in enumerate(templates):
+        if note is None: continue
         #Image.saveImage(session_id, "test"+ str(index) +".png", note)
         symbols = TemplateProcessor.detect_symbols(image, test, note, test_color[index])
         w, h = note.shape[::-1]
@@ -85,6 +86,9 @@ def __allocate_note_to_stave(staves, detected_symbols):
 
         for index, stave_x_0 in enumerate(current.sections[:-1]):
             stave_x_1 = current.sections[index+1]
+            if stave_x_0 <= symbol_x and symbol_x <= stave_x_1:
+                break
+
         current.addNote(str(stave_x_0), symbol)
 
 def __process_tail_type(staves, image, test):
@@ -98,6 +102,41 @@ def __process_tail_type(staves, image, test):
                     else:
                         next_note =  stave.notes[separator][index + 1]
                         note.tail_type = TailDetector.find_tail_type(image, note, next_note.tail_x, next_note.tail_y, test)
+
+def __find_note_pitch(staves):
+    for stave in staves:
+        y0 = stave.y0
+        y1 = stave.y1
+        #print stave
+        for section in stave.notes:
+            #print '\t', section
+            for note in stave.notes[section]:
+                #print '\t\t', note.center(), stave.lines
+                note_y = note.center()[1]
+                for index, line in enumerate(stave.lines):
+                    if index == (len(stave.lines) - 1):
+                        pitchVar = index + (index + 1)
+                        #print '\t\t\t', line[-1], note_y, "BLANK", pitchVar
+                        note.setPitch(pitchVar)
+                        break
+                    elif index == 0 and note_y < line[-1]:
+                        pitchVar = -1
+                        #print '\t\t\t', line[-1], note_y, "BLANK", pitchVar
+                        note.setPitch(pitchVar)
+                        break
+                    else:
+                        if line[-1] <= note_y and note_y < stave.lines[index+1][-1]:
+                            if note_y == line[-1]:
+                                pitchVar = index * 2
+                                #print '\t\t\t', line[-1], note_y, stave.lines[index+1][-1], pitchVar
+                                note.setPitch(pitchVar)
+                                break
+                            else:
+                                pitchVar = index + (index + 1)
+                                #print '\t\t\t', line[-1], note_y, stave.lines[index+1][-1], pitchVar
+                                note.setPitch(pitchVar)
+                                break
+                #print '\t\t\t', note
 
 def locate_symbols():
     detected_symbols = {}
@@ -118,12 +157,20 @@ def locate_symbols():
     img = np.asarray(img)
     img_copy = img.copy()
     img_rgb = np.asarray(img_rgb)
+    if int(flat[0]) != -1: note_type.append(img[int(flat[1]):int(flat[3]), int(flat[0]):int(flat[2])].copy())
+    else: note_type.append(None)
 
-    note_type.append(img[int(flat[1]):int(flat[3]), int(flat[0]):int(flat[2])].copy())
-    note_type.append(img[int(sharp[1]):int(sharp[3]), int(sharp[0]):int(sharp[2])].copy())
-    note_type.append(img[int(normal[1]):int(normal[3]), int(normal[0]):int(normal[2])].copy())
-    note_type.append(img[int(half[1]):int(half[3]), int(half[0]):int(half[2])].copy())
-    note_type.append(img[int(whole[1]):int(whole[3]), int(whole[0]):int(whole[2])].copy())
+    if int(sharp[0]) != -1: note_type.append(img[int(sharp[1]):int(sharp[3]), int(sharp[0]):int(sharp[2])].copy())
+    else: note_type.append(None)
+
+    if int(normal[0]) != -1: note_type.append(img[int(normal[1]):int(normal[3]), int(normal[0]):int(normal[2])].copy())
+    else: note_type.append(None)
+
+    if int(half[0]) != -1: note_type.append(img[int(half[1]):int(half[3]), int(half[0]):int(half[2])].copy())
+    else: note_type.append(None)
+
+    if int(whole[0]) != -1: note_type.append(img[int(whole[1]):int(whole[3]), int(whole[0]):int(whole[2])].copy())
+    else: note_type.append(None)
 
     pkl_file = open('./public/' + session_id + '/' + 'stave.pkl')
     staves = pickle.load(pkl_file)
@@ -132,15 +179,13 @@ def locate_symbols():
     detected_symbols = __process_tail_direction(detected_symbols, img_copy, img_rgb)
     __allocate_note_to_stave(staves, detected_symbols)
     __process_tail_type(staves, img_copy, img_rgb)
+    __find_note_pitch(staves)
 
     for stave in staves:
-        for notes in stave.notes:
-            for note in stave.notes[notes]:
-                print note
-
+        print stave.json()
     Image.saveImage(session_id, "image_marked.png", img_rgb)
     Image.saveImage(session_id, "image_after_process.png", img)
         #print symbol_x, symbol_y
-    return detected_symbols
+    #return detected_symbols
 
 locate_symbols()

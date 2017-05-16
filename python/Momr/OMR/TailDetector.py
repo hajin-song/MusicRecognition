@@ -73,15 +73,10 @@ def find_tail_type(image, note, next_tail_x, next_tail_y, test):
     base_x = note.x
     base_y = note.y
 
-
-    cv2.rectangle(test, (tail_x, tail_y + 3), (next_tail_x + 1, tail_y +4),  (255, 0, 0), 1)
     right_most, left_most, top_most, bottom_most =  __bfs_x_limit(tail_x, tail_y, next_tail_x, next_tail_y, tail_x, tail_y, image, test)
     if right_most == left_most and top_most == bottom_most:
-        cv2.rectangle(test, (tail_x, tail_y - 5), (next_tail_x + 5, tail_y - 4),  (255, 0, 0), 1)
         return 0
     elif right_most >= next_tail_x - 1:
-        cv2.rectangle(test, (tail_x, tail_y - -5), (next_tail_x + 5, tail_y - 4),  (0, 255, 0), 1)
         return 1
     else:
-        cv2.rectangle(test, (tail_x, tail_y - 5), (next_tail_x + 5, tail_y - 4),  (0, 0, 255), 1)
         return 2

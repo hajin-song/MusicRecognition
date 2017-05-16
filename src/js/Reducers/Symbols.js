@@ -1,11 +1,11 @@
 import SymbolActions from 'omrActions/Symbols';
 
 const initialState = {
- normal: { coordinates: {}, image: "" },
- half: { coordinates: {}, image: "" },
- whole: {coordinates: {}, image: "" },
- sharp: { coordinates: {}, image: "" },
- flat: { coordinates: {}, image: "" }
+ normal: { coordinates: [-1,-1,-1,-1], image: "" },
+ half: { coordinates: [-1,-1,-1,-1], image: "" },
+ whole: {coordinates: [-1,-1,-1,-1], image: "" },
+ sharp: { coordinates: [-1,-1,-1,-1], image: "" },
+ flat: { coordinates: [-1,-1,-1,-1], image: "" }
 };
 
 const getCoordinate = (box) => {

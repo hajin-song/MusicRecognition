@@ -1,0 +1,13 @@
+.stave__canvas-container{
+ display: flex;
+ justify-content: center;
+ border: 1px solid black;
+ margin: 20px 0;
+ #stave__vexflow{
+  position: absolute;
+  z-index: 0;
+ }
+ #stave__vexflow-action{
+  z-index: 1;
+ }
+}

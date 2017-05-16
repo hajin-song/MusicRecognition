@@ -7,10 +7,8 @@ class Canvas extends React.Component{
   this.clickedStaves = [];
 
   $("#image-actions").on('click', (e) => {
-   if(e.ctrlKey && typeof this.area != "undefined"){
-    this.props.staveSelect(this.area);
-   }else{
-    return;
+   if(typeof this.area != "undefined"){
+    this.props.staveSelect(this.area, e.ctrlKey);
    }
   });
 

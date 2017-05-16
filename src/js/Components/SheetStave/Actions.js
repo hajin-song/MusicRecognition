@@ -24,8 +24,7 @@ class Actions extends React.Component{
      }
     }/>
     <Action className="actions__action" text="To Detect" onClick={() => {
-      $('#staves').css('display', 'none');
-      $('#crop').css('display', 'block');
+      $('#crop').css('left', '0');
      }
     }/>
    </div>

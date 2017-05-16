@@ -7,10 +7,12 @@ class Stave:
         self.height = y1 - y0
         self.y0 = y0
         self.y1 = y1
+        self.true_y0 = y0
+        self.true_y1 = y1
         self.staveFactor = 0.0
         self.isStave = False
         self.notes = defaultdict(list)
-
+        
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return (self.y0 == other.y0) or (self.y1 == other.y1)
@@ -30,16 +32,32 @@ class Stave:
         )
 
     def json(self):
-        return '{' + '"y0":{},"y1":{},"lines":{},"sections":{}'.format(
+        noteJson = []
+        for section in self.notes.keys():
+            sectionJson = '{' + '"x":{}, "notes":{}'.format(
+                section,
+                '[' + ','.join((list(map(lambda x: x.json(), self.notes[section] )))) +']'
+            ) + '}'
+            noteJson.append(sectionJson)
+        noteJson = ','.join(noteJson)
+
+
+        return '{' + '"trueY0": {}, "trueY1": {}, "y0":{},"y1":{},"lines":{},"sections":{},"notes":{}'.format(
+            str(self.true_y0), str(self.true_y1),
             str(self.y0), str(self.y1),
             '[' + ','.join(list(map(lambda x: str(x), self.lines))) + ']',
-            '[' + ','.join(list(map(lambda x: str(x), self.sections))) +']'
+            '[' + ','.join(list(map(lambda x: str(x), self.sections))) +']',
+            '[' + noteJson + ']'
         ) + '}'
 
     def setSection(self, sections):
         slf.sections = sorted(sections)
 
     def addNote(self, section, note):
+        if note.y < self.true_y0:
+            self.true_y0 = note.y
+        if note.y > self.true_y1:
+            self.true_y1 = note.y
         self.notes[section].append(note)
 
     def isSuperSet(self, other):

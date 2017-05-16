@@ -95,8 +95,10 @@ app.post('/detect', function(req,res){
  PythonShell.run('locateSymbols.py', options, function (err, results) {
    if (err) throw err;
    console.log('results: %j', results);
+   console.log( "[" + results.join(',') + "]" );
+   req.session.staveGroup = "[" + results.join(',') + "]";
    // results is an array consisting of messages collected during execution
-   res.send(results);
+   res.send(JSON.parse("[" + results.join(',') + "]"));
  });
 });
 
