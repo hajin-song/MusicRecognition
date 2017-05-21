@@ -1,32 +1,37 @@
-#staves{
+.image__container{
+ padding: 10px;
  display: flex;
- .sheet__canvas canvas{
-  border: 1px solid black;
+ justify-content: center;
+ overflow-x: auto;
+}
+
+.image__container--action{
+ canvas:first-child{
   position: absolute;
  }
- .sheet__canvas canvas#image-actions{
-  opacity: 0.4;
+ canvas:last-child{
+   opacity: 0.4;
  }
 }
 
-.sheet{
- &__actions{
+.stave__container{
+ margin: 20px 0;
+ overflow-x: auto;
+ position: relative;
+}
+.stave__container--action{
+ canvas:first-child{
   position: absolute;
-  height: 100%;
-  width: 20%;
-  border-right: 1px solid black;
  }
- &__canvas{
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  width: 100%;
+ canvas:last-child{
+   opacity: 0.4;
  }
 }
 
-.sheet__canvas--crop{
- img{
-  max-width: 100%;
- }
+#detected, #original{
+ border: 1px solid black;
+ display: flex;
+ justify-content: center;
+ padding: 10px;
+ margin: 20px 0;
 }

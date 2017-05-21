@@ -41,7 +41,6 @@ function handleStaveSectionMerge(staveList, currentStaveGroup){
 
 function initialiser(){
  return {
-  sheet: {},
   current: "",
   uniquePath: "",
   clickedStaves: [],
@@ -84,11 +83,7 @@ function processNote(staveGroup){
 const sheetReducer = (state = initialiser(), action) => {
  switch(action.type) {
   case SheetActions.UPLOAD_SHEET:
-   return Object.assign( {}, state, { sheet: action.sheet, current:  "original.png" });
-  case SheetActions.ORIGINAL_SHEET:
-   return Object.assign( {}, state, { current: "original.png" });
-  case SheetActions.DETECTED_SHEET:
-   return Object.assign( {}, state, { current: "image_marked.png" });
+   return Object.assign( {}, state, { current:  "original.png" });
   case SheetActions.GET_STAVE_GROUPS:
    console.log(processNote(action.staveGroup));
    return Object.assign( {}, state, { staveGroup: action.staveGroup });

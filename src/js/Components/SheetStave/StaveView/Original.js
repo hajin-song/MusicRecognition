@@ -4,7 +4,7 @@ import { PropTypes } from 'prop-types';
 
 import SheetActions from 'omrActions/Sheet';
 
-import Canvas from 'omrComponents/Common/StaticCanvas';
+import Canvas from 'omrComponents/SheetStave/StaveView/StaticCanvas';
 
 const mapStateToProps = (state) => {
  return {
@@ -20,8 +20,8 @@ const mapDispatchToProps =(dispatch) => {
 }
 
 const Sheet = ({ stave, cropper }) => (
- <div className='col-xs-12'>
-  <Canvas stave={stave} cropper={cropper} />
+ <div id="original" className='col-xs-12'>
+  <Canvas stave={stave} cropper={cropper} canvasID="selected-canvas" />
  </div>
 );
 

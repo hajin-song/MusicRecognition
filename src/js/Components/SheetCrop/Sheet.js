@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
 
-import CroppableCanvas from 'omrComponents/Common/CroppableCanvas';
+import CroppableCanvas from 'omrComponents/SheetCrop/CroppableCanvas';
 
 const mapStateToProps = (state) => {
  return {

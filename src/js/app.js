@@ -1,7 +1,8 @@
 import React from 'react';
 import StaveMode from 'omrComponents/SheetStave/Container';
 import CropMode from 'omrComponents/SheetCrop/Container';
-import Form from 'omrComponents/SheetForm/SheetForm';
+import UnstavedMode from 'omrComponents/SheetUnstaved/Container';
+
 
 class App extends React.Component{
  render() {
@@ -9,6 +10,7 @@ class App extends React.Component{
     <div className="container-fluid">
      <StaveMode />
      <CropMode />
+     <UnstavedMode />
     </div>
    )
  }

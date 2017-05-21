@@ -10,7 +10,7 @@ import sheet from 'omrReducers/Sheet';
 import symbols from 'omrReducers/Symbols';
 import crop from 'omrReducers/Cropper';
 import app from 'omrReducers/App';
-import mode from 'omrReducers/Mode';
+import image from 'omrReducers/Image';
 
 import AppActions from 'omrActions/App';
 
@@ -40,7 +40,7 @@ $(document).ready(()=>{
    symbols,
    crop,
    app,
-   mode
+   image,
   });
 
   const store = createStore(Reducer, {});

@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import SheetActions from 'omrActions/Sheet';
 import ImageActions from 'omrActions/Image';
 
 import Action from 'omrComponents/Common/ActionButton';
@@ -20,16 +19,16 @@ class Actions extends React.Component{
   const { store } = this.context;
   return(
    <div className="col-xs-3 content__actions content__actions--sheet">
-    <Action className="action" text="Merge Section" onClick={() => {
-      store.dispatch({ type: SheetActions.MERGE_STAVE_SECTIONS });
+    <Action className="action" text="To Edit" onClick={() => {
+      $('#unstaved').css('left', '100%');
      }
     }/>
-    <Action className="action" text="Edit Unstaved Image" onClick={() => {
-      $('#unstaved').css('left', '0');
-     }
-    }/>
-    <Action className="action" text="To Detect" onClick={() => {
-      $('#crop').css('left', '0');
+    <Action className="action" text="Save Changes" onClick={() => {
+      var c = $('#unstave-canvas')[0];
+      store.dispatch({
+       type: ImageActions.UNSTAVED_SHEET,
+       sheet: c.toDataURL('image/png', 1.0)
+      });
      }
     }/>
    </div>

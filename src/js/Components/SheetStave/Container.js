@@ -12,7 +12,7 @@ class SheetContainer extends React.Component{
  }
  render(){
   return (
-   <div id='staves' className="row sheet">
+   <div id='staves' className="row content content--sheet">
     <Actions />
     <Sheet />
     <Loader />

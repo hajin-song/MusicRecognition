@@ -7,7 +7,6 @@ import CropperActions from 'omrActions/Cropper';
 class CroppableCanvas extends React.Component{
  componentDidMount(){
   const { store } = this.context;
-  console.log(store);
   $("#image-crop").on('load', function(){
    store.dispatch({
     type: CropperActions.CROP_CHANGED
@@ -15,12 +14,11 @@ class CroppableCanvas extends React.Component{
   });
  }
  componentDidUpdate(prevProps, prevState){
-  console.log("whue");
-  console.log(this.props.src);
+
  }
  render() {
   return (
-   <div className='col-xs-9 sheet__canvas sheet__canvas--crop'>
+   <div className='col-xs-9 content__image'>
     <img id="image-crop" src={this.props.src}>
     </img>
    </div>

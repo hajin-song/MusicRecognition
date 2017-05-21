@@ -4,15 +4,13 @@ import { PropTypes } from 'prop-types';
 
 class Canvas extends React.Component{
  componentDidMount(){
-  this.clickedStaves = [];
-
-  $("#image-actions").on('click', (e) => {
+  $('#' + this.props.canvasID + '-actions').on('click', (e) => {
    if(typeof this.area != "undefined"){
     this.props.staveSelect(this.area, e.ctrlKey);
    }
   });
 
-  $("#image-actions").on('mousemove', (e) => {
+  $('#' + this.props.canvasID + '-actions').on('mousemove', (e) => {
    let coord = this.__getMousePos(e);
    let stave = this.__getStave(coord.x, coord.y);
 
@@ -23,7 +21,7 @@ class Canvas extends React.Component{
    }
 
    if(typeof stave != "undefined"){
-    var canvasAction = document.getElementById('image-actions');
+    var canvasAction = document.getElementById(this.props.canvasID + '-actions');
     var contextAction = canvasAction.getContext('2d');
 
     let section = this.__getStaveSection(stave, coord.x);
@@ -31,20 +29,20 @@ class Canvas extends React.Component{
     if(typeof this.area != "undefined" && curAreaIndex == -1 && this.area != area){
      this.__removeStaveHighlight(this.area.stave, this.area.section);
     }
-
     this.__addStaveHighlight(stave, section);
     this.area = area;
-   }else{
-    this.area = undefined;
+    return;
    }
+   this.area = undefined;
   });
  }
+
  componentDidUpdate(prevProps, prevState){
   this.props.clickedStaves.map((stave) => {
    this.__addStaveHighlight(stave.stave, stave.section);
   });
-  var canvas = document.getElementById('image');
-  var canvasAction = document.getElementById('image-actions');
+  var canvas = document.getElementById(this.props.canvasID);
+  var canvasAction = document.getElementById(this.props.canvasID + '-actions');
   var context = canvas.getContext('2d');
   var contextAction = canvasAction.getContext('2d');
   var img = new Image();
@@ -55,11 +53,14 @@ class Canvas extends React.Component{
    contextAction.canvas.width = img.naturalWidth;
    context.drawImage(img, 0, 0);
 
+   let data = context.getImageData(0, 0, canvas.width, canvas.height);
+   this.props.imageLoaded(canvas.toDataURL('image/png', 1.0));
   }
   img.src = "/" + this.props.src;
  }
+
  __getMousePos(evt) {
-    var rect = document.getElementById('image').getBoundingClientRect();
+    var rect = document.getElementById(this.props.canvasID).getBoundingClientRect();
     return {
       x: evt.clientX - rect.left,
       y: evt.clientY - rect.top
@@ -86,8 +87,8 @@ class Canvas extends React.Component{
  }
 
  __addStaveHighlight(stave, section){
-  var canvasAction = document.getElementById('image-actions');
-  var contextAction = canvasAction.getContext('2d');
+  var canvasAction = document.getElementById(this.props.canvasID + '-actions');
+  var contextAction = document.getElementById(this.props.canvasID + '-actions').getContext('2d');
   contextAction.fillStyle="#FF0000";
   contextAction.fillRect(
    section[0],
@@ -95,26 +96,26 @@ class Canvas extends React.Component{
    section[1] - section[0],
    stave.y1 - stave.y0
   );
-  $('#image-actions').css('cursor', 'pointer');
+  $(canvasAction).css('cursor', 'pointer');
  }
 
  __removeStaveHighlight(stave, section){
-  var canvasAction = document.getElementById('image-actions');
-  var contextAction = canvasAction.getContext('2d');
+  var canvasAction = document.getElementById(this.props.canvasID + '-actions');
+  var contextAction = document.getElementById(this.props.canvasID + '-actions').getContext('2d');
   contextAction.clearRect(
    section[0],
    stave.y0,
    section[1] - section[0],
    stave.y1 - stave.y0
   );
-  $('#image-actions').css('cursor', '');
+  $(canvasAction).css('cursor', '');
  }
 
  render() {
   return (
-   <div className="sheet__canvas">
-    <canvas id="image"></canvas>
-    <canvas id="image-actions"></canvas>
+   <div className="image__container image__container--action">
+    <canvas id={this.props.canvasID}></canvas>
+    <canvas id={this.props.canvasID + '-actions'}></canvas>
    </div>
   )
  }
@@ -124,6 +125,8 @@ Canvas.propTypes = {
  src: PropTypes.string,
  staves: PropTypes.arrayOf(PropTypes.object),
  staveSelect: PropTypes.func,
+ imageLoaded: PropTypes.func,
+ canvasID: PropTypes.string,
 }
 
-export default Canvas
+export default Canvas;

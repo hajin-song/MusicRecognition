@@ -14,8 +14,8 @@ class VexFlowCanvas extends React.Component{
   let top = this.props.stave.stave.trueY0;
   let height = (this.props.stave.stave.trueY1 - top) * 2;
 
-  let current = document.getElementById('stave__vexflow');
-  let currentAction = document.getElementById('stave__vexflow-action');
+  let current = document.getElementById(this.props.canvasID);
+  let currentAction = document.getElementById(this.props.canvasID + '-action');
   let currentContext = current.getContext('2d');
   let currentActionContext = currentAction.getContext('2d');
   currentContext.canvas.height = height;
@@ -23,12 +23,12 @@ class VexFlowCanvas extends React.Component{
 
   currentActionContext.canvas.height = height;
   currentActionContext.canvas.width = width;
+
   var renderer = new VF.Renderer(current, VF.Renderer.Backends.CANVAS);
   renderer.resize(width, height);
   var context = renderer.getContext();
   context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
   var stave = new VF.Stave(0, 0, width);
-  stave.addClef("treble")
   stave.setContext(context).draw();
 
   let notes = this.props.stave.stave.notes.sort( (a, b) => {
@@ -49,13 +49,18 @@ class VexFlowCanvas extends React.Component{
 
  render() {
   return (
-   <div className="stave__canvas-container">
-    <canvas id="stave__vexflow"></canvas>
-    <canvas id="stave__vexflow-action"></canvas>
+   <div className="stave__container stave__container--action">
+    <canvas id={this.props.canvasID}></canvas>
+    <canvas id={this.props.canvasID + '-action'}></canvas>
    </div>
   )
  }
 }
+
+VexFlowCanvas.propTypes = {
+ canvasID: PropTypes.string,
+}
+
 
 VexFlowCanvas.contextTypes = {
  store: PropTypes.object

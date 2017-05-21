@@ -82,6 +82,14 @@ app.post('/update', function(req, res){
  });
 });
 
+app.post('/editImage', function(req, res){
+ var base64Data = req.body.img.replace(/^data:image\/png;base64,/, "");
+ fs.writeFile("public/" + req.session.uniqueString + "/" + req.body.name, base64Data, 'base64', function(err) {
+  console.log(err);
+});
+ res.send("Done");
+});
+
 app.post('/detect', function(req,res){
  console.log(req.body);
  //let coordinates = req.body.normalNote

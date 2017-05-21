@@ -1,7 +1,6 @@
-@import './symbolPreview';
-@import './symbols';
 @import './canvas';
-@import "./actions";
+@import "./action";
+@import "./content";
 @import "./stave";
 
 body{
@@ -27,10 +26,13 @@ body{
 #stave{
  z-index: 0;
 }
-#crop{
+#crop, #unstaved{
  left: 100%;
  z-index: 1;
  background-color: white;
+}
+
+#crop{
  #image-crop{
   max-width: 100%;
  }

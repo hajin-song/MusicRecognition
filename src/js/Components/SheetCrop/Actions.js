@@ -21,7 +21,7 @@ class Symbols extends React.Component{
  render(){
   const { store } = this.context;
   return(
-   <div id='symbols' className='col-xs-3 sheet__symbols'>
+   <div id='symbols' className='col-xs-3 content__actions content__actions--sheet'>
     <Symbol name="normal" image={store.getState().symbols.normal.image} onClick={
      () => {
       store.dispatch({
@@ -58,7 +58,7 @@ class Symbols extends React.Component{
       cropImage: store.getState().crop.cropper.getCroppedCanvas().toDataURL('image/jpeg')
      });
     }}/>
-    <ActionButton text="Detect" onClick={()=>{
+    <ActionButton className="action" text="Detect" onClick={()=>{
      let state = store.getState();
      var data = {}
      data["normal"] = state.symbols.normal.coordinates;
@@ -74,7 +74,7 @@ class Symbols extends React.Component{
       store.dispatch(actionUpdateStave);
      });
     }}/>
-    <ActionButton text="To Edit" onClick={()=>{
+    <ActionButton className="action" text="To Edit" onClick={()=>{
      $('#crop').css('left', '-100%');
     }}/>
    </div>

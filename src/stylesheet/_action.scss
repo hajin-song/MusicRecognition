@@ -1,15 +1,24 @@
+.action{
+ margin: 10px 5px;
+}
+
 .symbol{
  width: 100%;
  position:relative;
+ padding: 5px 10px;
+ text-align: center;
  &__image{
+  width: 100%;
+  height: auto;
   visibility: hidden;
   position: absolute;
   padding: 5px 0;
   color: red;
-  background-color: red;
+ }
+ &__name{
+  font-weight: bold;
  }
  &:hover{
-  background-color: black;
   cursor: pointer;
   .symbol__image{
    visibility: visible;

@@ -14,6 +14,17 @@ from Momr.Objects.Note import Note
 COLOR = [(255,0,0), (0, 255, 0), (0, 0, 255),  (0, 255,255), (255, 0, 255), (120, 120, 120), (90, 180, 120), (10, 10, 10) ]
 THRESHOLD = 0.7
 
+def __check_coliision(x0, y0, x1, y1, w, h):
+    target_corners = [x0, x0+w, y0, y0+h]
+    new_points = [(x1,y1), (x1+w, y1), (x1, y1+h), (x1+w, y1+h)]
+    for point in new_points:
+        if target_corners[0] <= point[0] and point[0] <= target_corners[1]:
+            if target_corners[2] <= point[1] and point[1] <= target_corners[3]:
+                return True
+    #print target_corners, x1, y1, w, h
+    return False
+
+
 def __match_template(image, templates, test, test_color):
     detected_symbols = []
     for index, note in enumerate(templates):
@@ -26,11 +37,7 @@ def __match_template(image, templates, test, test_color):
             for y in sorted(symbols[x].keys(), key=lambda y: int(y)):
                 x = int(x)
                 y = int(y)
-                x_center = x + w/2
-                y_center = y + h/2
-                x_prev_center = prev[0] + h/2
-                y_prev_center = prev[1] + w/2
-                if abs(x_center - x_prev_center) > h or abs(y_center - y_prev_center) > w:
+                if not __check_coliision(prev[0], prev[1], x, y, w, h):
                     prev = (x, y)
                     detected_symbols.append(Note(x, y, index, w, h))
     return detected_symbols

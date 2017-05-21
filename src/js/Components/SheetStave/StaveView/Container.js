@@ -16,8 +16,8 @@ const StaveContainer = () => (
        <div className="modal-header">
          <h5 className="modal-title">Stave View</h5>
        </div>
-       <div className="modal-body row">
-        <OriginalStave />
+       <div className="modal-body container-fluid">
+        <OriginalStave/>
         <DetectedStave />
         <NoteList />
        </div>

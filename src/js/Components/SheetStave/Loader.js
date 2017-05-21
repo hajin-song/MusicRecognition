@@ -10,7 +10,6 @@ class Uploader extends React.Component{
   $("#form-stave").on("submit", function(e){
    e.preventDefault();
    $('#sheet-loader').modal('hide');
-   $('#staves').css('display', 'block');
    $(this).ajaxSubmit({
     success: function(res){
      let actionuploadedImage = {
