@@ -1826,8 +1826,6 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var UPLOAD_SHEET = 'UPLOAD_SHEET';
-
 var GET_STAVE_GROUPS = 'GET_STAVE_GROUPS';
 
 var STAVE_CLICKED_CONTROL = 'STAVE_CLICKED_CONTROL';
@@ -1836,7 +1834,7 @@ var MERGE_STAVE_SECTIONS = 'MERGE_STAVE_SECTIONS';
 var SPLIT_STAVE_SECTIONS = 'SPLIT_STAVE_SECTIONS';
 
 var ADD_NOTE = 'ADD_NOTE';
-exports.default = { UPLOAD_SHEET: UPLOAD_SHEET, GET_STAVE_GROUPS: GET_STAVE_GROUPS, MERGE_STAVE_SECTIONS: MERGE_STAVE_SECTIONS, STAVE_CLICKED_CONTROL: STAVE_CLICKED_CONTROL, STAVE_CLICKED: STAVE_CLICKED, ADD_NOTE: ADD_NOTE };
+exports.default = { GET_STAVE_GROUPS: GET_STAVE_GROUPS, MERGE_STAVE_SECTIONS: MERGE_STAVE_SECTIONS, STAVE_CLICKED_CONTROL: STAVE_CLICKED_CONTROL, STAVE_CLICKED: STAVE_CLICKED, ADD_NOTE: ADD_NOTE };
 
 /***/ }),
 /* 17 */
@@ -2971,22 +2969,7 @@ module.exports = React;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var ORIGINAL_SHEET = 'ORIGINAL_SHEET';
-var UNSTAVED_SHEET = 'UNSTAVED_SHEET';
-var DETECTED_SHEET = 'DETECTED_SHEET';
-
-exports.default = { ORIGINAL_SHEET: ORIGINAL_SHEET, UNSTAVED_SHEET: UNSTAVED_SHEET, DETECTED_SHEET: DETECTED_SHEET };
-
-/***/ }),
+/* 24 */,
 /* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6905,19 +6888,7 @@ module.exports = ReactNoopUpdateQueue;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 58 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var INIT_SESSION = 'INIT_SESSION';
-exports.default = { INIT_SESSION: INIT_SESSION };
-
-/***/ }),
+/* 58 */,
 /* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6950,125 +6921,7 @@ var CROP_SHARP = 'CROP_SHARP';
 exports.default = { CROP_NORMAL_NOTE: CROP_NORMAL_NOTE, CROP_HALF_NOTE: CROP_HALF_NOTE, CROP_WHOLE_NOTE: CROP_WHOLE_NOTE, CROP_FLAT: CROP_FLAT, CROP_SHARP: CROP_SHARP };
 
 /***/ }),
-/* 61 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(4);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = __webpack_require__(5);
-
-var _Sheet = __webpack_require__(16);
-
-var _Sheet2 = _interopRequireDefault(_Sheet);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Uploader = function (_React$Component) {
-  _inherits(Uploader, _React$Component);
-
-  function Uploader() {
-    _classCallCheck(this, Uploader);
-
-    return _possibleConstructorReturn(this, (Uploader.__proto__ || Object.getPrototypeOf(Uploader)).apply(this, arguments));
-  }
-
-  _createClass(Uploader, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var store = this.context.store;
-
-      $('#sheet-loader').modal('show');
-      $("#form-stave").on("submit", function (e) {
-        e.preventDefault();
-        $('#sheet-loader').modal('hide');
-        $(this).ajaxSubmit({
-          success: function success(res) {
-            var actionuploadedImage = {
-              "type": _Sheet2.default.UPLOAD_SHEET
-            };
-            store.dispatch(actionuploadedImage);
-            $.get("/session", function (data) {
-              var actionUpdateStave = {
-                "type": _Sheet2.default.GET_STAVE_GROUPS,
-                "staveGroup": JSON.parse(data["staveGroup"])
-              };
-              store.dispatch(actionUpdateStave);
-            });
-          },
-          error: function error(err) {
-            console.log(err);
-          }
-        });
-      });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        { id: 'sheet-loader', className: 'modal fade' },
-        _react2.default.createElement(
-          'div',
-          { className: 'modal-dialog', role: 'document' },
-          _react2.default.createElement(
-            'div',
-            { className: 'modal-content' },
-            _react2.default.createElement(
-              'div',
-              { className: 'modal-header' },
-              _react2.default.createElement(
-                'h5',
-                { className: 'modal-title' },
-                'Load Image'
-              )
-            ),
-            _react2.default.createElement(
-              'div',
-              { className: 'modal-body' },
-              _react2.default.createElement(
-                'form',
-                { id: 'form-stave', action: '/', method: 'POST', encType: 'multipart/form-data' },
-                _react2.default.createElement(
-                  'div',
-                  null,
-                  _react2.default.createElement('input', { type: 'file', name: 'musicSheet', id: 'musicSheet' })
-                ),
-                _react2.default.createElement('input', { type: 'submit', value: 'Submit' })
-              )
-            )
-          )
-        )
-      );
-    }
-  }]);
-
-  return Uploader;
-}(_react2.default.Component);
-
-Uploader.contextTypes = {
-  store: _propTypes.PropTypes.object
-};
-
-exports.default = Uploader;
-
-/***/ }),
+/* 61 */,
 /* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11238,17 +11091,13 @@ var _Cropper = __webpack_require__(125);
 
 var _Cropper2 = _interopRequireDefault(_Cropper);
 
-var _App = __webpack_require__(124);
+var _Session = __webpack_require__(258);
 
-var _App2 = _interopRequireDefault(_App);
+var _Session2 = _interopRequireDefault(_Session);
 
-var _Image = __webpack_require__(126);
+var _Session3 = __webpack_require__(259);
 
-var _Image2 = _interopRequireDefault(_Image);
-
-var _App3 = __webpack_require__(58);
-
-var _App4 = _interopRequireDefault(_App3);
+var _Session4 = _interopRequireDefault(_Session3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11281,14 +11130,13 @@ $(document).ready(function () {
       sheet: _Sheet2.default,
       symbols: _Symbols2.default,
       crop: _Cropper2.default,
-      app: _App2.default,
-      image: _Image2.default
+      session: _Session2.default
     });
 
     var store = (0, _redux.createStore)(Reducer, {});
 
     store.dispatch({
-      type: _App4.default.INIT_SESSION,
+      type: _Session4.default.INIT_SESSION,
       uniquePath: data.uniqueString
     });
 
@@ -11478,10 +11326,6 @@ var _Sheet = __webpack_require__(108);
 
 var _Sheet2 = _interopRequireDefault(_Sheet);
 
-var _Loader = __webpack_require__(61);
-
-var _Loader2 = _interopRequireDefault(_Loader);
-
 var _Actions = __webpack_require__(105);
 
 var _Actions2 = _interopRequireDefault(_Actions);
@@ -11638,7 +11482,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    sheet: state.app.uniquePath + "/" + state.sheet.current,
+    sheet: state.session.uniquePath + "/" + state.sheet.current,
     original: state.sheet.sheet
   };
 };
@@ -11695,102 +11539,7 @@ _Symbol.propTypes = {
 exports.default = _Symbol;
 
 /***/ }),
-/* 110 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(4);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = __webpack_require__(5);
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _Sheet = __webpack_require__(16);
-
-var _Sheet2 = _interopRequireDefault(_Sheet);
-
-var _Image = __webpack_require__(24);
-
-var _Image2 = _interopRequireDefault(_Image);
-
-var _ActionButton = __webpack_require__(37);
-
-var _ActionButton2 = _interopRequireDefault(_ActionButton);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Actions = function (_React$Component) {
-  _inherits(Actions, _React$Component);
-
-  function Actions() {
-    _classCallCheck(this, Actions);
-
-    return _possibleConstructorReturn(this, (Actions.__proto__ || Object.getPrototypeOf(Actions)).apply(this, arguments));
-  }
-
-  _createClass(Actions, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      var store = this.context.store;
-
-      this.unsubscribe = store.subscribe(function () {
-        return _this2.forceUpdate();
-      });
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      this.unsubscribe();
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var store = this.context.store;
-
-      return _react2.default.createElement(
-        'div',
-        { className: 'col-xs-3 content__actions content__actions--sheet' },
-        _react2.default.createElement(_ActionButton2.default, { className: 'action', text: 'Merge Section', onClick: function onClick() {
-            store.dispatch({ type: _Sheet2.default.MERGE_STAVE_SECTIONS });
-          } }),
-        _react2.default.createElement(_ActionButton2.default, { className: 'action', text: 'Edit Unstaved Image', onClick: function onClick() {
-            $('#unstaved').css('left', '0');
-          } }),
-        _react2.default.createElement(_ActionButton2.default, { className: 'action', text: 'To Detect', onClick: function onClick() {
-            $('#crop').css('left', '0');
-          } })
-      );
-    }
-  }]);
-
-  return Actions;
-}(_react2.default.Component);
-
-Actions.contextTypes = {
-  store: _propTypes2.default.object
-};
-
-exports.default = Actions;
-
-/***/ }),
+/* 110 */,
 /* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11806,8 +11555,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
-
-var _reactRedux = __webpack_require__(9);
 
 var _propTypes = __webpack_require__(5);
 
@@ -11884,11 +11631,8 @@ var Canvas = function (_React$Component) {
         contextAction.canvas.height = img.naturalHeight;
         contextAction.canvas.width = img.naturalWidth;
         context.drawImage(img, 0, 0);
-
-        var data = context.getImageData(0, 0, canvas.width, canvas.height);
-        _this3.props.imageLoaded(canvas.toDataURL('image/png', 1.0));
       };
-      img.src = "/" + this.props.src;
+      img.src = this.props.sheet;
     }
   }, {
     key: '__getMousePos',
@@ -11972,8 +11716,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
@@ -11984,13 +11726,13 @@ var _Sheet = __webpack_require__(113);
 
 var _Sheet2 = _interopRequireDefault(_Sheet);
 
-var _Loader = __webpack_require__(61);
+var _LoaderContainer = __webpack_require__(261);
 
-var _Loader2 = _interopRequireDefault(_Loader);
+var _LoaderContainer2 = _interopRequireDefault(_LoaderContainer);
 
-var _Actions = __webpack_require__(110);
+var _ActionsContainer = __webpack_require__(262);
 
-var _Actions2 = _interopRequireDefault(_Actions);
+var _ActionsContainer2 = _interopRequireDefault(_ActionsContainer);
 
 var _Container = __webpack_require__(114);
 
@@ -11998,47 +11740,15 @@ var _Container2 = _interopRequireDefault(_Container);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var SheetContainer = function (_React$Component) {
-  _inherits(SheetContainer, _React$Component);
-
-  function SheetContainer() {
-    _classCallCheck(this, SheetContainer);
-
-    return _possibleConstructorReturn(this, (SheetContainer.__proto__ || Object.getPrototypeOf(SheetContainer)).apply(this, arguments));
-  }
-
-  _createClass(SheetContainer, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var store = this.context.store;
-
-      console.log(store.getState());
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        { id: 'staves', className: 'row content content--sheet' },
-        _react2.default.createElement(_Actions2.default, null),
-        _react2.default.createElement(_Sheet2.default, null),
-        _react2.default.createElement(_Loader2.default, null),
-        _react2.default.createElement(_Container2.default, null)
-      );
-    }
-  }]);
-
-  return SheetContainer;
-}(_react2.default.Component);
-
-SheetContainer.contextTypes = {
-  store: _propTypes.PropTypes.object
+var SheetContainer = function SheetContainer() {
+  return _react2.default.createElement(
+    'div',
+    { id: 'staves', className: 'row content content--sheet' },
+    _react2.default.createElement(_ActionsContainer2.default, null),
+    _react2.default.createElement(_Sheet2.default, null),
+    _react2.default.createElement(_LoaderContainer2.default, null),
+    _react2.default.createElement(_Container2.default, null)
+  );
 };
 
 exports.default = SheetContainer;
@@ -12060,15 +11770,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(9);
 
-var _propTypes = __webpack_require__(5);
-
 var _Sheet = __webpack_require__(16);
 
 var _Sheet2 = _interopRequireDefault(_Sheet);
 
-var _Image = __webpack_require__(24);
+var _Session = __webpack_require__(259);
 
-var _Image2 = _interopRequireDefault(_Image);
+var _Session2 = _interopRequireDefault(_Session);
 
 var _Canvas = __webpack_require__(111);
 
@@ -12078,7 +11786,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    sheet: state.app.uniquePath + "/" + state.sheet.current,
+    sheet: state.session.original,
     staves: state.sheet.staveGroup,
     clickedStaves: state.sheet.clickedStaves
   };
@@ -12087,7 +11795,7 @@ var mapStateToProps = function mapStateToProps(state) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   return {
     imageLoaded: function imageLoaded(data) {
-      dispatch({ "type": _Image2.default.ORIGINAL_SHEET, "sheet": data });
+      dispatch({ "type": _Session2.default.ORIGINAL_SHEET, "sheet": data });
     },
     staveSelect: function staveSelect(area, ctrl) {
       if (ctrl) {
@@ -12097,7 +11805,6 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
         $('#stave-viewer').modal('show');
       }
     }
-
   };
 };
 
@@ -12110,7 +11817,7 @@ var Sheet = function Sheet(_ref) {
   return _react2.default.createElement(
     'div',
     { className: 'col-xs-9 content__image' },
-    _react2.default.createElement(_Canvas2.default, { src: sheet, staves: staves,
+    _react2.default.createElement(_Canvas2.default, { sheet: sheet, staves: staves,
       clickedStaves: clickedStaves, staveSelect: staveSelect,
       imageLoaded: imageLoaded,
       canvasID: 'main-canvas', canvasClass: 'canvas--main' })
@@ -12550,99 +12257,7 @@ VexFlowCanvas.contextTypes = {
 exports.default = VexFlowCanvas;
 
 /***/ }),
-/* 120 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(4);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = __webpack_require__(5);
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _Image = __webpack_require__(24);
-
-var _Image2 = _interopRequireDefault(_Image);
-
-var _ActionButton = __webpack_require__(37);
-
-var _ActionButton2 = _interopRequireDefault(_ActionButton);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Actions = function (_React$Component) {
-  _inherits(Actions, _React$Component);
-
-  function Actions() {
-    _classCallCheck(this, Actions);
-
-    return _possibleConstructorReturn(this, (Actions.__proto__ || Object.getPrototypeOf(Actions)).apply(this, arguments));
-  }
-
-  _createClass(Actions, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      var store = this.context.store;
-
-      this.unsubscribe = store.subscribe(function () {
-        return _this2.forceUpdate();
-      });
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      this.unsubscribe();
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var store = this.context.store;
-
-      return _react2.default.createElement(
-        'div',
-        { className: 'col-xs-3 content__actions content__actions--sheet' },
-        _react2.default.createElement(_ActionButton2.default, { className: 'action', text: 'To Edit', onClick: function onClick() {
-            $('#unstaved').css('left', '100%');
-          } }),
-        _react2.default.createElement(_ActionButton2.default, { className: 'action', text: 'Save Changes', onClick: function onClick() {
-            var c = $('#unstave-canvas')[0];
-            store.dispatch({
-              type: _Image2.default.UNSTAVED_SHEET,
-              sheet: c.toDataURL('image/png', 1.0)
-            });
-          } })
-      );
-    }
-  }]);
-
-  return Actions;
-}(_react2.default.Component);
-
-Actions.contextTypes = {
-  store: _propTypes2.default.object
-};
-
-exports.default = Actions;
-
-/***/ }),
+/* 120 */,
 /* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12698,8 +12313,6 @@ var Canvas = function (_React$Component) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps, prevState) {
-      var _this3 = this;
-
       var canvas = document.getElementById(this.props.canvasID);
       var context = canvas.getContext('2d');
       var img = new Image();
@@ -12707,18 +12320,8 @@ var Canvas = function (_React$Component) {
         context.canvas.height = img.naturalHeight;
         context.canvas.width = img.naturalWidth;
         context.drawImage(img, 0, 0);
-
-        var data = context.getImageData(0, 0, canvas.width, canvas.height);
-        _this3.props.imageLoaded(canvas.toDataURL('image/png', 1.0));
       };
-
-      if (this.props.sheet == "") {
-        img.src = "/" + this.props.original;
-      } else {
-        //context.canvas.height = height;
-        //context.canvas.width = width;
-        img.src = this.props.sheet;
-      }
+      img.src = this.props.sheet;
     }
   }, {
     key: '__getMousePos',
@@ -12744,8 +12347,6 @@ var Canvas = function (_React$Component) {
 }(_react2.default.Component);
 
 Canvas.propTypes = {
-  original: _propTypes.PropTypes.string,
-  imageLoaded: _propTypes.PropTypes.func,
   sheet: _propTypes.PropTypes.object
 };
 
@@ -12762,8 +12363,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
@@ -12774,51 +12373,19 @@ var _Sheet = __webpack_require__(123);
 
 var _Sheet2 = _interopRequireDefault(_Sheet);
 
-var _Actions = __webpack_require__(120);
+var _ActionsContainer = __webpack_require__(265);
 
-var _Actions2 = _interopRequireDefault(_Actions);
+var _ActionsContainer2 = _interopRequireDefault(_ActionsContainer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var SheetContainer = function (_React$Component) {
-  _inherits(SheetContainer, _React$Component);
-
-  function SheetContainer() {
-    _classCallCheck(this, SheetContainer);
-
-    return _possibleConstructorReturn(this, (SheetContainer.__proto__ || Object.getPrototypeOf(SheetContainer)).apply(this, arguments));
-  }
-
-  _createClass(SheetContainer, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var store = this.context.store;
-
-      console.log(store.getState());
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        { id: 'unstaved', className: 'row content content--sheet' },
-        _react2.default.createElement(_Actions2.default, null),
-        _react2.default.createElement(_Sheet2.default, null)
-      );
-    }
-  }]);
-
-  return SheetContainer;
-}(_react2.default.Component);
-
-SheetContainer.contextTypes = {
-  store: _propTypes.PropTypes.object
+var SheetContainer = function SheetContainer() {
+  return _react2.default.createElement(
+    'div',
+    { id: 'unstaved', className: 'row content content--sheet' },
+    _react2.default.createElement(_ActionsContainer2.default, null),
+    _react2.default.createElement(_Sheet2.default, null)
+  );
 };
 
 exports.default = SheetContainer;
@@ -12842,9 +12409,9 @@ var _reactRedux = __webpack_require__(9);
 
 var _propTypes = __webpack_require__(5);
 
-var _Image = __webpack_require__(24);
+var _Session = __webpack_require__(259);
 
-var _Image2 = _interopRequireDefault(_Image);
+var _Session2 = _interopRequireDefault(_Session);
 
 var _Canvas = __webpack_require__(121);
 
@@ -12854,67 +12421,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    original: state.app.uniquePath + "/" + "sheet_without_staves.png",
-    sheet: state.image.unstaved,
-    current: state.sheet.current
+    sheet: state.session.unstaved
   };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-  return {
-    imageLoaded: function imageLoaded(data) {
-      dispatch({ "type": _Image2.default.UNSTAVED_SHEET, "sheet": data });
-    }
-
-  };
+  return {};
 };
 
 var Sheet = function Sheet(_ref) {
-  var original = _ref.original,
-      sheet = _ref.sheet,
-      imageLoaded = _ref.imageLoaded;
+  var sheet = _ref.sheet;
   return _react2.default.createElement(
     'div',
     { className: 'col-xs-9 content__image' },
-    _react2.default.createElement(_Canvas2.default, { original: original, sheet: sheet, imageLoaded: imageLoaded,
-      canvasID: 'unstave-canvas', canvasClass: 'canvas--unstave' })
+    _react2.default.createElement(_Canvas2.default, { sheet: sheet, canvasID: 'unstave-canvas', canvasClass: 'canvas--unstave' })
   );
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Sheet);
 
 /***/ }),
-/* 124 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _App = __webpack_require__(58);
-
-var _App2 = _interopRequireDefault(_App);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var AppReducer = function AppReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { uniquePath: "" };
-  var action = arguments[1];
-
-  switch (action.type) {
-    case _App2.default.INIT_SESSION:
-      return Object.assign({}, state, { uniquePath: action.uniquePath });
-    default:
-      return state;
-  }
-};
-
-exports.default = AppReducer;
-
-/***/ }),
+/* 124 */,
 /* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12968,52 +12495,7 @@ var cropperReducer = function cropperReducer() {
 exports.default = cropperReducer;
 
 /***/ }),
-/* 126 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _Image = __webpack_require__(24);
-
-var _Image2 = _interopRequireDefault(_Image);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function initialiser() {
-  return {
-    original: "",
-    detected: "",
-    unstaved: ""
-  };
-}
-
-var sheetReducer = function sheetReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialiser();
-  var action = arguments[1];
-
-  switch (action.type) {
-    case _Image2.default.UNSTAVED_SHEET:
-      $.post("/editImage", { img: action.sheet, name: "sheet_without_staves.png" }, function (res) {
-        console.log(res);
-      });
-      return Object.assign({}, state, { unstaved: action.sheet });
-    case _Image2.default.ORIGINAL_SHEET:
-      return Object.assign({}, state, { original: action.sheet });
-    case _Image2.default.DETECTED_SHEET:
-      return Object.assign({}, state, { detected: action.sheet });
-    default:
-      return state;
-  }
-};
-
-exports.default = sheetReducer;
-
-/***/ }),
+/* 126 */,
 /* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13075,8 +12557,6 @@ function handleStaveSectionMerge(staveList, currentStaveGroup) {
 
 function initialiser() {
   return {
-    current: "",
-    uniquePath: "",
     clickedStaves: [],
     staveGroup: [],
     currentStave: {
@@ -13119,8 +12599,6 @@ var sheetReducer = function sheetReducer() {
   var action = arguments[1];
 
   switch (action.type) {
-    case _Sheet2.default.UPLOAD_SHEET:
-      return Object.assign({}, state, { current: "original.png" });
     case _Sheet2.default.GET_STAVE_GROUPS:
       console.log(processNote(action.staveGroup));
       return Object.assign({}, state, { staveGroup: action.staveGroup });
@@ -49848,6 +49326,469 @@ module.exports = function(module) {
 __webpack_require__(103);
 module.exports = __webpack_require__(104);
 
+
+/***/ }),
+/* 258 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _Session = __webpack_require__(259);
+
+var _Session2 = _interopRequireDefault(_Session);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var initialState = {
+  original: "",
+  unstaved: "",
+  uniquePath: ""
+};
+
+var AppReducer = function AppReducer() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+  var action = arguments[1];
+
+  switch (action.type) {
+    case _Session2.default.INIT_SESSION:
+      return Object.assign({}, state, { uniquePath: action.uniquePath });
+    case _Session2.default.ORIGINAL_SHEET:
+      return Object.assign({}, state, { original: action.data });
+    case _Session2.default.UNSTAVED_SHEET:
+      return Object.assign({}, state, { unstaved: action.data });
+    default:
+      return state;
+  }
+};
+
+exports.default = AppReducer;
+
+/***/ }),
+/* 259 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var INIT_SESSION = 'INIT_SESSION';
+
+var ORIGINAL_SHEET = 'ORIGINAL_SHEET';
+var UNSTAVED_SHEET = 'UNSTAVED_SHEET';
+var DETECTED_SHEET = 'DETECTED_SHEET';
+
+exports.default = {
+  INIT_SESSION: INIT_SESSION,
+  ORIGINAL_SHEET: ORIGINAL_SHEET,
+  UNSTAVED_SHEET: UNSTAVED_SHEET,
+  DETECTED_SHEET: DETECTED_SHEET
+};
+
+/***/ }),
+/* 260 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(5);
+
+var _Sheet = __webpack_require__(16);
+
+var _Sheet2 = _interopRequireDefault(_Sheet);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Loader = function (_React$Component) {
+  _inherits(Loader, _React$Component);
+
+  function Loader() {
+    _classCallCheck(this, Loader);
+
+    return _possibleConstructorReturn(this, (Loader.__proto__ || Object.getPrototypeOf(Loader)).apply(this, arguments));
+  }
+
+  _createClass(Loader, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      $('#sheet-loader').modal('show');
+      $("#form-stave").on("submit", function (e) {
+        e.preventDefault();
+        _this2.props.imageUploaded(_this2.props.uuid);
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'form',
+        { id: 'form-stave', action: '/', method: 'POST', encType: 'multipart/form-data' },
+        _react2.default.createElement(
+          'div',
+          null,
+          _react2.default.createElement('input', { type: 'file', name: 'musicSheet', id: 'musicSheet' })
+        ),
+        _react2.default.createElement('input', { type: 'submit', value: 'Submit' })
+      );
+    }
+  }]);
+
+  return Loader;
+}(_react2.default.Component);
+
+Loader.PropTypes = {
+  imageUploaded: _propTypes.PropTypes.func
+};
+
+exports.default = Loader;
+
+/***/ }),
+/* 261 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(5);
+
+var _reactRedux = __webpack_require__(9);
+
+var _Sheet = __webpack_require__(16);
+
+var _Sheet2 = _interopRequireDefault(_Sheet);
+
+var _Session = __webpack_require__(259);
+
+var _Session2 = _interopRequireDefault(_Session);
+
+var _Loader = __webpack_require__(260);
+
+var _Loader2 = _interopRequireDefault(_Loader);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getImageURL(src, dispatch, actionType) {
+  var image = new Image();
+  var c = document.createElement('canvas'),
+      ctx = c.getContext('2d');
+  image.onload = function () {
+    c.width = image.width;
+    c.height = image.height;
+
+    ctx.drawImage(image, 0, 0, image.width, image.height);
+    var dataURL = c.toDataURL();
+    dispatch({
+      "type": actionType,
+      "data": dataURL
+    });
+  };
+  image.src = "/" + src;
+}
+
+var mapStateToProps = function mapStateToProps(state) {
+  return {
+    uuid: state.session.uniquePath
+  };
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+  return {
+    imageUploaded: function imageUploaded(uuid) {
+      $('#sheet-loader').modal('hide');
+      $("#form-stave").ajaxSubmit({
+        success: function success(res) {
+          $.get("/session", function (data) {
+            getImageURL(uuid + "/original.png", dispatch, _Session2.default.ORIGINAL_SHEET);
+            getImageURL(uuid + "/sheet_without_staves.png", dispatch, _Session2.default.UNSTAVED_SHEET);
+            dispatch({ "type": _Sheet2.default.GET_STAVE_GROUPS, "staveGroup": JSON.parse(data["staveGroup"]) });
+          });
+        },
+        error: function error(err) {
+          console.log(err);
+        }
+      });
+    }
+
+  };
+};
+
+var LoaderContainer = function LoaderContainer(_ref) {
+  var uuid = _ref.uuid,
+      imageUploaded = _ref.imageUploaded;
+  return _react2.default.createElement(
+    'div',
+    { id: 'sheet-loader', className: 'modal fade' },
+    _react2.default.createElement(
+      'div',
+      { className: 'modal-dialog', role: 'document' },
+      _react2.default.createElement(
+        'div',
+        { className: 'modal-content' },
+        _react2.default.createElement(
+          'div',
+          { className: 'modal-header' },
+          _react2.default.createElement(
+            'h5',
+            { className: 'modal-title' },
+            'Load Image'
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'modal-body' },
+          _react2.default.createElement(_Loader2.default, { uuid: uuid, imageUploaded: imageUploaded })
+        )
+      )
+    )
+  );
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LoaderContainer);
+
+/***/ }),
+/* 262 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(9);
+
+var _Sheet = __webpack_require__(16);
+
+var _Sheet2 = _interopRequireDefault(_Sheet);
+
+var _Actions = __webpack_require__(263);
+
+var _Actions2 = _interopRequireDefault(_Actions);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mapStateToProps = function mapStateToProps(state) {
+  return {
+    sheet: state.session.original,
+    staves: state.sheet.staveGroup,
+    clickedStaves: state.sheet.clickedStaves
+  };
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+  return {
+    mergeStave: function mergeStave() {
+      dispatch({ type: _Sheet2.default.MERGE_STAVE_SECTIONS });
+    },
+    toEditUnstaved: function toEditUnstaved() {
+      $('#unstaved').css('left', '0');
+    },
+    toDetect: function toDetect() {
+      $('#crop').css('left', '0');
+    }
+  };
+};
+
+var ActionsContainer = function ActionsContainer(_ref) {
+  var mergeStave = _ref.mergeStave,
+      toEditUnstaved = _ref.toEditUnstaved,
+      toDetect = _ref.toDetect;
+
+  return _react2.default.createElement(_Actions2.default, {
+    mergeStave: mergeStave,
+    toDetect: toDetect,
+    toEditUnstaved: toEditUnstaved
+  });
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ActionsContainer);
+
+/***/ }),
+/* 263 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(5);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _ActionButton = __webpack_require__(37);
+
+var _ActionButton2 = _interopRequireDefault(_ActionButton);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Actions = function Actions(_ref) {
+  var mergeStave = _ref.mergeStave,
+      toEditUnstaved = _ref.toEditUnstaved,
+      toDetect = _ref.toDetect;
+
+  return _react2.default.createElement(
+    'div',
+    { className: 'col-xs-3 content__actions content__actions--sheet' },
+    _react2.default.createElement(_ActionButton2.default, { className: 'action', text: 'Merge Section', onClick: mergeStave }),
+    _react2.default.createElement(_ActionButton2.default, { className: 'action', text: 'Edit Unstaved Image', onClick: toEditUnstaved }),
+    _react2.default.createElement(_ActionButton2.default, { className: 'action', text: 'To Detect', onClick: toDetect })
+  );
+};
+
+Actions.propTypes = {
+  mergeStave: _propTypes2.default.func,
+  toEditUnstaved: _propTypes2.default.func,
+  toDetect: _propTypes2.default.func
+};
+
+exports.default = Actions;
+
+/***/ }),
+/* 264 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(5);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _ActionButton = __webpack_require__(37);
+
+var _ActionButton2 = _interopRequireDefault(_ActionButton);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Actions = function Actions(_ref) {
+  var toEdit = _ref.toEdit,
+      saveChanges = _ref.saveChanges;
+
+  return _react2.default.createElement(
+    'div',
+    { className: 'col-xs-3 content__actions content__actions--sheet' },
+    _react2.default.createElement(_ActionButton2.default, { className: 'action', text: 'To Edit', onClick: toEdit }),
+    _react2.default.createElement(_ActionButton2.default, { className: 'action', text: 'Save Changes', onClick: saveChanges })
+  );
+};
+
+Actions.propTypes = {
+  saveChanges: _propTypes2.default.func,
+  toEdit: _propTypes2.default.func
+};
+
+exports.default = Actions;
+
+/***/ }),
+/* 265 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(9);
+
+var _Session = __webpack_require__(259);
+
+var _Session2 = _interopRequireDefault(_Session);
+
+var _Actions = __webpack_require__(264);
+
+var _Actions2 = _interopRequireDefault(_Actions);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mapStateToProps = function mapStateToProps(state) {
+  return {};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+  return {
+    saveChanges: function saveChanges() {
+      var c = $('#unstave-canvas')[0];
+      dispatch({
+        type: _Session2.default.UNSTAVED_SHEET,
+        sheet: $('#unstave-canvas')[0].toDataURL('image/png', 1.0)
+      });
+    },
+    toEdit: function toEdit() {
+      $('#unstaved').css('left', '100%');
+    }
+  };
+};
+
+var ActionsContainer = function ActionsContainer(_ref) {
+  var saveChanges = _ref.saveChanges,
+      toEdit = _ref.toEdit;
+
+  return _react2.default.createElement(_Actions2.default, {
+    saveChanges: saveChanges,
+    toEdit: toEdit
+  });
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ActionsContainer);
 
 /***/ })
 /******/ ]);

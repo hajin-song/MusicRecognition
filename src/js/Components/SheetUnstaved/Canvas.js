@@ -23,18 +23,8 @@ class Canvas extends React.Component{
    context.canvas.height = img.naturalHeight;
    context.canvas.width = img.naturalWidth;
    context.drawImage(img, 0, 0);
-
-   let data = context.getImageData(0, 0, canvas.width, canvas.height);
-   this.props.imageLoaded(canvas.toDataURL('image/png', 1.0));
   }
-
-  if(this.props.sheet == ""){
-   img.src = "/" + this.props.original;
-  }else{
-   //context.canvas.height = height;
-   //context.canvas.width = width;
-   img.src = this.props.sheet;
-  }
+  img.src = this.props.sheet
  }
 
  __getMousePos(evt) {
@@ -55,8 +45,6 @@ class Canvas extends React.Component{
 }
 
 Canvas.propTypes = {
- original: PropTypes.string,
- imageLoaded: PropTypes.func,
  sheet: PropTypes.object,
 }
 

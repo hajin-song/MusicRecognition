@@ -9,10 +9,9 @@ import App from './app.js';
 import sheet from 'omrReducers/Sheet';
 import symbols from 'omrReducers/Symbols';
 import crop from 'omrReducers/Cropper';
-import app from 'omrReducers/App';
-import image from 'omrReducers/Image';
+import session from 'omrReducers/Session';
 
-import AppActions from 'omrActions/App';
+import SessionActions from 'omrActions/Session';
 
 $(document).ready(()=>{
  (function($) {
@@ -39,14 +38,13 @@ $(document).ready(()=>{
    sheet,
    symbols,
    crop,
-   app,
-   image,
+   session,
   });
 
   const store = createStore(Reducer, {});
 
   store.dispatch({
-   type: AppActions.INIT_SESSION,
+   type: SessionActions.INIT_SESSION,
    uniquePath: data.uniqueString
   })
 

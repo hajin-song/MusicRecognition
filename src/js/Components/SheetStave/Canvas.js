@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
+
 import { PropTypes } from 'prop-types';
 
 class Canvas extends React.Component{
@@ -52,11 +52,8 @@ class Canvas extends React.Component{
    contextAction.canvas.height = img.naturalHeight;
    contextAction.canvas.width = img.naturalWidth;
    context.drawImage(img, 0, 0);
-
-   let data = context.getImageData(0, 0, canvas.width, canvas.height);
-   this.props.imageLoaded(canvas.toDataURL('image/png', 1.0));
   }
-  img.src = "/" + this.props.src;
+  img.src = this.props.sheet;
  }
 
  __getMousePos(evt) {
