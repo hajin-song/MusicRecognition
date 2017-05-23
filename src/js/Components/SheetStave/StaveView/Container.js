@@ -7,7 +7,7 @@ import SheetActions from 'omrActions/Sheet';
 import OriginalStave from 'omrComponents/SheetStave/StaveView/Original';
 import DetectedStave from 'omrComponents/SheetStave/StaveView/Detected';
 
-import NoteList from 'omrComponents/SheetStave/StaveView/NoteList';
+import Actions from 'omrComponents/SheetStave/StaveView/Actions/ActionsContainer';
 
 const StaveContainer = () => (
  <div id='stave-viewer' className="modal fade">
@@ -19,7 +19,7 @@ const StaveContainer = () => (
        <div className="modal-body container-fluid">
         <OriginalStave/>
         <DetectedStave />
-        <NoteList />
+        <Actions />
        </div>
      </div>
    </div>

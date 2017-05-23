@@ -12,7 +12,7 @@ class Stave:
         self.staveFactor = 0.0
         self.isStave = False
         self.notes = defaultdict(list)
-        
+
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return (self.y0 == other.y0) or (self.y1 == other.y1)
@@ -34,10 +34,9 @@ class Stave:
     def json(self):
         noteJson = []
         for section in self.notes.keys():
-            sectionJson = '{' + '"x":{}, "notes":{}'.format(
-                section,
-                '[' + ','.join((list(map(lambda x: x.json(), self.notes[section] )))) +']'
-            ) + '}'
+            sectionJson = '{}'.format(
+                ','.join((list(map(lambda x: x.json(), self.notes[section] ))))
+            )
             noteJson.append(sectionJson)
         noteJson = ','.join(noteJson)
 

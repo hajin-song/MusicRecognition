@@ -4,7 +4,7 @@ import { PropTypes } from 'prop-types';
 
 import SheetActions from 'omrActions/Sheet';
 
-import Canvas from 'omrComponents/SheetStave/StaveView/VexFlowCanvas';
+import Canvas from 'omrComponents/SheetStave/StaveView/Detected/VexFlowCanvas';
 
 const mapStateToProps = (state) => {
  return {
@@ -19,7 +19,7 @@ const mapDispatchToProps =(dispatch) => {
 }
 
 const Sheet = ({ stave }) => (
- <div id="detected" className='col-xs-12'>
+ <div id="detected" className='row'>
   <Canvas stave={stave} canvasID="detected-canvas"/>
  </div>
 );

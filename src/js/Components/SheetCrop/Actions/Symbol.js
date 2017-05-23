@@ -1,7 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 
-const Symbol = ({name, image, onClick}) => (
+const SymbolTes = ({name, image, onClick}) => (
  <div className='symbol' onClick={onClick}>
   {name}
   <span className='symbol__image'>
@@ -10,10 +10,10 @@ const Symbol = ({name, image, onClick}) => (
  </div>
 )
 
-Symbol.propTypes = {
+SymbolTes.propTypes = {
  name: PropTypes.string,
  image: PropTypes.string,
  onClick: PropTypes.func,
 }
 
-export default Symbol;
+export default SymbolTes;

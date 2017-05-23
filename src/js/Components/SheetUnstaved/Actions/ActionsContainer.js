@@ -14,10 +14,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps =(dispatch) => {
  return ({
   saveChanges: () => {
-    var c = $('#unstave-canvas')[0];
     dispatch({
-     type: SessionActions.UNSTAVED_SHEET,
-     sheet: $('#unstave-canvas')[0].toDataURL('image/png', 1.0)
+     type: SessionActions.EDIT_UNSTAVED_SHEET,
+     data: $('#unstave-canvas')[0].toDataURL('image/png', 1.0)
     });
    },
   toEdit: () => { $('#unstaved').css('left', '100%'); },

@@ -5,9 +5,6 @@ import { PropTypes } from 'prop-types';
 import Vex from 'vexflow';
 const VF = Vex.Flow
 class VexFlowCanvas extends React.Component{
- componentDidMount(){
-  console.log(Vex)
- }
  componentDidUpdate(prevProps, prevState){
   let left = this.props.stave.section[0];
   let width = (this.props.stave.section[1] - left) * 2;
@@ -23,7 +20,10 @@ class VexFlowCanvas extends React.Component{
 
   currentActionContext.canvas.height = height;
   currentActionContext.canvas.width = width;
+  this.__drawNotes(current, height, width);
+ }
 
+ __drawNotes(current, height, width){
   var renderer = new VF.Renderer(current, VF.Renderer.Backends.CANVAS);
   renderer.resize(width, height);
   var context = renderer.getContext();
@@ -37,14 +37,16 @@ class VexFlowCanvas extends React.Component{
    return this.props.stave.section[0] <= section.x && section.x <= this.props.stave.section[1];
   });
 
-  let notesVex = notes.map( (section) => {
-   return section.notes.map((note) => {
-    return new VF.StaveNote({clef: "treble", keys: [note.pitch], duration: note.duration })
-   })
+  let notesVex = notes.map( (note) => {
+   return new VF.StaveNote({
+    clef: "treble",
+    keys: [note.pitch + "/" + note.octave],
+    duration: note.duration,
+    auto_stem: true
+   });
   });
 
-  console.log(notesVex);
-  VF.Formatter.FormatAndDraw(context, stave,  [].concat.apply([], notesVex));
+  VF.Formatter.FormatAndDraw(context, stave, [].concat.apply([], notesVex));
  }
 
  render() {
@@ -61,10 +63,4 @@ VexFlowCanvas.propTypes = {
  canvasID: PropTypes.string,
 }
 
-
-VexFlowCanvas.contextTypes = {
- store: PropTypes.object
-}
-
-
-export default VexFlowCanvas
+export default VexFlowCanvas;

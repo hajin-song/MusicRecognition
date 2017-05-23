@@ -20,7 +20,6 @@ app.use(bodyParser.json());
 
 var storage = multer.diskStorage({
  destination: function(req, file, callback){
-  console.log(req.session);
   mkdirp('./public/' +  req.session.uniqueString);
   callback(null, './public/' + req.session.uniqueString + "/");
  },
@@ -44,10 +43,6 @@ app.use(session({
 app.get('/', function(req, res){
  req.session.uniqueString = uuid.v1();
  res.sendFile(path.join(__dirname + '/index.html'));
-});
-
-app.get('/session', function(req, res){
- res.send(req.session);
 });
 
 app.post('/', upload.single('musicSheet'), function(req, res, next){
@@ -88,6 +83,10 @@ app.post('/editImage', function(req, res){
   console.log(err);
 });
  res.send("Done");
+});
+
+app.get('/session', function(req, res){
+ res.send(req.session);
 });
 
 app.post('/detect', function(req,res){

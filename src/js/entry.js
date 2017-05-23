@@ -33,6 +33,18 @@ $(document).ready(()=>{
   }
  }(jQuery));
 
+ (function($) {
+  $.objectCopy = function(object){
+   return JSON.parse(JSON.stringify(object));
+  }
+ }(jQuery));
+
+ (function($) {
+  $.arrayCopy = function(array){
+   return $.extend(true, [],  array);
+  }
+ }(jQuery));
+
  $.get("/session", (data) => {
   const Reducer = combineReducers({
    sheet,

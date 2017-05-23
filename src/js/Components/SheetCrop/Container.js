@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 
 import Sheet from 'omrComponents/SheetCrop/Sheet';
-import Actions from 'omrComponents/SheetCrop/Actions';
+import Actions from 'omrComponents/SheetCrop/Actions/ActionsContainer';
 
 class SheetContainer extends React.Component{
  componentDidMount(){
