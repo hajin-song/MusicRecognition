@@ -8,6 +8,7 @@
     "babel-loader": "^6.4.1",
     "babel-preset-es2015": "^6.24.0",
     "body-parser": "^1.17.1",
+    "client-sessions": "^0.8.0",
     "cropperjs": "^1.0.0-rc",
     "express": "^4.15.2",
     "mkdirp": "^0.5.1",
