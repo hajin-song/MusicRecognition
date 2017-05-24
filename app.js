@@ -109,6 +109,6 @@ app.post('/detect', function(req,res){
  });
 });
 
-app.listen(3000, function() {
- console.log("Laucnhing application... listening on port 3000")
+app.listen(8888, function() {
+ console.log("Laucnhing application... listening on port 8888")
 });
