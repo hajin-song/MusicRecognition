@@ -36,7 +36,7 @@
   },
   "scripts": {
     "bundle": "webpack --progress --watch --color",
-    "postinstall": "./node_modules/bower/bin/bower install",
+    "postinstall": "bower install",
     "start": "node app.js"
   },
   "author": "",
