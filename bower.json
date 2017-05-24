@@ -18,10 +18,7 @@
     "jquery": "^3.2.1",
     "jquery-form": "^4.2.0",
     "cropper": "^2.3.4",
-    "cropperjs": "^0.8.1"
-  },
-  "devDependencies": {
-    "jquery": "^3.2.1",
+    "cropperjs": "^0.8.1",
     "bootstrap": "^3.3.7"
-  }
+  },
 }
