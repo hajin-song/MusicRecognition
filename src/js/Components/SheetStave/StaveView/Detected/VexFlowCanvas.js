@@ -15,7 +15,8 @@ import {
  fillRest,
  generateNotes,
  markRemainders,
- groupBeams
+ groupBeams,
+ groupSlurs
 } from './VexFlowCanvasTool';
 
 import Vex from 'vexflow';
@@ -51,7 +52,6 @@ class VexFlowCanvas extends React.Component{
   stave.addTimeSignature("4/4");
   stave.setContext(context).draw();
 
-
   var remainingTicks = 4;
 
   // Order notes so processing is left to right
@@ -70,13 +70,26 @@ class VexFlowCanvas extends React.Component{
 
   // Beams
   var beams = groupBeams(notes, noteIndex);
-  var vexBeams = []
+  var vexBeams = [];
   while(beams.length >= 2){
    var start = beams[0];
    var end = beams[1];
    beams.splice(0,2);
    vexBeams.push(new VF.Beam(vexNotes.slice(start, end+1)));
   }
+
+  var slurs = groupSlurs(notes, noteIndex);
+  var vexSlurs = [];
+  while(slurs.length >= 2){
+   var start = slurs[0];
+   var end = slurs[1];
+   slurs.splice(0,2);
+   vexSlurs.push(new VF.Curve(
+    vexNotes[start],
+    vexNotes[end]
+   ));
+  }
+  console.log(vexSlurs);
 
   markRemainders(notes, noteIndex);
 
@@ -92,6 +105,7 @@ class VexFlowCanvas extends React.Component{
   // Draww
   Vex.Flow.Formatter.FormatAndDraw(context, stave, vexNotes);
   vexBeams.map( (vexBeam) => { vexBeam.setContext(context).draw(); });
+  vexSlurs.map( (slur) => { slur.setContext(context).draw(); });
  }
 
  render() {

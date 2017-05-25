@@ -73,16 +73,23 @@ function generateNotes(notes, ticks){
   let noteDuration =  getNoteDuration(curNote);
   if (ticks - noteDuration >= 0){
    __markAsLegal(noteIndex);
+   console.log(curNote);
    if(curNote.type === 'r'){
     vexNotes.push(new VF.StaveNote({
      keys:['b/4'],
      duration: curNote.duration + 'r'
     }));
    }else{
-    vexNotes.push(new VF.StaveNote({
+    var note = new VF.StaveNote({
      keys:[curNote.pitch + "/" + curNote.octave],
-     duration: curNote.duration
-    }));
+     duration: curNote.duration,
+     auto_stem: true
+    });
+    curNote.articulations.map( (articulation, index) => {
+     note = note.addArticulation(0,
+      new VF.Articulation(articulation).setPosition(3));
+    });
+    vexNotes.push(note);
    }
    ticks -= noteDuration;
   }else{
@@ -105,11 +112,30 @@ function groupBeams(notes, legalIndex){
  var noteIndex = 0;
  for(noteIndex ; noteIndex < legalIndex ; noteIndex++){
   var note = notes[noteIndex];
-  if(note.bar >= 0){
+  if(note.bar > 0){
    beamGroups.push(noteIndex);
   }
  }
  return beamGroups;
+}
+
+/**
+ * groupSlurss - Collect the slur markers in the notes
+ *
+ * @param  {Array.Object} notes      List of notes
+ * @param  {Number}       legalIndex Last note that got written up in the vex stave
+ * @return {Array.Number}            List of note indexs
+ */
+function groupSlurs(notes, legalIndex){
+ var slurGroups = [];
+ var noteIndex = 0;
+ for(noteIndex ; noteIndex < legalIndex ; noteIndex++){
+  var note = notes[noteIndex];
+  if(note.slur > 0){
+   slurGroups.push(noteIndex);
+  }
+ }
+ return slurGroups;
 }
 
 
@@ -139,5 +165,6 @@ export {
  fillRest,
  generateNotes,
  markRemainders,
- groupBeams
+ groupBeams,
+ groupSlurs,
 };

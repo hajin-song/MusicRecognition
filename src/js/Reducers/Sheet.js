@@ -97,11 +97,13 @@ function createNote(pitchID, octaveID, durationID, note){
  var newNote;
 
  if(pitch === 'r'){
-  newNote = { 'pitch': 'b', 'octave': '4', 'duration': duration, 'type': 'r', bar: -1};
+  newNote = { 'pitch': 'b', 'octave': '4', 'duration': duration, 'type': 'r' };
  }else{
-  newNote = {'pitch': pitch, 'octave': octave, 'duration': duration, 'type': 'n', bar: -1 };
+  newNote = {'pitch': pitch, 'octave': octave, 'duration': duration, 'type': 'n' };
  }
 
+ if(note.bar == -1){ newNote['bar'] = -1; }
+ if(note.slur == -1){ newNote['slur'] = -1; }
  return Object.assign( {}, note, newNote);
 }
 
@@ -163,15 +165,53 @@ function removeNoteFromSection(noteID, currentStave, staveGroup){
  var newStaveGroup = $.arrayCopy(staveGroup);
  var newStave = $.objectCopy(currentStave);
 
+ let targetNote = newStave.stave.notes[noteID];
+ // deleted note was start or end of bar
+ if(targetNote.bar == 1)
+ {
+  let nextNote = newStave.stave.notes[noteID + 1];
+  if (typeof nextNote === "undefined" || nextNote.bar == 2) { nextNote.bar = -1; }
+  else { nextNote.bar = 1; }
+ }
+ // deleted note was end of bar
+ else if(targetNote.bar == 2)
+ {
+  let prevNote = newStave.stave.notes[noteID - 1];
+  if (typeof prevNote === "undefined" || prevNote.bar == 1) { prevNote.bar = -1; }
+  else { prevNote.bar = 2; }
+ }
+
+ if(targetNote.slur == 1)
+ {
+  let nextNote = newStave.stave.notes[noteID + 1];
+  if (typeof nextNote === "undefined" || nextNote.slur == 2) { nextNote.slur = -1; }
+  else { nextNote.slur = 1; }
+ }
+ // deleted note was end of bar
+ else if(targetNote.bar == 2)
+ {
+  let prevNote = newStave.stave.notes[noteID - 1];
+  if (typeof prevNote === "undefined" || prevNote.slur == 1) { prevNote.slur = -1; }
+  else { prevNote.slur = 2; }
+ }
+
  // remove target note and set new IDs to remaining notes
  newStave.stave.notes.splice(noteID, 1);
- newStave.stave.notes.map( (note, index) => {
-  note.id = index;
- });
+ newStave.stave.notes.map( (note, index) => { note.id = index; });
  newStaveGroup[staveIndex] = newStave.stave;
  return { staveGroup: newStaveGroup, currentStave: newStave };
 }
 
+
+/**
+ * addArticulation - add articulation symbol to note
+ *
+ * @param  {String}         symbol       description
+ * @param  {Array.number}   clickedNotes IDs of the selected notes
+ * @param  {Object}         currentStave Current Stave selected
+ * @param  {Array.<Object>} staveGroup   Currently set Stave Groups
+ * @return {Object} new stave group and current stave Object state
+ */
 function addArticulation(symbol, clickedNotes, currentStave, staveGroup){
  let staveIndex = $.objectIndex(currentStave.stave, staveGroup);
  var newStaveGroup = $.arrayCopy(staveGroup);
@@ -179,6 +219,8 @@ function addArticulation(symbol, clickedNotes, currentStave, staveGroup){
  var newStave = $.objectCopy(currentStave);
  clickedNotes.map( (note) => {
   let symbolIndex = newStave.stave.notes[note].articulations.indexOf(symbol);
+
+  // if articulation is already there, remove it
   if(symbolIndex == -1){
    newStave.stave.notes[note].articulations.push(symbol);
   }else{
@@ -202,34 +244,64 @@ function markAsBarNote(clickedNotes, currentStave, staveGroup){
 
  let staveIndex = $.objectIndex(currentStave.stave, staveGroup);
  var newStaveGroup = $.arrayCopy(staveGroup);
-
  var newStave = $.objectCopy(currentStave);
 
- newStave.stave.notes[first].bar = 0;
- newStave.stave.notes[last].bar = 1;
-
- // Check if it is valid, if not revert the changes
+ // Check if it is valid bar grouping
  if(first != last){
   for(var i = first ; i <= last ; i++){
    let note = newStave.stave.notes[i]
    if(note.duration == 'w' || note.duration == 'h' || note.duration == 'q'){
     alert("Cannot group non-quaver as bar note!");
-    newStave = $.objectCopy(currentStave);
-    break;
+    return { staveGroup: staveGroup, currentStave: currentStave };
    }else if(note.bar >= 0){
     alert("Cannot allocate one note to multiple bar group!!");
-    newStave = $.objectCopy(currentStave);
-    break;
+    return { staveGroup: staveGroup, currentStave: currentStave };
+   }else{
+    note.bar = 0;
    }
   }
  }else{
-  newStave = $.objectCopy(currentStave);
   alert("Cannot group single note at bar note!");
+  return { staveGroup: staveGroup, currentStave: currentStave };
  }
 
  newStaveGroup[staveIndex] = newStave.stave;
+ // flag start and end
+ newStave.stave.notes[first].bar = 1;
+ newStave.stave.notes[last].bar = 2;
+ return { staveGroup: newStaveGroup, currentStave: newStave, clickedNotes: [] };
+}
 
- return { staveGroup: newStaveGroup, currentStave: newStave };
+
+function markAsSlur(clickedNotes, currentStave, staveGroup){
+ let first = clickedNotes[0];
+ let last = clickedNotes[clickedNotes.length - 1];
+
+ let staveIndex = $.objectIndex(currentStave.stave, staveGroup);
+ var newStaveGroup = $.arrayCopy(staveGroup);
+ var newStave = $.objectCopy(currentStave);
+
+ // Check if it is valid bar grouping
+ if(first != last){
+  for(var i = first ; i <= last ; i++){
+   let note = newStave.stave.notes[i]
+   if(note.slur >= 0){
+    alert("Cannot allocate one note to multiple slur group!!");
+    return { staveGroup: staveGroup, currentStave: currentStave };
+   }else{
+    note.slur = 0;
+   }
+  }
+ }else{
+  alert("Cannot group single note as slur!");
+  return { staveGroup: staveGroup, currentStave: currentStave };
+ }
+
+ newStaveGroup[staveIndex] = newStave.stave;
+ // flag start and end
+ newStave.stave.notes[first].slur = 1;
+ newStave.stave.notes[last].slur = 2;
+ return { staveGroup: newStaveGroup, currentStave: newStave, clickedNotes: [] };
 }
 
 
@@ -272,7 +344,7 @@ const sheetReducer = (state = initialState, action) => {
    var result = handleStaveSectionMerge(state.clickedStaves, state.staveGroup);
    let data = { 'data': JSON.stringify(result[1]), 'target': 'stave.pkl' };
    $.post('/update', data, (res)=>{ });
-   return Object.assign( {}, state, { staveGroup: result[0], clickedStaves: [] });;
+   return Object.assign( {}, state, { staveGroup: result[0], clickedStaves: [] });
   case SheetActions.STAVE_CLICKED:
    return Object.assign( {}, state, { currentStave: action.area });
   case SheetActions.ADD_NOTE:
@@ -285,6 +357,8 @@ const sheetReducer = (state = initialState, action) => {
    return Object.assign( {}, state, { clickedNotes: handleNoteClick(action.noteID, state.clickedNotes )});
   case SheetActions.GROUP_AS_BAR:
    return Object.assign( {}, state, markAsBarNote(state.clickedNotes, state.currentStave, state.staveGroup));
+  case SheetActions.GROUP_AS_SLUR:
+   return Object.assign( {}, state, markAsSlur(state.clickedNotes, state.currentStave, state.staveGroup));
   case SheetActions.ADD_ARTICULATION:
    return Object.assign( {}, state, addArticulation(action.symbol, state.clickedNotes, state.currentStave, state.staveGroup));
   default:

@@ -1272,6 +1272,7 @@ var EDIT_NOTE = 'EDIT_NOTE';
 var NOTE_CLICKED_CONTROL = 'NOTE_CLICKED_CONTROL';
 
 var GROUP_AS_BAR = 'GROUP_AS_BAR';
+var GROUP_AS_SLUR = 'GROUP_AS_SLUR';
 var ADD_ARTICULATION = 'ADD_ARTICULATION';
 
 exports.default = {
@@ -1284,6 +1285,7 @@ exports.default = {
   EDIT_NOTE: EDIT_NOTE,
   NOTE_CLICKED_CONTROL: NOTE_CLICKED_CONTROL,
   GROUP_AS_BAR: GROUP_AS_BAR,
+  GROUP_AS_SLUR: GROUP_AS_SLUR,
   ADD_ARTICULATION: ADD_ARTICULATION
 };
 
@@ -12268,6 +12270,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     setAsBarNote: function setAsBarNote() {
       dispatch({ 'type': _Sheet2.default.GROUP_AS_BAR });
     },
+    setAsSlur: function setAsSlur() {
+      dispatch({ 'type': _Sheet2.default.GROUP_AS_SLUR });
+    },
     addArticulation: function addArticulation(symbol) {
       dispatch({ 'type': _Sheet2.default.ADD_ARTICULATION, 'symbol': symbol });
     }
@@ -12277,7 +12282,8 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 var ActionsContainer = function ActionsContainer(_ref) {
   var addNewNote = _ref.addNewNote,
       setAsBarNote = _ref.setAsBarNote,
-      addArticulation = _ref.addArticulation;
+      addArticulation = _ref.addArticulation,
+      setAsSlur = _ref.setAsSlur;
   return _react2.default.createElement(
     'div',
     { className: 'row notes' },
@@ -12291,7 +12297,7 @@ var ActionsContainer = function ActionsContainer(_ref) {
       ),
       _react2.default.createElement(
         'button',
-        { className: 'btn btn-primary' },
+        { onClick: setAsSlur, className: 'btn btn-primary' },
         'Slur'
       ),
       _react2.default.createElement(
@@ -12936,6 +12942,16 @@ var VexFlowCanvas = function (_React$Component) {
         vexBeams.push(new VF.Beam(vexNotes.slice(start, end + 1)));
       }
 
+      var slurs = (0, _VexFlowCanvasTool.groupSlurs)(notes, noteIndex);
+      var vexSlurs = [];
+      while (slurs.length >= 2) {
+        var start = slurs[0];
+        var end = slurs[1];
+        slurs.splice(0, 2);
+        vexSlurs.push(new VF.Curve(vexNotes[start], vexNotes[end]));
+      }
+      console.log(vexSlurs);
+
       (0, _VexFlowCanvasTool.markRemainders)(notes, noteIndex);
 
       // Fill up rests;
@@ -12951,6 +12967,9 @@ var VexFlowCanvas = function (_React$Component) {
       _vexflow2.default.Flow.Formatter.FormatAndDraw(context, stave, vexNotes);
       vexBeams.map(function (vexBeam) {
         vexBeam.setContext(context).draw();
+      });
+      vexSlurs.map(function (slur) {
+        slur.setContext(context).draw();
       });
     }
   }, {
@@ -13592,11 +13611,17 @@ function createNote(pitchID, octaveID, durationID, note) {
   var newNote;
 
   if (pitch === 'r') {
-    newNote = { 'pitch': 'b', 'octave': '4', 'duration': duration, 'type': 'r', bar: -1 };
+    newNote = { 'pitch': 'b', 'octave': '4', 'duration': duration, 'type': 'r' };
   } else {
-    newNote = { 'pitch': pitch, 'octave': octave, 'duration': duration, 'type': 'n', bar: -1 };
+    newNote = { 'pitch': pitch, 'octave': octave, 'duration': duration, 'type': 'n' };
   }
 
+  if (note.bar == -1) {
+    newNote['bar'] = -1;
+  }
+  if (note.slur == -1) {
+    newNote['slur'] = -1;
+  }
   return Object.assign({}, note, newNote);
 }
 
@@ -13656,6 +13681,44 @@ function removeNoteFromSection(noteID, currentStave, staveGroup) {
   var newStaveGroup = $.arrayCopy(staveGroup);
   var newStave = $.objectCopy(currentStave);
 
+  var targetNote = newStave.stave.notes[noteID];
+  // deleted note was start or end of bar
+  if (targetNote.bar == 1) {
+    var nextNote = newStave.stave.notes[noteID + 1];
+    if (typeof nextNote === "undefined" || nextNote.bar == 2) {
+      nextNote.bar = -1;
+    } else {
+      nextNote.bar = 1;
+    }
+  }
+  // deleted note was end of bar
+  else if (targetNote.bar == 2) {
+      var prevNote = newStave.stave.notes[noteID - 1];
+      if (typeof prevNote === "undefined" || prevNote.bar == 1) {
+        prevNote.bar = -1;
+      } else {
+        prevNote.bar = 2;
+      }
+    }
+
+  if (targetNote.slur == 1) {
+    var _nextNote = newStave.stave.notes[noteID + 1];
+    if (typeof _nextNote === "undefined" || _nextNote.slur == 2) {
+      _nextNote.slur = -1;
+    } else {
+      _nextNote.slur = 1;
+    }
+  }
+  // deleted note was end of bar
+  else if (targetNote.bar == 2) {
+      var _prevNote = newStave.stave.notes[noteID - 1];
+      if (typeof _prevNote === "undefined" || _prevNote.slur == 1) {
+        _prevNote.slur = -1;
+      } else {
+        _prevNote.slur = 2;
+      }
+    }
+
   // remove target note and set new IDs to remaining notes
   newStave.stave.notes.splice(noteID, 1);
   newStave.stave.notes.map(function (note, index) {
@@ -13665,6 +13728,15 @@ function removeNoteFromSection(noteID, currentStave, staveGroup) {
   return { staveGroup: newStaveGroup, currentStave: newStave };
 }
 
+/**
+ * addArticulation - add articulation symbol to note
+ *
+ * @param  {String}         symbol       description
+ * @param  {Array.number}   clickedNotes IDs of the selected notes
+ * @param  {Object}         currentStave Current Stave selected
+ * @param  {Array.<Object>} staveGroup   Currently set Stave Groups
+ * @return {Object} new stave group and current stave Object state
+ */
 function addArticulation(symbol, clickedNotes, currentStave, staveGroup) {
   var staveIndex = $.objectIndex(currentStave.stave, staveGroup);
   var newStaveGroup = $.arrayCopy(staveGroup);
@@ -13672,6 +13744,8 @@ function addArticulation(symbol, clickedNotes, currentStave, staveGroup) {
   var newStave = $.objectCopy(currentStave);
   clickedNotes.map(function (note) {
     var symbolIndex = newStave.stave.notes[note].articulations.indexOf(symbol);
+
+    // if articulation is already there, remove it
     if (symbolIndex == -1) {
       newStave.stave.notes[note].articulations.push(symbol);
     } else {
@@ -13695,34 +13769,63 @@ function markAsBarNote(clickedNotes, currentStave, staveGroup) {
 
   var staveIndex = $.objectIndex(currentStave.stave, staveGroup);
   var newStaveGroup = $.arrayCopy(staveGroup);
-
   var newStave = $.objectCopy(currentStave);
 
-  newStave.stave.notes[first].bar = 0;
-  newStave.stave.notes[last].bar = 1;
-
-  // Check if it is valid, if not revert the changes
+  // Check if it is valid bar grouping
   if (first != last) {
     for (var i = first; i <= last; i++) {
       var note = newStave.stave.notes[i];
       if (note.duration == 'w' || note.duration == 'h' || note.duration == 'q') {
         alert("Cannot group non-quaver as bar note!");
-        newStave = $.objectCopy(currentStave);
-        break;
+        return { staveGroup: staveGroup, currentStave: currentStave };
       } else if (note.bar >= 0) {
         alert("Cannot allocate one note to multiple bar group!!");
-        newStave = $.objectCopy(currentStave);
-        break;
+        return { staveGroup: staveGroup, currentStave: currentStave };
+      } else {
+        note.bar = 0;
       }
     }
   } else {
-    newStave = $.objectCopy(currentStave);
     alert("Cannot group single note at bar note!");
+    return { staveGroup: staveGroup, currentStave: currentStave };
   }
 
   newStaveGroup[staveIndex] = newStave.stave;
+  // flag start and end
+  newStave.stave.notes[first].bar = 1;
+  newStave.stave.notes[last].bar = 2;
+  return { staveGroup: newStaveGroup, currentStave: newStave, clickedNotes: [] };
+}
 
-  return { staveGroup: newStaveGroup, currentStave: newStave };
+function markAsSlur(clickedNotes, currentStave, staveGroup) {
+  var first = clickedNotes[0];
+  var last = clickedNotes[clickedNotes.length - 1];
+
+  var staveIndex = $.objectIndex(currentStave.stave, staveGroup);
+  var newStaveGroup = $.arrayCopy(staveGroup);
+  var newStave = $.objectCopy(currentStave);
+
+  // Check if it is valid bar grouping
+  if (first != last) {
+    for (var i = first; i <= last; i++) {
+      var note = newStave.stave.notes[i];
+      if (note.slur >= 0) {
+        alert("Cannot allocate one note to multiple slur group!!");
+        return { staveGroup: staveGroup, currentStave: currentStave };
+      } else {
+        note.slur = 0;
+      }
+    }
+  } else {
+    alert("Cannot group single note as slur!");
+    return { staveGroup: staveGroup, currentStave: currentStave };
+  }
+
+  newStaveGroup[staveIndex] = newStave.stave;
+  // flag start and end
+  newStave.stave.notes[first].slur = 1;
+  newStave.stave.notes[last].slur = 2;
+  return { staveGroup: newStaveGroup, currentStave: newStave, clickedNotes: [] };
 }
 
 function processNote(staveGroup) {
@@ -13767,7 +13870,7 @@ var sheetReducer = function sheetReducer() {
       var result = handleStaveSectionMerge(state.clickedStaves, state.staveGroup);
       var data = { 'data': JSON.stringify(result[1]), 'target': 'stave.pkl' };
       $.post('/update', data, function (res) {});
-      return Object.assign({}, state, { staveGroup: result[0], clickedStaves: [] });;
+      return Object.assign({}, state, { staveGroup: result[0], clickedStaves: [] });
     case _Sheet2.default.STAVE_CLICKED:
       return Object.assign({}, state, { currentStave: action.area });
     case _Sheet2.default.ADD_NOTE:
@@ -13780,6 +13883,8 @@ var sheetReducer = function sheetReducer() {
       return Object.assign({}, state, { clickedNotes: handleNoteClick(action.noteID, state.clickedNotes) });
     case _Sheet2.default.GROUP_AS_BAR:
       return Object.assign({}, state, markAsBarNote(state.clickedNotes, state.currentStave, state.staveGroup));
+    case _Sheet2.default.GROUP_AS_SLUR:
+      return Object.assign({}, state, markAsSlur(state.clickedNotes, state.currentStave, state.staveGroup));
     case _Sheet2.default.ADD_ARTICULATION:
       return Object.assign({}, state, addArticulation(action.symbol, state.clickedNotes, state.currentStave, state.staveGroup));
     default:
@@ -50504,7 +50609,7 @@ module.exports = __webpack_require__(102);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.groupBeams = exports.markRemainders = exports.generateNotes = exports.fillRest = exports.getNoteDuration = undefined;
+exports.groupSlurs = exports.groupBeams = exports.markRemainders = exports.generateNotes = exports.fillRest = exports.getNoteDuration = undefined;
 
 var _vexflow = __webpack_require__(260);
 
@@ -50599,16 +50704,22 @@ function generateNotes(notes, ticks) {
     var noteDuration = getNoteDuration(curNote);
     if (ticks - noteDuration >= 0) {
       __markAsLegal(noteIndex);
+      console.log(curNote);
       if (curNote.type === 'r') {
         vexNotes.push(new VF.StaveNote({
           keys: ['b/4'],
           duration: curNote.duration + 'r'
         }));
       } else {
-        vexNotes.push(new VF.StaveNote({
+        var note = new VF.StaveNote({
           keys: [curNote.pitch + "/" + curNote.octave],
-          duration: curNote.duration
-        }));
+          duration: curNote.duration,
+          auto_stem: true
+        });
+        curNote.articulations.map(function (articulation, index) {
+          note = note.addArticulation(0, new VF.Articulation(articulation).setPosition(3));
+        });
+        vexNotes.push(note);
       }
       ticks -= noteDuration;
     } else {
@@ -50630,11 +50741,30 @@ function groupBeams(notes, legalIndex) {
   var noteIndex = 0;
   for (noteIndex; noteIndex < legalIndex; noteIndex++) {
     var note = notes[noteIndex];
-    if (note.bar >= 0) {
+    if (note.bar > 0) {
       beamGroups.push(noteIndex);
     }
   }
   return beamGroups;
+}
+
+/**
+ * groupSlurss - Collect the slur markers in the notes
+ *
+ * @param  {Array.Object} notes      List of notes
+ * @param  {Number}       legalIndex Last note that got written up in the vex stave
+ * @return {Array.Number}            List of note indexs
+ */
+function groupSlurs(notes, legalIndex) {
+  var slurGroups = [];
+  var noteIndex = 0;
+  for (noteIndex; noteIndex < legalIndex; noteIndex++) {
+    var note = notes[noteIndex];
+    if (note.slur > 0) {
+      slurGroups.push(noteIndex);
+    }
+  }
+  return slurGroups;
 }
 
 /**
@@ -50662,6 +50792,7 @@ exports.fillRest = fillRest;
 exports.generateNotes = generateNotes;
 exports.markRemainders = markRemainders;
 exports.groupBeams = groupBeams;
+exports.groupSlurs = groupSlurs;
 
 /***/ })
 /******/ ]);
