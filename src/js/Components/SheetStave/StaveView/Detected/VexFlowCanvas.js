@@ -37,15 +37,41 @@ class VexFlowCanvas extends React.Component{
    return this.props.stave.section[0] <= section.x && section.x <= this.props.stave.section[1];
   });
 
-  let notesVex = notes.map( (note) => {
-   return new VF.StaveNote({
+  var beams = [];
+  var collecting = false;
+  let notesVex = notes.map( (note, index) => {
+   console.log('xo', note);
+   if(note.bar && !collecting){
+    collecting = true;
+    beams.push(index);
+   }else if(!note.bar && collecting){
+    collecting = false;
+    beams.push(index - 1);
+   }else if(index == notes.length - 1 && collecting){
+    collecting = false;
+    beams.push(index);
+   }
+   var noteSymbol = new VF.StaveNote({
     clef: "treble",
     keys: [note.pitch + "/" + note.octave],
     duration: note.duration,
     auto_stem: true
    });
+   note.articulations.map( (articulation) => {
+    noteSymbol = noteSymbol.addArticulation(0, new VF.Articulation(articulation).setPosition(3));
+   });
+   return noteSymbol;
   });
 
+  var beamVex = [];
+  while(beams.length >= 2){
+   var test = notesVex.slice(beams[0], beams[1] - beams[0] + 1);
+   beams.splice(0, 2);
+   var beam = new VF.Beam(test);
+   beam.setContext(context).draw();
+  }
+
+  console.log(new VF.TextDynamics({ text: 'fff', duration: '4'}));
   VF.Formatter.FormatAndDraw(context, stave, [].concat.apply([], notesVex));
  }
 

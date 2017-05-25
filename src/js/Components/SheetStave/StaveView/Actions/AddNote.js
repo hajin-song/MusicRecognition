@@ -16,7 +16,7 @@ class Note extends React.Component{
       <option value='g'>G</option>
       <option value='r'>Rest</option>
      </select>
-     <input id='note-octave' />
+     <input id='note-octave' type='number'/>
      <select id='note-duration'>
       <option value='w'>Semibreve</option>
       <option value='h'>Minim</option>

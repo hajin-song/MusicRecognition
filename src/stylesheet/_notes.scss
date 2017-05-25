@@ -1,4 +1,10 @@
 .notes{
+ input[type="number"]{
+  width: 50px;
+ }
+ .btn{
+  width: 100px;
+ }
  &__add{
   display: flex;
   justify-content: space-around;
@@ -9,5 +15,10 @@
   justify-content: space-around;
   align-items: center;
   margin: 5px 0;
+ }
+ &__annotate{
+  button{
+    margin: 10px 0;
+  }
  }
 }

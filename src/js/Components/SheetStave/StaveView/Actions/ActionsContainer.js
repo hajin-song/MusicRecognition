@@ -19,17 +19,25 @@ const mapDispatchToProps =(dispatch) => {
   },
   setAsBarNote: () => {
    dispatch({ 'type': SheetActions.GROUP_AS_BAR});
+  },
+  addArticulation: (symbol) => {
+   dispatch({ 'type': SheetActions.ADD_ARTICULATION, 'symbol': symbol });
   }
  });
 }
 
-const ActionsContainer = ({ addNewNote, setAsBarNote }) => (
+const ActionsContainer = ({ addNewNote, setAsBarNote, addArticulation }) => (
  <div className='row notes'>
-  <NewNote addNewNote={addNewNote} />
-  <div className='notes__annotate'>
-   <button onClick={setAsBarNote} className="btn btn-primary">Set As Bar Notes</button>
+  <div className='col-xs-3 notes__annotate'>
+   <button onClick={setAsBarNote} className="btn btn-primary">Bar</button>
+   <button className="btn btn-primary">Slur</button>
+   <button onClick={()=>{ addArticulation('a@a');}} className="btn btn-primary">Fermata</button>
+   <button onClick={()=>{ addArticulation('a.');}} className="btn btn-primary">Staccato</button>
   </div>
-  <NoteList />
+  <div className='col-xs-9'>
+   <NewNote addNewNote={addNewNote} />
+   <NoteList />
+  </div>
  </div>
 );
 

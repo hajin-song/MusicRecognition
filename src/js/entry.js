@@ -58,7 +58,7 @@ $(document).ready(()=>{
   store.dispatch({
    type: SessionActions.INIT_SESSION,
    uniquePath: data.uniqueString
-  })
+  });
 
   console.log(store.getState().sheet);
 

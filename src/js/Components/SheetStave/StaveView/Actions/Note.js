@@ -23,14 +23,7 @@ class Note extends React.Component{
   $('#note-pitch-' + this.props.note.id +
    ',#note-octave-' + this.props.note.id +
    ',#note-duration-' + this.props.note.id).on('change', () => {
-   let note = {
-    'id': this.props.note.id,
-    'pitch': $('#note-pitch-' + this.props.note.id).val(),
-    'octave': $('#note-octave-' + this.props.note.id).val(),
-    'duration': $('#note-duration-' + this.props.note.id).val(),
-    'x': this.props.note.x
-   }
-   this.props.editNote(note);
+   this.props.editNote(this.props.note.id);
   });
  }
  componentDidUpdate(prevProps, prevState){
@@ -53,7 +46,7 @@ class Note extends React.Component{
      <option value='g'>G</option>
      <option value='r'>Rest</option>
     </select>
-    <input id={'note-octave-'+this.props.note.id} />
+    <input id={'note-octave-'+this.props.note.id} type='number' />
     <select id={'note-duration-'+this.props.note.id}>
      <option value='w'>Semibreve</option>
      <option value='h'>Minim</option>
