@@ -2,14 +2,15 @@
 * Sheet.js
 * Sheet Reducer
 * Author: Ha Jin Song
-* Last Modified: 22-May-2017
+* Last Modified: 25-May-2017
 */
 import SheetActions from 'omrActions/Sheet';
 
 /**
-* Handles Note Click on the Stave view
+* handleNoteClick - Handles Note Click on the Stave view
 * @param {Number} noteID - ID of the note being clicked
 * @param {Array.<Number>} list - List of note IDs previously selected
+* @return {Array.<Number>} - List of note IDs currently selected
 * @description Adds the note ID to the list if it does not exists already
 */
 function handleNoteClick(noteID, list){
@@ -21,13 +22,14 @@ function handleNoteClick(noteID, list){
 }
 
 /**
-* Handles Stave Click on the main sheet view
-* @param {Object} stave - The stave being clicked
-* @param {Array.<Object>} list - List of the Stave Groups previously selected
-* @description Adds the stave to the list if it does not exists already
-*/
+ * handleStaveClick - Handles Stave Click on the main sheet view
+ * @param {Object} stave - The stave being clicked
+ * @param {Array.<Object>} list - List of the Stave Groups previously selected
+ * @return {Array.<Object>} - List of the Stave Groups currently selected
+ * @description Adds the stave to the list if it does not exists already
+ */
 function handleStaveClick(stave, list){
- let result = list.slice(0);
+ let result = $.arrayCopy(list);
  let staveIndex = $.objectIndex(stave, list);
  if(staveIndex == -1){ result.push(stave); }
  else{ result.splice(staveIndex , 1); }
@@ -35,13 +37,16 @@ function handleStaveClick(stave, list){
 }
 
 /**
-* Handle section merging
+* handleStaveSectionMerge - Handle section merging
 * @param {Array.<Object>} staveList - Selected Stave Sections
 * @param {Array.<Object>} currentStaveGroup - Currently set Stave Groups
+* @return {Array} - Merged Stave list and updated currentStaveGroup
 */
 function handleStaveSectionMerge(staveList, currentStaveGroup){
  let y0 = staveList[0].stave.y0;
  let y1 = staveList[1].stave.y1;
+
+ // Check if it is a valid merging action
  for(var staveIndex = 0 ; staveIndex < staveList.length ; staveIndex++){
   if(y0 != staveList[staveIndex].stave.y0 || y1 != staveList[staveIndex].stave.y1){
    console.log('Cannot merge section that does not have belong in same stave row');
@@ -49,27 +54,41 @@ function handleStaveSectionMerge(staveList, currentStaveGroup){
   }
  }
 
+ // Get the stave containing the sections being merged
  let targetStave = currentStaveGroup.filter( (stave) => {
   return stave.y0 == y0 && stave.y1 == y1;
  })[0];
 
+ // Store the index of the stave in order to update it later
  let targetIndex = $.objectIndex(targetStave, currentStaveGroup);
+
+ // find the first and last x value of the new section
  var mergers = staveList.reduce( (cur, current) => {
   return cur.concat(current.section)
- }, []).sort((a,b) => { return a- b; });
+ }, []).sort((a,b) => { return a - b; });
 
+ // Create new section - collect all x values that lies within the new section
  let newSections = targetStave.sections.filter( (section) => {
   return section <= mergers[0] || mergers[mergers.length - 1] <= section
  });
 
-
+ // Create nwe section and assign to the stave
  let newStave = Object.assign( {}, targetStave, { sections: newSections });
- var newStaveGroup = currentStaveGroup.slice(0);
+ var newStaveGroup = $.arrayCopy(currentStaveGroup);
  newStaveGroup[targetIndex] = newStave;
 
  return [newStaveGroup, newStave];
 }
 
+/**
+ * createNote - Create a new object
+ *
+ * @param  {String} pitchID    DOM Id
+ * @param  {String} octaveID   Dom Id
+ * @param  {String} durationID Dom Id
+ * @param  {Object} note       Note object - empty if new
+ * @return {Object}              New note object
+ */
 function createNote(pitchID, octaveID, durationID, note){
  let pitch = $('#' + pitchID).val();
  let octave = $('#' + octaveID).val();
@@ -78,19 +97,16 @@ function createNote(pitchID, octaveID, durationID, note){
  var newNote;
 
  if(pitch === 'r'){
-  if(duration === 'w'){ duration = 1; }
-  else if(duration === 'h'){ duration = 2; }
-  else if(duration === 'q'){ duration = 4; }
-  newNote = { 'pitch': 'b', 'octave': '4', 'duration': duration + 'r' };
+  newNote = { 'pitch': 'b', 'octave': '4', 'duration': duration, 'type': 'r', bar: -1};
  }else{
-  newNote = {'pitch': pitch, 'octave': octave, 'duration': duration };
+  newNote = {'pitch': pitch, 'octave': octave, 'duration': duration, 'type': 'n', bar: -1 };
  }
 
  return Object.assign( {}, note, newNote);
 }
 
 /**
-* Adds a new note to the section
+* addNoteToSection = Adds a new note to the section
 * @param {Object} currentStave - Current Stave Section
 * @param {Array.<Object>} staveGroup - Currently set Stave Groups
 * @return {Object} new stave group and current stave Object state
@@ -145,9 +161,13 @@ function editNoteFromSection(noteID, currentStave, staveGroup){
 function removeNoteFromSection(noteID, currentStave, staveGroup){
  let staveIndex = $.objectIndex(currentStave.stave, staveGroup);
  var newStaveGroup = $.arrayCopy(staveGroup);
-
  var newStave = $.objectCopy(currentStave);
+
+ // remove target note and set new IDs to remaining notes
  newStave.stave.notes.splice(noteID, 1);
+ newStave.stave.notes.map( (note, index) => {
+  note.id = index;
+ });
  newStaveGroup[staveIndex] = newStave.stave;
  return { staveGroup: newStaveGroup, currentStave: newStave };
 }
@@ -168,9 +188,14 @@ function addArticulation(symbol, clickedNotes, currentStave, staveGroup){
  return { staveGroup: newStaveGroup, currentStave: newStave };
 }
 
-
 /**
-*/
+ * markAsBarNote - set currently selected notes ar bar group
+ *
+ * @param  {Array.number} clickedNotes IDs of the selected notes
+ * @param {Object} currentStave - Current Stave selected
+ * @param {Array.<Object>} staveGroup - Currently set Stave Groups
+ * @return {Object} new stave group and current stave Object state
+ */
 function markAsBarNote(clickedNotes, currentStave, staveGroup){
  let first = clickedNotes[0];
  let last = clickedNotes[clickedNotes.length - 1];
@@ -179,16 +204,29 @@ function markAsBarNote(clickedNotes, currentStave, staveGroup){
  var newStaveGroup = $.arrayCopy(staveGroup);
 
  var newStave = $.objectCopy(currentStave);
- for(var i = first ; i <= last ; i++){
-  if(newStave.stave.notes[i]['duration'] != 'w' && newStave.stave.notes[i]['duration'] != 'h' && newStave.stave.notes[i]['duration'] != 'q'){
-   newStave.stave.notes[i]["bar"] = true;
-  }
-  else{
-   alert("bad!");
+
+ newStave.stave.notes[first].bar = 0;
+ newStave.stave.notes[last].bar = 1;
+
+ // Check if it is valid, if not revert the changes
+ if(first != last){
+  for(var i = first ; i <= last ; i++){
+   let note = newStave.stave.notes[i]
+   if(note.duration == 'w' || note.duration == 'h' || note.duration == 'q'){
+    alert("Cannot group non-quaver as bar note!");
     newStave = $.objectCopy(currentStave);
     break;
+   }else if(note.bar >= 0){
+    alert("Cannot allocate one note to multiple bar group!!");
+    newStave = $.objectCopy(currentStave);
+    break;
+   }
   }
+ }else{
+  newStave = $.objectCopy(currentStave);
+  alert("Cannot group single note at bar note!");
  }
+
  newStaveGroup[staveIndex] = newStave.stave;
 
  return { staveGroup: newStaveGroup, currentStave: newStave };
@@ -246,7 +284,6 @@ const sheetReducer = (state = initialState, action) => {
   case SheetActions.NOTE_CLICKED_CONTROL:
    return Object.assign( {}, state, { clickedNotes: handleNoteClick(action.noteID, state.clickedNotes )});
   case SheetActions.GROUP_AS_BAR:
-  console.log("BAR");
    return Object.assign( {}, state, markAsBarNote(state.clickedNotes, state.currentStave, state.staveGroup));
   case SheetActions.ADD_ARTICULATION:
    return Object.assign( {}, state, addArticulation(action.symbol, state.clickedNotes, state.currentStave, state.staveGroup));

@@ -1,11 +1,29 @@
+/**
+ * VexFlowCanvasTool
+ * @author - Ha Jin Song
+ * Last Modified - 25-May-2017
+ * @description - Canvas Component containing Vex Flow entities
+ */
+
+
 import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
 
+import {
+ getNoteDuration,
+ fillRest,
+ generateNotes,
+ markRemainders,
+ groupBeams
+} from './VexFlowCanvasTool';
+
 import Vex from 'vexflow';
 const VF = Vex.Flow
+
 class VexFlowCanvas extends React.Component{
  componentDidUpdate(prevProps, prevState){
+  // Set up canvas
   let left = this.props.stave.section[0];
   let width = (this.props.stave.section[1] - left) * 2;
   let top = this.props.stave.stave.trueY0;
@@ -20,59 +38,60 @@ class VexFlowCanvas extends React.Component{
 
   currentActionContext.canvas.height = height;
   currentActionContext.canvas.width = width;
+  // Draw Vex Flow Stave
   this.__drawNotes(current, height, width);
  }
 
  __drawNotes(current, height, width){
   var renderer = new VF.Renderer(current, VF.Renderer.Backends.CANVAS);
-  renderer.resize(width, height);
+  renderer.resize(width*2, height);
   var context = renderer.getContext();
   context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
-  var stave = new VF.Stave(0, 0, width);
+  var stave = new VF.Stave(0, 0, width*2);
+  stave.addTimeSignature("4/4");
   stave.setContext(context).draw();
 
+
+  var remainingTicks = 4;
+
+  // Order notes so processing is left to right
   let notes = this.props.stave.stave.notes.sort( (a, b) => {
    return a.x > b.x;
   }).filter( (section) => {
-   return this.props.stave.section[0] <= section.x && section.x <= this.props.stave.section[1];
+   let currentSection = this.props.stave.section;
+   return currentSection[0] <= section.x && section.x <= currentSection[1];
   });
 
-  var beams = [];
-  var collecting = false;
-  let notesVex = notes.map( (note, index) => {
-   console.log('xo', note);
-   if(note.bar && !collecting){
-    collecting = true;
-    beams.push(index);
-   }else if(!note.bar && collecting){
-    collecting = false;
-    beams.push(index - 1);
-   }else if(index == notes.length - 1 && collecting){
-    collecting = false;
-    beams.push(index);
-   }
-   var noteSymbol = new VF.StaveNote({
-    clef: "treble",
-    keys: [note.pitch + "/" + note.octave],
-    duration: note.duration,
-    auto_stem: true
-   });
-   note.articulations.map( (articulation) => {
-    noteSymbol = noteSymbol.addArticulation(0, new VF.Articulation(articulation).setPosition(3));
-   });
-   return noteSymbol;
-  });
+  // Vex Flow notes generated up to tickable count
+  var result = generateNotes(notes, remainingTicks);
+  var vexNotes = result[2];
+  var noteIndex = result[0];
+  remainingTicks = result[1];
 
-  var beamVex = [];
+  // Beams
+  var beams = groupBeams(notes, noteIndex);
+  var vexBeams = []
   while(beams.length >= 2){
-   var test = notesVex.slice(beams[0], beams[1] - beams[0] + 1);
-   beams.splice(0, 2);
-   var beam = new VF.Beam(test);
-   beam.setContext(context).draw();
+   var start = beams[0];
+   var end = beams[1];
+   beams.splice(0,2);
+   vexBeams.push(new VF.Beam(vexNotes.slice(start, end+1)));
   }
 
-  console.log(new VF.TextDynamics({ text: 'fff', duration: '4'}));
-  VF.Formatter.FormatAndDraw(context, stave, [].concat.apply([], notesVex));
+  markRemainders(notes, noteIndex);
+
+  // Fill up rests;
+  var rests = fillRest(remainingTicks);
+  rests = rests.map( (rest) => {
+   return new VF.StaveNote({keys: ["b/4"], duration: rest });
+  })
+
+  // Combine notes with fill up rests
+  vexNotes = vexNotes.concat(rests);
+
+  // Draww
+  Vex.Flow.Formatter.FormatAndDraw(context, stave, vexNotes);
+  vexBeams.map( (vexBeam) => { vexBeam.setContext(context).draw(); });
  }
 
  render() {

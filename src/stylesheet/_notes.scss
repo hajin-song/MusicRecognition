@@ -22,3 +22,10 @@
   }
  }
 }
+
+.note{
+ margin: 5px 0;
+ &--illegal{
+  border: 1px solid red;
+ }
+}

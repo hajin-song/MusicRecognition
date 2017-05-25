@@ -110,5 +110,5 @@ app.post('/detect', function(req,res){
 });
 
 app.listen(process.env.PORT || 3000, function() {
- console.log("Laucnhing application... listening on port 8888")
+ console.log("Laucnhing application... listening on port 3000")
 });

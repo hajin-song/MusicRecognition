@@ -16,11 +16,12 @@
 
 .stave__container{
  margin: 20px 0;
- overflow-x: auto;
  position: relative;
+ width:100%;
 }
 .stave__container--action{
  canvas:first-child{
+  width: 100%;
   position: absolute;
  }
  canvas:last-child{
