@@ -2,7 +2,7 @@ import React from 'react';
 import StaveMode from 'omrComponents/SheetStave/Container';
 import CropMode from 'omrComponents/SheetCrop/Container';
 import UnstavedMode from 'omrComponents/SheetUnstaved/Container';
-
+import SheetExport from 'omrComponents/SheetExport/Container';
 
 class App extends React.Component{
  render() {
@@ -11,6 +11,7 @@ class App extends React.Component{
      <StaveMode />
      <CropMode />
      <UnstavedMode />
+     <SheetExport />
     </div>
    )
  }

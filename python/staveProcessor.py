@@ -75,17 +75,20 @@ def __findSectionDividers(img, staves):
     By definition, a separator is a black line striking through the stave row
     vertically.
     Since note detections are not done at this stage, users can manually merge
-    separators at Frontend
+    separators at Front end
     """
     h, w = img.shape
 
+    prev = -1
     for stave in staves:
         y0 = stave.y0
         y1 = stave.y1
         for x in range(0, w):
             if all(img[y0:y1, x:x+1] <= 200) and img[y0:y1, x:x+1][0] <= 200:
-                img[y0:y1, x:x+1] = 255
-                stave.sections.append(x)
+                if prev == -1 or abs(x-prev) > 80:
+                    img[y0:y1, x:x+1] = 255
+                    stave.sections.append(x)
+                    prev = x
 
 def cropStaves():
     # sessionId = Unique string for user's session

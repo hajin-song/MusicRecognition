@@ -5,6 +5,7 @@
 * Last Modified: 25-May-2017
 */
 import SheetActions from 'omrActions/Sheet';
+import {sortNotes} from 'omrComponents/Common/Tool/VexFlowCanvasTool';
 
 /**
 * handleNoteClick - Handles Note Click on the Stave view
@@ -129,7 +130,7 @@ function addNoteToSection(currentStave, staveGroup){
 
 
  var newStave = $.objectCopy(currentStave);
- newStave.stave.notes = notes;
+ newStave.stave.notes = sortNotes(notes);
  newStaveGroup[staveIndex] = newStave.stave;
 
  return { staveGroup: newStaveGroup, currentStave: newStave };
@@ -147,7 +148,10 @@ function editNoteFromSection(noteID, currentStave, staveGroup){
  var newStaveGroup = $.arrayCopy(staveGroup);
 
  var newStave = $.objectCopy(currentStave);
+ newStave.stave.notes = sortNotes(newStave.stave.notes);
  var newNote = createNote('note-pitch-' + noteID, 'note-octave-' + noteID, 'note-duration-'+noteID, newStave.stave.notes[noteID]);
+
+
  newStave.stave.notes[noteID] = newNote;
  newStaveGroup[staveIndex] = newStave.stave;
  return { staveGroup: newStaveGroup, currentStave: newStave };
@@ -196,6 +200,7 @@ function removeNoteFromSection(noteID, currentStave, staveGroup){
  }
 
  // remove target note and set new IDs to remaining notes
+ newStave.stave.notes = sortNotes(newStave.stave.notes);
  newStave.stave.notes.splice(noteID, 1);
  newStave.stave.notes.map( (note, index) => { note.id = index; });
  newStaveGroup[staveIndex] = newStave.stave;
@@ -304,6 +309,27 @@ function markAsSlur(clickedNotes, currentStave, staveGroup){
  return { staveGroup: newStaveGroup, currentStave: newStave, clickedNotes: [] };
 }
 
+function transpose(staveGroup, toneValue){
+ var newStaveGroup = $.arrayCopy(staveGroup);
+ let pitches = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
+ console.log('=========================');
+ console.log(newStaveGroup);
+ newStaveGroup.map( (staveGroup) => {
+  staveGroup.notes.map( (note) => {
+   let newTone = pitches.indexOf(note.pitch) + toneValue;
+   let octaveChange = Math.floor(newTone / 7);
+   console.log(octaveChange, newTone, toneValue,  pitches[newTone % 7], note.pitch, note.octave);
+   if(toneValue < 0) { octaveChange = octaveChange * -1; }
+   let newPitch = pitches[newTone % 7];
+   note.pitch = newPitch;
+   note.octave = (parseInt(note.octave) + octaveChange).toString();
+  });
+ });
+
+ console.log('=========================');
+ console.log(staveGroup, newStaveGroup);
+ return newStaveGroup;
+}
 
 function processNote(staveGroup){
  let pitches = ['e', 'f', 'g', 'a', 'b', 'c', 'd']
@@ -361,6 +387,9 @@ const sheetReducer = (state = initialState, action) => {
    return Object.assign( {}, state, markAsSlur(state.clickedNotes, state.currentStave, state.staveGroup));
   case SheetActions.ADD_ARTICULATION:
    return Object.assign( {}, state, addArticulation(action.symbol, state.clickedNotes, state.currentStave, state.staveGroup));
+  case SheetActions.TRANSPOSE:
+   console.log(action.tone);
+   return Object.assign( {}, state, { staveGroup: transpose(state.staveGroup, action.tone)});
   default:
    return state;
  }

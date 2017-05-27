@@ -8,6 +8,13 @@
 import Vex from 'vexflow';
 const VF = Vex.Flow;
 
+function sortNotes(noteList){
+ return noteList.sort( (a, b) => {
+  if(a.id == b.id){ return a.x - b.x; }
+  return a.id - b.id;
+ })
+}
+
 /**
  * getNoteDuration - Get note's duration in numeric value
  *
@@ -73,7 +80,6 @@ function generateNotes(notes, ticks){
   let noteDuration =  getNoteDuration(curNote);
   if (ticks - noteDuration >= 0){
    __markAsLegal(noteIndex);
-   console.log(curNote);
    if(curNote.type === 'r'){
     vexNotes.push(new VF.StaveNote({
      keys:['b/4'],
@@ -146,8 +152,9 @@ function groupSlurs(notes, legalIndex){
  * @param  {Number}       legalIndex Last note that got written up in the vex stave
  */
 function markRemainders(notes, legalIndex){
+
  for(legalIndex ; legalIndex < notes.length ; legalIndex++){
-  __markAsIllegal(legalIndex);
+  __markAsIllegal(notes[0].id + legalIndex);
  }
 }
 
@@ -167,4 +174,5 @@ export {
  markRemainders,
  groupBeams,
  groupSlurs,
+ sortNotes,
 };

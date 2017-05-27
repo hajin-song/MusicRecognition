@@ -18,15 +18,17 @@ const mapDispatchToProps =(dispatch) => {
   mergeStave: () => { dispatch({ type: SheetActions.MERGE_STAVE_SECTIONS }); },
   toEditUnstaved: () => { $('#unstaved').css('left', '0'); },
   toDetect: () => { $('#crop').css('left', '0'); },
+  toExport: () => { $('#export').css('left', '0'); },
  });
 }
 
-const ActionsContainer = ({ mergeStave, toEditUnstaved, toDetect })=> {
+const ActionsContainer = ({ mergeStave, toEditUnstaved, toDetect, toExport })=> {
  return(
   <Actions
    mergeStave={mergeStave}
    toDetect={toDetect}
    toEditUnstaved={toEditUnstaved}
+   toExport={toExport}
   />
  );
 }

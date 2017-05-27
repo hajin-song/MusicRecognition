@@ -17,7 +17,7 @@ import {
  markRemainders,
  groupBeams,
  groupSlurs
-} from './VexFlowCanvasTool';
+} from 'omrComponents/Common/Tool/VexFlowCanvasTool';
 
 import Vex from 'vexflow';
 const VF = Vex.Flow
@@ -31,35 +31,29 @@ class VexFlowCanvas extends React.Component{
   let height = (this.props.stave.stave.trueY1 - top) * 2;
 
   let current = document.getElementById(this.props.canvasID);
-  let currentAction = document.getElementById(this.props.canvasID + '-action');
   let currentContext = current.getContext('2d');
-  let currentActionContext = currentAction.getContext('2d');
   currentContext.canvas.height = height;
   currentContext.canvas.width = width;
 
-  currentActionContext.canvas.height = height;
-  currentActionContext.canvas.width = width;
   // Draw Vex Flow Stave
   this.__drawNotes(current, height, width);
  }
 
  __drawNotes(current, height, width){
   var renderer = new VF.Renderer(current, VF.Renderer.Backends.CANVAS);
-  renderer.resize(width*2, height);
+  renderer.resize(width * 2, height);
   var context = renderer.getContext();
   context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
-  var stave = new VF.Stave(0, 0, width*2);
+  var stave = new VF.Stave(0, 0, width * 2 - 5);
   stave.addTimeSignature("4/4");
   stave.setContext(context).draw();
 
   var remainingTicks = 4;
 
   // Order notes so processing is left to right
-  let notes = this.props.stave.stave.notes.sort( (a, b) => {
-   return a.x > b.x;
-  }).filter( (section) => {
+  let notes = this.props.stave.stave.notes.filter( (section) => {
    let currentSection = this.props.stave.section;
-   return currentSection[0] <= section.x && section.x <= currentSection[1];
+   return currentSection[0] < section.x && section.x <= currentSection[1];
   });
 
   // Vex Flow notes generated up to tickable count
@@ -89,7 +83,6 @@ class VexFlowCanvas extends React.Component{
     vexNotes[end]
    ));
   }
-  console.log(vexSlurs);
 
   markRemainders(notes, noteIndex);
 
@@ -112,7 +105,6 @@ class VexFlowCanvas extends React.Component{
   return (
    <div className="stave__container stave__container--action">
     <canvas id={this.props.canvasID}></canvas>
-    <canvas id={this.props.canvasID + '-action'}></canvas>
    </div>
   )
  }

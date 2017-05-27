@@ -30,10 +30,8 @@ const mapDispatchToProps =(dispatch) => {
 const NoteList = ({ stave, clickedNotes, removeNote, editNote, controlClickNote }) => (
  <div className='notes__list'>
   {
-   stave.stave.notes.sort( (a, b) => {
-    return a.x > b.x;
-   }).filter( (section) => {
-    return stave.section[0] <= section.x && section.x <= stave.section[1];
+   stave.stave.notes.filter( (section) => {
+    return stave.section[0] < section.x && section.x <= stave.section[1];
    }).map( (note) => {
     return (<Note key={note.id} note={note} clickedNotes={clickedNotes} removeNote={removeNote} editNote={editNote} controlClickNote={controlClickNote}/>);
    })
