@@ -13,6 +13,7 @@ module.exports = {
     'omrComponents': path.resolve(__dirname, 'src/js/Components'),
     'omrActions': path.resolve(__dirname, 'src/js/Actions'),
     'omrReducers': path.resolve(__dirname, 'src/js/Reducers'),
+    'omrTools': path.resolve(__dirname, 'src/js/Tools'),
    }
   },
   module: {

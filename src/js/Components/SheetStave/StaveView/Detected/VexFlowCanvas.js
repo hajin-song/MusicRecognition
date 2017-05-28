@@ -17,7 +17,7 @@ import {
  markRemainders,
  groupBeams,
  groupSlurs
-} from 'omrComponents/Common/Tool/VexFlowCanvasTool';
+} from 'omrTools/VexFlowCanvasTool';
 
 import Vex from 'vexflow';
 const VF = Vex.Flow

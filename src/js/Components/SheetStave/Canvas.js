@@ -2,6 +2,10 @@ import React from 'react';
 
 import { PropTypes } from 'prop-types';
 
+import {
+ getMousePos
+} from 'omrTools/Canvas';
+
 class Canvas extends React.Component{
  componentDidMount(){
   $('#' + this.props.canvasID + '-actions').on('click', (e) => {
@@ -11,7 +15,7 @@ class Canvas extends React.Component{
   });
 
   $('#' + this.props.canvasID + '-actions').on('mousemove', (e) => {
-   let coord = this.__getMousePos(e);
+   let coord = getMousePos(this.props.canvasID, e);
    let stave = this.__getStave(coord.x, coord.y);
 
    let curAreaIndex = $.objectIndex(this.area, this.props.clickedStaves);
@@ -54,14 +58,6 @@ class Canvas extends React.Component{
    context.drawImage(img, 0, 0);
   }
   img.src = this.props.sheet;
- }
-
- __getMousePos(evt) {
-    var rect = document.getElementById(this.props.canvasID).getBoundingClientRect();
-    return {
-      x: evt.clientX - rect.left,
-      y: evt.clientY - rect.top
-    };
  }
 
  __getStave(x, y){

@@ -2,15 +2,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
 
+import {
+ getMousePos,
+ drawRectangle,
+} from 'omrTools/Canvas';
+
 class Canvas extends React.Component{
  componentDidMount(){
   $('#' + this.props.canvasID).on('mousemove', (e) => {
    if(e.ctrlKey){
-    var canvas = document.getElementById(this.props.canvasID);
-    var context = canvas.getContext('2d');
-    let coord = this.__getMousePos(e);
-    context.fillStyle = "#fff";
-    context.fillRect(coord.x,coord.y,5,5);
+    let coord = getMousePos(this.props.canvasID, e);
+    drawRectangle(this.props.canvasID, coord.x, coord.y , 5, 5);
    }
   });
  }
@@ -27,14 +29,6 @@ class Canvas extends React.Component{
   img.src = this.props.sheet
  }
 
- __getMousePos(evt) {
-    var rect = document.getElementById(this.props.canvasID).getBoundingClientRect();
-    return {
-      x: evt.clientX - rect.left,
-      y: evt.clientY - rect.top
-    };
- }
-
  render() {
   return (
    <div className="image__container">
@@ -45,7 +39,7 @@ class Canvas extends React.Component{
 }
 
 Canvas.propTypes = {
- sheet: PropTypes.object,
+ sheet: PropTypes.string,
 }
 
 export default Canvas;

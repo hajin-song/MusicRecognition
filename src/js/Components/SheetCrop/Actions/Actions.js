@@ -8,12 +8,9 @@ const Actions = ({
  cropper, crop_normal, crop_half, crop_whole, crop_flat, crop_sharp,
  normal, half, whole, flat, sharp, detect, toEdit,
 }) => {
- console.log(cropper);
  return(
   <div id='symbols' className='col-xs-3 content__actions content__actions--sheet'>
    <Symbol name="normal" image={normal.image} onClick={() => {
-    console.log(cropper);
-    console.log(normal);
     crop_normal(cropper);
    }} />
    <Symbol name="half" image={half.image} onClick={ () => {
@@ -31,7 +28,6 @@ const Actions = ({
      flat: flat.coordinates,
      sharp: sharp.coordinates,
     };
-    console.log(cropper);
     detect(data);
    }}/>
    <Action className="action" text="To Edit" onClick={toEdit} />

@@ -5,7 +5,7 @@
 * Last Modified: 25-May-2017
 */
 import SheetActions from 'omrActions/Sheet';
-import {sortNotes} from 'omrComponents/Common/Tool/VexFlowCanvasTool';
+import {sortNotes} from 'omrTools/VexFlowCanvasTool';
 
 /**
 * handleNoteClick - Handles Note Click on the Stave view
@@ -388,7 +388,6 @@ const sheetReducer = (state = initialState, action) => {
   case SheetActions.ADD_ARTICULATION:
    return Object.assign( {}, state, addArticulation(action.symbol, state.clickedNotes, state.currentStave, state.staveGroup));
   case SheetActions.TRANSPOSE:
-   console.log(action.tone);
    return Object.assign( {}, state, { staveGroup: transpose(state.staveGroup, action.tone)});
   default:
    return state;

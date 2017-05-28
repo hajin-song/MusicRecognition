@@ -15,9 +15,7 @@ const AppReducer = (state = initialState, action) => {
   case SessionActions.UNSTAVED_SHEET:
    return Object.assign( {}, state, { unstaved: action.data});
   case SessionActions.EDIT_UNSTAVED_SHEET:
-   $.post('/editImage', { img: action.data, name: 'sheet_without_staves.png'}, (res) => {
-    console.log(res);
-   });
+   $.post('/editImage', { img: action.data, name: 'sheet_without_staves.png'}, (res) => { });
    return state;
   default:
    return state;

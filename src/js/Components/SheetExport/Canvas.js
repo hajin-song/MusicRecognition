@@ -5,7 +5,6 @@
  * @description - Canvas Component for Export phase
  */
 
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
@@ -17,7 +16,13 @@ import {
  markRemainders,
  groupBeams,
  groupSlurs
-} from 'omrComponents/Common/Tool/VexFlowCanvasTool';
+} from 'omrTools/VexFlowCanvasTool';
+
+import {
+ getMousePos
+} from 'omrTools/Canvas';
+
+import Annotator from 'omrComponents/SheetExport/Actions/AnnotatorContainer';
 
 import Vex from 'vexflow';
 const VF = Vex.Flow
@@ -34,9 +39,12 @@ class VexFlowCanvas extends React.Component{
   var canvasWidth = $(this.current).width();
   var canvasHeight = $(this.current).height();
 
-  this.renderer = new VF.Renderer(this.current, VF.Renderer.Backends.CANVAS);
+  this.renderer = new VF.Renderer(this.current, VF.Renderer.Backends.SVG);
   this.renderer.resize(canvasWidth, canvasHeight);
-  this.context =this.renderer.getContext();
+  this.rendererAction = new VF.Renderer(this.currentAction, VF.Renderer.Backends.SVG);
+  this.rendererAction.resize(canvasWidth, canvasHeight);
+
+  this.context = this.renderer.getContext();
   this.context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
 
   var staveHeight = 0;
@@ -58,7 +66,6 @@ class VexFlowCanvas extends React.Component{
    staveHeight += 100;
   });
 
-  console.log(this.notes);
   let currentContext = this.current.getContext('2d');
   let currentActionContext = this.currentAction.getContext('2d');
 
@@ -108,31 +115,21 @@ class VexFlowCanvas extends React.Component{
    })
 
    this.vexNotes[index] = this.vexNotes[index].concat(rests);
-   console.log(curNotes, stave);
+
    // Draww
    Vex.Flow.Formatter.FormatAndDraw(this.context, stave, this.vexNotes[index]);
    vexBeams.map( (vexBeam) => { vexBeam.setContext(this.context).draw(); });
    vexSlurs.map( (slur) => { slur.setContext(this.context).draw(); });
   });;
-  //this.__drawNotes(current, height, width);
  }
 
- __drawNotes(current, height, width){
-  var renderer = new VF.Renderer(current, VF.Renderer.Backends.CANVAS);
-  renderer.resize(width*2, height);
-  var context = renderer.getContext();
-  context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
-  var stave = new VF.Stave(0, 0, width*2);
-  stave.addTimeSignature("4/4");
-  stave.setContext(context).draw();
-
- }
 
  render() {
   return (
    <div className="export__container">
     <canvas id={this.props.canvasID}></canvas>
     <canvas id={this.props.canvasID + '-action'}></canvas>
+    <Annotator/>
    </div>
   )
  }
