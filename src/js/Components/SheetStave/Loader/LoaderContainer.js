@@ -27,9 +27,11 @@ function getImageURL(src, dispatch, actionType){
 
 const mapStateToProps = (state) => {
  return {
-  uuid: state.session.uniquePath,
+  uuid: state.session.unique_path,
  }
 }
+
+
 
 const mapDispatchToProps = (dispatch) => {
  return ({
@@ -40,7 +42,7 @@ const mapDispatchToProps = (dispatch) => {
       $.get("/session", (data) => {
        getImageURL(uuid + "/original.png", dispatch, SessionActions.ORIGINAL_SHEET);
        getImageURL(uuid + "/sheet_without_staves.png", dispatch, SessionActions.UNSTAVED_SHEET);
-       dispatch({"type": SheetActions.GET_STAVE_GROUPS, "staveGroup": JSON.parse(data["staveGroup"])});
+       dispatch({"type": SheetActions.GET_STAVE_GROUPS, "stave_group": JSON.parse(data["stave_group"])});
       });
     },
     error: function(err){ console.log(err); }

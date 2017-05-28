@@ -23,41 +23,41 @@ const mapDispatchToProps = (dispatch) => {
   crop_normal: (cropper) => {
    dispatch({
     type: SymbolActions.CROP_NORMAL_NOTE,
-    cropPane: cropper.getData(),
-    cropImage: cropper.getCroppedCanvas().toDataURL('image/jpeg')
+    crop_pane: cropper.getData(),
+    crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
    });
   },
   crop_half: (cropper) => {
    dispatch({
     type: SymbolActions.CROP_HALF_NOTE,
-    cropPane: cropper.getData(),
-    cropImage: cropper.getCroppedCanvas().toDataURL('image/jpeg')
+    crop_pane: cropper.getData(),
+    crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
    });
   },
   crop_whole: (cropper) => {
    dispatch({
     type: SymbolActions.CROP_WHOLE_NOTE,
-    cropPane: cropper.getData(),
-    cropImage: cropper.getCroppedCanvas().toDataURL('image/jpeg')
+    crop_pane: cropper.getData(),
+    crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
    });
   },
   crop_flat: (cropper) => {
    dispatch({
     type: SymbolActions.CROP_FLAT,
-    cropPane: cropper.getData(),
-    cropImage: cropper.getCroppedCanvas().toDataURL('image/jpeg')
+    crop_pane: cropper.getData(),
+    crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
    });
   },
   crop_sharp: (cropper) => {
    dispatch({
     type: SymbolActions.CROP_SHARP,
-    cropPane: cropper.getData(),
-    cropImage: cropper.getCroppedCanvas().toDataURL('image/jpeg')
+    crop_pane: cropper.getData(),
+    crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
    });
   },
   detect: (data) => {
    $.post('/detect', data, (res)=>{
-    let actionUpdateStave = { "type": SheetActions.GET_STAVE_GROUPS, "staveGroup": res };
+    let actionUpdateStave = { "type": SheetActions.GET_STAVE_GROUPS, "stave_group": res };
     dispatch(actionUpdateStave);
    });
   },

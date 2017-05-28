@@ -1,33 +1,50 @@
+/**
+* Note.js
+* Component for Note Item
+* Author: Ha Jin Song
+* Last Modified: 28-May-2017
+*/
+
 import React from 'react';
-import { connect } from 'react-redux';
+
 import { PropTypes } from 'prop-types';
-
-
 
 class Note extends React.Component{
  componentDidMount(){
-  if(this.props.clickedNotes.indexOf(this.props.note.id) != -1){
-   $('#note-'+this.props.note.id).css("background-color", "red");
-  }
+  // Fill edit form fields with note
   $('#note-pitch-' + this.props.note.id).val(this.props.note.pitch);
+  $('#note-accidental-' + this.props.note.id).val(this.props.note.accidental);
   $('#note-octave-' + this.props.note.id).val(this.props.note.octave);
   $('#note-duration-' + this.props.note.id).val(this.props.note.duration);
+
+  // Mark as clicked
+  if(this.props.clicked_notes.indexOf(this.props.note.id) != -1){
+   $('#note-'+this.props.note.id).css("background-color", "red");
+  }
+
+  // Save note as being clicked
   $('#note-' + this.props.note.id).on('click', (e) => {
    if(e.ctrlKey){
     this.props.controlClickNote(this.props.note.id);
    }
   });
+
+  // remove note from section
   $('#note-remove-' + this.props.note.id).on('click', () => {
    this.props.removeNote(this.props.note.id);
   });
+
+  // Edit note
   $('#note-pitch-' + this.props.note.id +
    ',#note-octave-' + this.props.note.id +
-   ',#note-duration-' + this.props.note.id).on('change', () => {
+   ',#note-duration-' + this.props.note.id +
+   ',#note-accidental-' + this.props.note.id ).on('change', () => {
    this.props.editNote(this.props.note.id);
   });
  }
+
  componentDidUpdate(prevProps, prevState){
-  if(this.props.clickedNotes.indexOf(this.props.note.id) != -1){
+  if(this.props.clicked_notes.indexOf(this.props.note.id) != -1){
    $('#note-'+this.props.note.id).css("background-color", "red");
   }else{
    $('#note-'+this.props.note.id).css("background-color", "");
@@ -46,6 +63,12 @@ class Note extends React.Component{
      <option value='g'>G</option>
      <option value='r'>Rest</option>
     </select>
+    <select id={'note-accidental-'+this.props.note.id}>
+     <option value=''>Natural</option>
+     <option value='b'>b</option>
+     <option value='#'>#</option>
+     <option value='##'>##</option>
+    </select>
     <input id={'note-octave-'+this.props.note.id} type='number' />
     <select id={'note-duration-'+this.props.note.id}>
      <option value='w'>Semibreve</option>
@@ -62,7 +85,7 @@ class Note extends React.Component{
 }
 
 Note.propTypes = {
- clickedNotes: PropTypes.array,
+ clicked_notes: PropTypes.array,
  note: PropTypes.object,
  removeNote: PropTypes.func,
  editNote: PropTypes.func,

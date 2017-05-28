@@ -54,10 +54,10 @@ $(document).ready(()=>{
   });
 
   const store = createStore(Reducer, {});
-
+  console.log(data);
   store.dispatch({
    type: SessionActions.INIT_SESSION,
-   uniquePath: data.uniqueString
+   unique_path: data.unique_path
   });
 
   console.log(store.getState().sheet);

@@ -1,13 +1,13 @@
 /**
- * VexFlowCanvasTool
- * @author - Ha Jin Song
- * Last Modified - 25-May-2017
- * @description - Canvas Component containing Vex Flow entities
- */
+* VexFlowCanvas.js
+* Canvas Component for Stave View - Detected Image view
+* Author: Ha Jin Song
+* Last Modified: 28-May-2017
+*/
 
 
 import React from 'react';
-import { connect } from 'react-redux';
+
 import { PropTypes } from 'prop-types';
 
 import {
@@ -16,8 +16,9 @@ import {
  generateNotes,
  markRemainders,
  groupBeams,
- groupSlurs
-} from 'omrTools/VexFlowCanvasTool';
+ groupSlurs,
+ drawStaves
+} from 'omrTools/VexFlowTool';
 
 import Vex from 'vexflow';
 const VF = Vex.Flow
@@ -44,9 +45,9 @@ class VexFlowCanvas extends React.Component{
   renderer.resize(width * 2, height);
   var context = renderer.getContext();
   context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
-  var stave = new VF.Stave(0, 0, width * 2 - 5);
-  stave.addTimeSignature("4/4");
-  stave.setContext(context).draw();
+  var stave = drawStaves(context, 0, 0, width * 2 - 5, this.props.stave.stave.barAnnotation[this.props.stave.section[0]]);
+
+  console.log(this.props.stave);
 
   var remainingTicks = 4;
 

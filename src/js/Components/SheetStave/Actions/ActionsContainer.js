@@ -8,8 +8,8 @@ import Actions from 'omrComponents/SheetStave/Actions/Actions';
 const mapStateToProps = (state) => {
  return {
   sheet: state.session.original,
-  staves: state.sheet.staveGroup,
-  clickedStaves: state.sheet.clickedStaves
+  staves: state.sheet.stave_group,
+  clicked_staves: state.sheet.clicked_staves
  }
 }
 

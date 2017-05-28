@@ -1,5 +1,12 @@
+/**
+* StaticCanvas.js
+* Canvas Component for Stave View - Original Image view
+* Author: Ha Jin Song
+* Last Modified: 28-May-2017
+*/
+
 import React from 'react';
-import { connect } from 'react-redux';
+
 import { PropTypes } from 'prop-types';
 
 class Canvas extends React.Component{

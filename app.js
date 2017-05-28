@@ -11,7 +11,6 @@ var session = require('client-sessions');
 
 var app = express();
 
-
 app.use(bodyParser.urlencoded({
  extended: true
 }));
@@ -20,8 +19,8 @@ app.use(bodyParser.json());
 
 var storage = multer.diskStorage({
  destination: function(req, file, callback){
-  mkdirp('./public/' +  req.session.uniqueString);
-  callback(null, './public/' + req.session.uniqueString + "/");
+  mkdirp('./public/' +  req.session.unique_path);
+  callback(null, './public/' + req.session.unique_path + "/");
  },
  filename: function(req, file, callback){
   callback(null, "original.png");
@@ -41,7 +40,7 @@ app.use(session({
 }));
 
 app.get('/', function(req, res){
- req.session.uniqueString = uuid.v1();
+ req.session.unique_path = uuid.v1();
  res.sendFile(path.join(__dirname + '/index.html'));
 });
 
@@ -50,13 +49,13 @@ app.post('/', upload.single('musicSheet'), function(req, res, next){
    mode: 'text',
    pythonOptions: ['-u'],
    scriptPath: 'python',
-   args: [req.session.uniqueString, 'original.png']
+   args: [req.session.unique_path, 'original.png']
  };
 
  PythonShell.run('staveProcessor.py', options, function (err, results) {
    if (err) throw err;
    // results is an array consisting of messages collected during execution
-   req.session.staveGroup = "[" + results.join(',') + "]";
+   req.session.stave_group = "[" + results.join(',') + "]";
    res.send("Finished");
  });
 });
@@ -66,7 +65,7 @@ app.post('/update', function(req, res){
    mode: 'text',
    pythonOptions: ['-u'],
    scriptPath: 'python',
-   args: [req.body.data, req.session.uniqueString, req.body.target]
+   args: [req.body.data, req.session.unique_path, req.body.target]
  };
  console.log(req.body.data);
  PythonShell.run('dataUpdator.py', options, function (err, results) {
@@ -79,7 +78,7 @@ app.post('/update', function(req, res){
 
 app.post('/editImage', function(req, res){
  var base64Data = req.body.img.replace(/^data:image\/png;base64,/, "");
- fs.writeFile("public/" + req.session.uniqueString + "/" + req.body.name, base64Data, 'base64', function(err) {
+ fs.writeFile("public/" + req.session.unique_path + "/" + req.body.name, base64Data, 'base64', function(err) {
   console.log(err);
 });
  res.send("Done");
@@ -97,13 +96,13 @@ app.post('/detect', function(req,res){
    mode: 'text',
    pythonOptions: ['-u'],
    scriptPath: 'python',
-   args: [req.body.normal, req.body.half, req.body.whole, req.body.flat, req.body.sharp, req.session.uniqueString, "sheet_without_staves.png"]
+   args: [req.body.normal, req.body.half, req.body.whole, req.body.flat, req.body.sharp, req.session.unique_path, "sheet_without_staves.png"]
  };
  PythonShell.run('locateSymbols.py', options, function (err, results) {
    if (err) throw err;
    console.log('results: %j', results);
    console.log( "[" + results.join(',') + "]" );
-   req.session.staveGroup = "[" + results.join(',') + "]";
+   req.session.stave_group = "[" + results.join(',') + "]";
    // results is an array consisting of messages collected during execution
    res.send(JSON.parse("[" + results.join(',') + "]"));
  });

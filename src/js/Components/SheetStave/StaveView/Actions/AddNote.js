@@ -1,8 +1,15 @@
+/**
+* AddNote.js
+* COmponent for Action - Add New Note
+* Author: Ha Jin Song
+* Last Modified: 28-May-2017
+*/
+
 import React from 'react';
-import { connect } from 'react-redux';
+
 import { PropTypes } from 'prop-types';
 
-class Note extends React.Component{
+class AddNote extends React.Component{
  render(){
   return(
    <div className='notes__add'>
@@ -15,6 +22,12 @@ class Note extends React.Component{
       <option value='f'>F</option>
       <option value='g'>G</option>
       <option value='r'>Rest</option>
+     </select>
+     <select id='note-accidental'>
+      <option value=''>Natural</option>
+      <option value='b'>b</option>
+      <option value='#'>#</option>
+      <option value='##'>##</option>
      </select>
      <input id='note-octave' type='number'/>
      <select id='note-duration'>
@@ -31,5 +44,8 @@ class Note extends React.Component{
  }
 }
 
+AddNote.PropTypes = {
+ addNewNote: PropTypes.func,
+}
 
-export default Note;
+export default AddNote;

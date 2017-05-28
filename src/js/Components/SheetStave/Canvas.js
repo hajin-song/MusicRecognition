@@ -1,9 +1,18 @@
+/**
+* Canvas.js
+* Canvas Component for Main View
+* Author: Ha Jin Song
+* Last Modified: 28-May-2017
+*/
+
 import React from 'react';
 
 import { PropTypes } from 'prop-types';
 
 import {
- getMousePos
+ getMousePos,
+ drawRectangle,
+ removeRectangle
 } from 'omrTools/Canvas';
 
 class Canvas extends React.Component{
@@ -18,9 +27,11 @@ class Canvas extends React.Component{
    let coord = getMousePos(this.props.canvasID, e);
    let stave = this.__getStave(coord.x, coord.y);
 
-   let curAreaIndex = $.objectIndex(this.area, this.props.clickedStaves);
+   let curAreaIndex = $.objectIndex(this.area, this.props.clicked_staves);
 
-   if(typeof this.area != "undefined" && curAreaIndex == -1 && typeof stave === "undefined"){
+   if(typeof this.area != "undefined" &&
+      curAreaIndex == -1 &&
+      typeof stave === "undefined"){
     this.__removeStaveHighlight(this.area.stave, this.area.section);
    }
 
@@ -30,7 +41,9 @@ class Canvas extends React.Component{
 
     let section = this.__getStaveSection(stave, coord.x);
     var area = { stave: stave, section: section };
-    if(typeof this.area != "undefined" && curAreaIndex == -1 && this.area != area){
+    if(typeof this.area != "undefined" &&
+       curAreaIndex == -1 &&
+       this.area != area){
      this.__removeStaveHighlight(this.area.stave, this.area.section);
     }
     this.__addStaveHighlight(stave, section);
@@ -42,7 +55,7 @@ class Canvas extends React.Component{
  }
 
  componentDidUpdate(prevProps, prevState){
-  this.props.clickedStaves.map((stave) => {
+  this.props.clicked_staves.map((stave) => {
    this.__addStaveHighlight(stave.stave, stave.section);
   });
   var canvas = document.getElementById(this.props.canvasID);
@@ -63,45 +76,34 @@ class Canvas extends React.Component{
  __getStave(x, y){
   var stave = this.props.staves.filter( (stave) => {
    return stave.y0 <= y && y <= stave.y1 &&
-          stave.sections[0] <= x && x <= stave.sections[stave.sections.length - 1];
+          stave.sections[0] <= x &&
+          x <= stave.sections[stave.sections.length - 1];
   });
   return stave[0];
  }
 
  __getStaveSection(stave, x){
   var sectionsMin = stave.sections.filter ( (section) => {
-   return x >= section
+   return x >= section;
   });
   var sectionsMax = stave.sections.filter ( (section) => {
-   return x <= section
+   return x <= section;
   });
   sectionsMin.reverse();
-  return [sectionsMin[0], sectionsMax[0]]
+  return [sectionsMin[0], sectionsMax[0]];
  }
 
  __addStaveHighlight(stave, section){
-  var canvasAction = document.getElementById(this.props.canvasID + '-actions');
-  var contextAction = document.getElementById(this.props.canvasID + '-actions').getContext('2d');
-  contextAction.fillStyle="#FF0000";
-  contextAction.fillRect(
-   section[0],
-   stave.y0,
-   section[1] - section[0],
-   stave.y1 - stave.y0
-  );
-  $(canvasAction).css('cursor', 'pointer');
+  drawRectangle(this.props.canvasID + '-actions',
+                section[0], stave.y0,
+                section[1] - section[0], stave.y1 - stave.y0,
+               '#FF0000');
  }
 
  __removeStaveHighlight(stave, section){
-  var canvasAction = document.getElementById(this.props.canvasID + '-actions');
-  var contextAction = document.getElementById(this.props.canvasID + '-actions').getContext('2d');
-  contextAction.clearRect(
-   section[0],
-   stave.y0,
-   section[1] - section[0],
-   stave.y1 - stave.y0
-  );
-  $(canvasAction).css('cursor', '');
+  removeRectangle(this.props.canvasID + '-actions',
+                section[0], stave.y0,
+                section[1] - section[0], stave.y1 - stave.y0);
  }
 
  render() {

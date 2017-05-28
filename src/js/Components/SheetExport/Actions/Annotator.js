@@ -21,19 +21,24 @@ class Annotator extends React.Component{
  render(){
   return (
    <div id={this.props.containerID} className='export__annotate'>
-    <input id={this.props.inputID} />
+    <div>
+     <input id={this.props.inputID} />
 
-    <button onClick={ () => {
-     drawText('export-canvas-action',
-              $('#'+this.props.inputID).val(),
-              '10',
-              'Arial',
-              this.coord.x,
-              this.coord.y);
-    $('#'+this.props.containerID).toggle();
-    }}>
-     Annotate
-    </button>
+     <button onClick={ () => {
+      drawText('export-canvas-action',
+               $('#'+this.props.inputID).val(),
+               $('#annotator-size').val(),
+               'Arial',
+               this.coord.x,
+               this.coord.y);
+     $('#'+this.props.containerID).toggle();
+     }}>
+      Annotate
+     </button>
+    </div>
+    <div>
+     <input id='annotator-size' type='number' />
+    </div>
    </div>
   )
  }

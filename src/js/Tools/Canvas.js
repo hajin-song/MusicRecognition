@@ -6,11 +6,18 @@ function getMousePos(canvasID, evt) {
  };
 }
 
-function drawRectangle(canvasID, start, end, width, height){
+function drawRectangle(canvasID, start, end, width, height, style = '#fff'){
  var canvas = document.getElementById(canvasID);
  var context = canvas.getContext('2d');
- context.fillStyle = "#fff";
+ context.fillStyle = style;
  context.fillRect(start, end, width, height);
+}
+
+function removeRectangle(canvasID, start, end, width, height, style = '#fff'){
+ var canvas = document.getElementById(canvasID);
+ var context = canvas.getContext('2d');
+ context.fillStyle = style;
+ context.clearRect(start, end, width, height);
 }
 
 function drawText(canvasID, text, size, style, x, y){
@@ -23,5 +30,6 @@ function drawText(canvasID, text, size, style, x, y){
 export {
  getMousePos,
  drawRectangle,
+ removeRectangle,
  drawText,
 };

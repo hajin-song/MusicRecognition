@@ -8,7 +8,7 @@ import Canvas from 'omrComponents/SheetExport/Canvas';
 
 const mapStateToProps = (state) => {
  return {
-  staves: state.sheet.staveGroup
+  staves: state.sheet.stave_group
  }
 }
 

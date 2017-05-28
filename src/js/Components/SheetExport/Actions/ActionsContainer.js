@@ -22,15 +22,42 @@ const mapDispatchToProps =(dispatch) => {
      tone: parseFloat(toneValue)
     })
    }
+  },
+  download: () => {
+   var sheet = document.getElementById('export-canvas');
+   var sheetAnnotation = document.getElementById('export-canvas-action');
+   var contextSheet = sheet.getContext('2d');
+   var contextAnnoateSheet = sheetAnnotation.getContext('2d');
+
+   contextSheet.drawImage(sheetAnnotation, 0, 0);
+
+   var imgData=contextSheet.getImageData(0,0,sheet.width,sheet.height);
+   var data=imgData.data;
+   for(var i=0;i<data.length;i+=4){
+       if(data[i+3] == 0){
+           data[i]=255;
+           data[i+1]=255;
+           data[i+2]=255;
+           data[i+3]=255;
+       }
+   }
+   contextSheet.putImageData(imgData,0,0);
+
+   var dataURL = sheet.toDataURL("image/png");
+   var link = document.createElement('a');
+   link.download = "transposed.png";
+   link.href = dataURL.replace("image/png", "image/octet-stream");
+   link.click();
   }
  });
 }
 
-const ActionsContainer = ({ toEdit, transpose })=> {
+const ActionsContainer = ({ toEdit, transpose, download })=> {
  return(
   <Actions
    toEdit={toEdit}
    transpose={transpose}
+   download={download}
   />
  );
 }

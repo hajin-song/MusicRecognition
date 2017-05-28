@@ -1,3 +1,10 @@
+/**
+* Container.js
+* Container Component for Main View
+* Author: Ha Jin Song
+* Last Modified: 28-May-2017
+*/
+
 import React from 'react';
 import { PropTypes } from 'prop-types';
 

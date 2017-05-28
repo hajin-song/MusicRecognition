@@ -1,6 +1,11 @@
+/**
+* Container.js
+* Container Component for Stave View
+* Author: Ha Jin Song
+* Last Modified: 28-May-2017
+*/
+
 import React from 'react';
-import { connect } from 'react-redux';
-import { PropTypes } from 'prop-types';
 
 import SheetActions from 'omrActions/Sheet';
 

@@ -1,3 +1,10 @@
+/**
+* Sheet.js
+* Sheet Action
+* Author: Ha Jin Song
+* Last Modified: 28-May-2017
+*/
+
 const GET_STAVE_GROUPS = 'GET_STAVE_GROUPS'
 
 const STAVE_CLICKED_CONTROL = 'STAVE_CLICKED_CONTROL';
@@ -17,6 +24,9 @@ const ADD_ARTICULATION = 'ADD_ARTICULATION';
 const TRANSPOSE = 'TRANSPOSE';
 const ANNOTATE = 'ANNOTATE';
 
+const SET_REPEAT_START = 'SET_REPEAT_START';
+const SET_REPEAT_END = 'SET_REPEAT_END';
+
 export default {
  GET_STAVE_GROUPS,
  MERGE_STAVE_SECTIONS,
@@ -31,4 +41,7 @@ export default {
  ADD_ARTICULATION,
  TRANSPOSE,
  ANNOTATE,
+ SET_REPEAT_START,
+ SET_REPEAT_END,
+ 
 };

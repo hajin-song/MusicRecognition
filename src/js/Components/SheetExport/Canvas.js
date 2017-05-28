@@ -15,11 +15,13 @@ import {
  generateNotes,
  markRemainders,
  groupBeams,
- groupSlurs
-} from 'omrTools/VexFlowCanvasTool';
+ groupSlurs,
+ drawStaves,
+} from 'omrTools/VexFlowTool';
 
 import {
- getMousePos
+ getMousePos,
+ drawRectangle
 } from 'omrTools/Canvas';
 
 import Annotator from 'omrComponents/SheetExport/Actions/AnnotatorContainer';
@@ -36,26 +38,36 @@ class VexFlowCanvas extends React.Component{
   this.current = document.getElementById(this.props.canvasID);
   this.currentAction = document.getElementById(this.props.canvasID + '-action');
 
+
   var canvasWidth = $(this.current).width();
   var canvasHeight = $(this.current).height();
 
-  this.renderer = new VF.Renderer(this.current, VF.Renderer.Backends.SVG);
+  this.renderer = new VF.Renderer(this.current, VF.Renderer.Backends.CANVAS);
   this.renderer.resize(canvasWidth, canvasHeight);
-  this.rendererAction = new VF.Renderer(this.currentAction, VF.Renderer.Backends.SVG);
+  this.rendererAction = new VF.Renderer(this.currentAction, VF.Renderer.Backends.CANVAS);
   this.rendererAction.resize(canvasWidth, canvasHeight);
 
   this.context = this.renderer.getContext();
   this.context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
 
-  var staveHeight = 0;
+  let staveHeight = 100 * this.props.staves.length + 300;
+  let currentContext = this.current.getContext('2d');
+  let currentActionContext = this.currentAction.getContext('2d');
+
+  currentContext.canvas.height = staveHeight + 50;
+  currentActionContext.canvas.height = staveHeight + 50;
+  
   // total section count, i in below is local count
   var allSectionCount = 0;
-  this.props.staves.map( (stave) => {
+  this.props.staves.map( (stave, index) => {
    let sectionCount = stave.sections.length - 1;
    let sectionWidth = (canvasWidth-20) / sectionCount;
    for(var i = 0 ; i < sectionCount ; i++){
     this.notes.push([]);
-    this.staves.push(new VF.Stave(10 + (sectionWidth * i), staveHeight, sectionWidth));
+    var curStave = drawStaves(currentContext, 10 + (sectionWidth * i),
+                               index * 100 + 300, sectionWidth,
+                               stave.barAnnotation[stave.sections[i]]);
+    this.staves.push(curStave);
     for(var noteIndex = 0 ; noteIndex < stave.notes.length ; noteIndex++){
      if(stave.sections[i] < stave.notes[noteIndex].x && stave.notes[noteIndex].x <= stave.sections[i+1]){
       this.notes[i + allSectionCount].push(stave.notes[noteIndex]);
@@ -63,17 +75,11 @@ class VexFlowCanvas extends React.Component{
     }
    }
    allSectionCount += i;
-   staveHeight += 100;
   });
 
-  let currentContext = this.current.getContext('2d');
-  let currentActionContext = this.currentAction.getContext('2d');
-
-  currentContext.canvas.height = staveHeight + 50;
-  currentActionContext.canvas.height = staveHeight + 50;
 
   this.staves.map( (stave, index) => {
-   stave.setContext(this.context).draw();
+
    var curNotes = this.notes[index];
    var remainingTicks = 4;
 
