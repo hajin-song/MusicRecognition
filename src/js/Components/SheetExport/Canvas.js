@@ -56,7 +56,7 @@ class VexFlowCanvas extends React.Component{
 
   currentContext.canvas.height = staveHeight + 50;
   currentActionContext.canvas.height = staveHeight + 50;
-  
+
   // total section count, i in below is local count
   var allSectionCount = 0;
   this.props.staves.map( (stave, index) => {
@@ -107,20 +107,13 @@ class VexFlowCanvas extends React.Component{
     var end = slurs[1];
     slurs.splice(0,2);
     vexSlurs.push(new VF.Curve(
-     vexNotes[index][start],
-     vexNotes[index][end]
+     this.vexNotes[index][start],
+     this.vexNotes[index][end]
     ));
    }
 
    markRemainders(curNotes, noteIndex);
 
-   // Fill up rests;
-   var rests = fillRest(remainingTicks);
-   rests = rests.map( (rest) => {
-    return new VF.StaveNote({keys: ["b/4"], duration: rest });
-   })
-
-   this.vexNotes[index] = this.vexNotes[index].concat(rests);
 
    // Draww
    Vex.Flow.Formatter.FormatAndDraw(this.context, stave, this.vexNotes[index]);

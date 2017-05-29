@@ -49,7 +49,7 @@ class VexFlowCanvas extends React.Component{
 
   console.log(this.props.stave);
 
-  var remainingTicks = 4;
+  var remainingTicks = 8;
 
   // Order notes so processing is left to right
   let notes = this.props.stave.stave.notes.filter( (section) => {
@@ -92,9 +92,6 @@ class VexFlowCanvas extends React.Component{
   rests = rests.map( (rest) => {
    return new VF.StaveNote({keys: ["b/4"], duration: rest });
   })
-
-  // Combine notes with fill up rests
-  vexNotes = vexNotes.concat(rests);
 
   // Draww
   Vex.Flow.Formatter.FormatAndDraw(context, stave, vexNotes);
