@@ -10,6 +10,7 @@ class Note:
         self.tail_y = 0
         self.tail_type =0
         self.pitch = 0
+        self.is_bar = False
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -32,8 +33,8 @@ class Note:
         )
 
     def json(self):
-        return '{' + '"x":{},"y":{},"note_type":{},"tail_direction":{},"tail_type":{}, "pitch":{}'.format(
-            self.x, self.y, self.note_type, self.tail_direction, self.tail_type, self.pitch
+        return '{' + '"x":{},"y":{},"note_type":{},"tail_direction":{},"tail_type":{}, "pitch":{}, "is_bar":"{}"'.format(
+            self.x, self.y, self.note_type, self.tail_direction, self.tail_type, self.pitch, str(self.is_bar)
         ) +'}'
 
     def center(self):

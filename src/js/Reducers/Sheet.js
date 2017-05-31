@@ -6,7 +6,11 @@
 */
 
 import SheetActions from 'omrActions/Sheet';
-import { sortNotes, transposeNote } from 'omrTools/VexFlowTool';
+import {
+ sortNotes,
+ transposeNote,
+ convertToNote,
+} from 'omrTools/Note';
 
 /**
  * createNote - Create a new object
@@ -330,16 +334,33 @@ function markAsSlur(clicked_notes, current_stave, stave_group){
  return { stave_group: new_stave_group, current_stave: new_stave, clicked_notes: [] };
 }
 
-function transpose(stave_group, toneValue){
+
+/**
+ * transpose - Transpose notes based on the given tone value
+ *
+ * @param {Array.<Object>} stave_group - Currently set Stave Groups
+ * @param  {Number} tone_value - offset value
+ * @return {Array.<Object>} new Stave group
+ */
+function transpose(stave_group, tone_value){
  var new_stave_group = $.arrayCopy(stave_group);
  new_stave_group.map( (stave_group) => {
   stave_group.notes.map( (note, index) => {
-   stave_group.notes[index] = transposeNote(note, toneValue);
+   stave_group.notes[index] = transposeNote(note, tone_value);
   });
  });
  return new_stave_group;
 }
 
+
+/**
+ * setBarAnnotation - Add or remove
+ *
+ * @param  {type} current_stave description
+ * @param  {type} stave_group   description
+ * @param  {type} annotation    description
+ * @return {type}               description
+ */
 function setBarAnnotation(current_stave, stave_group, annotation){
  let stave_index = $.objectIndex(current_stave.stave, stave_group);
  var new_stave_group = $.arrayCopy(stave_group);
@@ -355,26 +376,24 @@ function setBarAnnotation(current_stave, stave_group, annotation){
 }
 
 function processNote(stave_group){
- let pitches = ['e', 'f', 'g', 'a', 'b', 'c', 'd']
  for (var stave_index = 0; stave_index < stave_group.length; stave_index++) {
   var stave = stave_group[stave_index];
   stave['barAnnotation'] = {};
   for (var section_index = 0 ; section_index < stave.sections.length - 1; section_index++){
    stave['barAnnotation'][stave.sections[section_index]] = {};
   }
+  stave.notes = sortNotes(stave.notes);
+  var prev_prop = { 'bar': false };
   for (var noteIndex = 0 ; noteIndex < stave.notes.length ; noteIndex++){
    var note = stave.notes[noteIndex];
-   var curPitch = note.pitch;
-   var curTailType = note.tail_type;
-   var curNoteType = note.note_type;
-   note.pitch = pitches[curPitch % 7];
-   note['octave'] = 4 + (parseInt(curPitch/7));
-   if(curTailType == 0){
-    note['duration'] = 'q';
+   let new_note = convertToNote(note, prev_prop);
+   new_note.id = noteIndex;
+   stave.notes[noteIndex] = new_note;
+   if(new_note.bar != -1 && new_note.bar != 2){
+    prev_prop = { 'bar': true };
    }else{
-    note['duration'] = '8';
+    prev_prop = { 'bar': false };
    }
-   note['id'] = noteIndex;
   }
  }
  console.log(stave_group);

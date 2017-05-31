@@ -8,13 +8,6 @@
 import Vex from 'vexflow';
 const VF = Vex.Flow;
 
-function sortNotes(noteList){
- return noteList.sort( (a, b) => {
-  if(a.id == b.id){ return a.x - b.x; }
-  return a.id - b.id;
- })
-}
-
 /**
  * getNoteDuration - Get note's duration in numeric value
  *
@@ -108,65 +101,6 @@ function generateNotes(notes, ticks){
  return [noteIndex, ticks, vexNotes];
 }
 
-
-/**
- * transposeNote - transpose a note to different pitch
- *
- * @param  {type} note            description
- * @param  {type} transpose_value description
- * @return {type}                 description
- */
-function transposeNote(note, transpose_value){
- let pitches = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
- // true if transpose direction is upward
-
- let direction = transpose_value > 0;
- let acc_value = transpose_value % 1;
- if(acc_value != 0){
-  if(note.accidental == '#' || note.accidental == 'b'){
-   if(direction){
-    if(note.accidental == '#'){
-     note.accidental = 'b';
-     transpose_value = Math.round(transpose_value);
-    }else {
-     note.accidental = '';
-     Math.abs(transpose_value) >= 1 ? transpose_value -= 1 : transpose_value = 0;
-    }
-   }else{
-    if(note.accidental == '#'){
-     note.accidental = '';
-     Math.abs(transpose_value) >= 1 ? transpose_value += 1 : transpose_value = 0;
-    }else {
-     note.accidental = '#';
-     transpose_value = Math.round(transpose_value) - 1;
-    }
-   }
-  }else if(note.accidental == ''){
-   Math.abs(transpose_value) >= 1 ? transpose_value -= 1 : transpose_value = 0;
-   direction ? note.accidental = '#' : note.accidental = 'b';
-  }
- }
-
- let pitch_value = Math.floor(transpose_value / 1);
- var new_pitch = pitches.indexOf(note.pitch);
- new_pitch += pitch_value;
-
- var octave_change = 0;
-
- while(new_pitch < 0 || new_pitch > pitches.length - 1){
-  if(direction){
-   new_pitch -= pitches.length;
-   octave_change += 1;
-  }else{
-   new_pitch += pitches.length;
-   octave_change -= 1;
-  }
- }
- console.log(new_pitch, octave_change, direction);
- note.pitch = pitches[new_pitch];
- note.octave = (parseInt(note.octave) + octave_change).toString();
- return note;
-}
 /**
  * groupBeams - Collect the beam markers in the notes
  *
@@ -250,7 +184,5 @@ export {
  markRemainders,
  groupBeams,
  groupSlurs,
- sortNotes,
- transposeNote,
  drawStaves,
 };

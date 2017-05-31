@@ -26,23 +26,37 @@ def __check_coliision(x0, y0, x1, y1, w, h):
 
 
 def __match_template(image, templates, test, test_color):
+    """ Perform template matching on an image using the given symbols
+        :param image: np array. Representation of image being templated
+        :param templates: np array. Collection of coordinate for symbols
+        :param test: DEBUG - used to mark the detected region
+        :param test_color: DEBUG - color used to mark the detected region
+    """
     detected_symbols = []
     for index, note in enumerate(templates):
         if note is None: continue
-        #Image.saveImage(session_id, "test"+ str(index) +".png", note)
         symbols = TemplateProcessor.detect_symbols(image, test, note, test_color[index])
         w, h = note.shape[::-1]
-        prev = (0, 0)
-        for x in sorted(symbols.keys(), key=lambda x: int(x)):
-            for y in sorted(symbols[x].keys(), key=lambda y: int(y)):
+        for x in symbols.keys():
+            for y in symbols[x].keys():
                 x = int(x)
                 y = int(y)
-                if not __check_coliision(prev[0], prev[1], x, y, w, h):
-                    prev = (x, y)
+                # Check if current region collide with previous detected regions
+                not_in = True
+                for symbol in detected_symbols:
+                    if __check_coliision(symbol.x, symbol.y, x, y, w, h):
+                        not_in = False
+                        break
+                if not_in:
                     detected_symbols.append(Note(x, y, index, w, h))
     return detected_symbols
 
 def __process_tail_direction(detected_symbols, image, test):
+    """ Detect tail's direction
+        :param detected_symbols: List of Notes. Detected notes
+        :param image: Target Image
+        :param test: DEBUG - used to mark the detected region
+    """
     for symbol in detected_symbols:
         x = symbol.x
         y = symbol.y
@@ -50,26 +64,21 @@ def __process_tail_direction(detected_symbols, image, test):
         h = symbol.h
         note_type = symbol.note_type
 
-        #TemplateProcessor.remove_detected(img, int(y), int(x), w, h)
-        if note_type == 0:
-            cv2.rectangle(test, (x, y), (x + 10, y + 10),  (0, 0, 255), 1)
-        elif note_type == 1:
-            cv2.rectangle(test, (x, y), (x + 10, y + 10),  (255, 255, 0), 1)
-        elif note_type == 2:
-            cv2.rectangle(test, (x, y), (x + 10, y + 10),  (0, 255, 255), 1)
-        elif note_type == 3:
-            cv2.rectangle(test, (x, y), (x + 10, y + 10),  (255, 0, 255), 1)
-        else:
-            cv2.rectangle(test, (x, y), (x + 10, y + 10),  (255, 0, 0), 1)
         tail_type, tail_x, tail_y = TailDetector.find_tail_direction(image, x, y, w, h, test)
-
+        if tail_type == 0:
+            cv2.rectangle(test, (x, y), (x + 10, y + 10),  (0, 255, 0), 1)
+        else:
+            cv2.rectangle(test, (x, y), (x + 10, y + 10),  (0, 0, 255), 1)
         symbol.tail_direction = tail_type
         symbol.tail_x = tail_x
         symbol.tail_y = tail_y
-        #TailDetector.find_tail_type(img_copy, tail_type, tail_x, tail_y, int(x), int(y), w, h, img_rgb)
     return detected_symbols
 
 def __allocate_note_to_stave(staves, detected_symbols):
+    """ Allocates notes to appropriate stave group based on the x and y value
+        :param staves: Stave groups within the sheet
+        :param detected_symbols: List of Notes that needs to be allocated
+    """
     for symbol in detected_symbols:
         symbol_x = symbol.x
         symbol_y = symbol.y
@@ -99,16 +108,29 @@ def __allocate_note_to_stave(staves, detected_symbols):
         current.addNote(str(stave_x_0), symbol)
 
 def __process_tail_type(staves, image, test):
+    """ traverse through image pixel and categorise the symbol's tail type
+        :param staves: stave groups with note allocated
+        :param image: source image
+        :param test: DEBUG - used to mark the detected region
+    """
+
     for stave in staves:
-        for separator in stave.notes:
+        #stave.notes = sorted(stave.notes, key=lambda x: int(x))
+        sorted_section = sorted(stave.notes, key=lambda x: int(x))
+        for section_index, separator in enumerate(sorted_section):
+            stave.notes[separator] = sorted(stave.notes[separator], key=lambda x: int(x.x))
             for index, note in enumerate(stave.notes[separator]):
-                if note.note_type> 1:
+                #print '\t\t', note, index
+                if note.note_type > 1:
                     if index == (len(stave.notes[separator])-1):
-                        keys = sorted(stave.notes.keys(), key= lambda x: int(x))
-                        note.tail_type = TailDetector.find_tail_type(image, note, int(keys[-1]), stave.y1, test)
+                        tail_type, is_bar = TailDetector.find_tail_type(image, note, stave.sections[stave.sections.index(int(separator))+1], note.tail_y, test)
+                        note.tail_type = tail_type
+                        note.is_bar = is_bar
                     else:
                         next_note =  stave.notes[separator][index + 1]
-                        note.tail_type = TailDetector.find_tail_type(image, note, next_note.tail_x, next_note.tail_y, test)
+                        tail_type, is_bar = TailDetector.find_tail_type(image, note, next_note.x, next_note.tail_y, test)
+                    note.tail_type = tail_type
+                    note.is_bar = is_bar
 
 def __find_note_pitch(staves):
     for stave in staves:
@@ -149,12 +171,7 @@ def locate_symbols():
     detected_symbols = {}
     note_type = []
 
-    normal = sys.argv[1].split(',')
-    half = sys.argv[2].split(',')
-    whole = sys.argv[3].split(',')
-    flat = sys.argv[4].split(',')
-    sharp = sys.argv[5].split(',')
-
+    # load current session's target file
     session_id = sys.argv[6]
     file_name = sys.argv[7]
 
@@ -164,6 +181,14 @@ def locate_symbols():
     img = np.asarray(img)
     img_copy = img.copy()
     img_rgb = np.asarray(img_rgb)
+
+    # Load template image coordinates
+    normal = sys.argv[1].split(',')
+    half = sys.argv[2].split(',')
+    whole = sys.argv[3].split(',')
+    flat = sys.argv[4].split(',')
+    sharp = sys.argv[5].split(',')
+
     if int(flat[0]) != -1: note_type.append(img[int(flat[1]):int(flat[3]), int(flat[0]):int(flat[2])].copy())
     else: note_type.append(None)
 
@@ -179,6 +204,7 @@ def locate_symbols():
     if int(whole[0]) != -1: note_type.append(img[int(whole[1]):int(whole[3]), int(whole[0]):int(whole[2])].copy())
     else: note_type.append(None)
 
+    # load stave group information from pickle
     pkl_file = open('./public/' + session_id + '/' + 'stave.pkl')
     staves = pickle.load(pkl_file)
 
