@@ -25,6 +25,7 @@ const VF = Vex.Flow
 
 class VexFlowCanvas extends React.Component{
  componentDidUpdate(prevProps, prevState){
+  console.log("updating stave view");
   // Set up canvas
   let left = this.props.stave.section[0];
   let width = (this.props.stave.section[1] - left) * 2;

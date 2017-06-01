@@ -19,19 +19,27 @@ function convertToNote(pyNote, prev_prop){
  var is_bar = -1;
  if(pyNote.tail_type == 0){
   note_type = 'q';
- }else{
+ }else if (pyNote.tail_type == 1){
+  console.log(pyNote.tail_type, "zzzz");
   note_type = '8';
+ }else {
+  console.log("DOCKO");
+  note_type = '16';
  }
 
  if(pyNote.is_bar == 'True'){
-  note_type = '8';
+  if(note_type == 'q'){
+   note_type = '8';
+  }
   if(prev_prop.bar){
    is_bar = 0;
   }else{
    is_bar = 1;
   }
  }else if(prev_prop.bar){
-  note_type = '8';
+  if(note_type == 'q'){
+   note_type = '8';
+  }
   is_bar = 2;
  }
  console.log(pyNote);

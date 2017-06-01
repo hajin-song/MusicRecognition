@@ -123,12 +123,16 @@ def __process_tail_type(staves, image, test):
                 #print '\t\t', note, index
                 if note.note_type > 1:
                     if index == (len(stave.notes[separator])-1):
-                        tail_type, is_bar = TailDetector.find_tail_type(image, note, stave.sections[stave.sections.index(int(separator))+1], note.tail_y, test)
-                        note.tail_type = tail_type
-                        note.is_bar = is_bar
+                        next_note = note
+                        prev_note =  stave.notes[separator][index - 1]
+                    elif index == 0:
+                        next_note = stave.notes[separator][index + 1]
+                        prev_note = note
                     else:
-                        next_note =  stave.notes[separator][index + 1]
-                        tail_type, is_bar = TailDetector.find_tail_type(image, note, next_note.x, next_note.tail_y, test)
+                        prev_note = stave.notes[separator][index - 1]
+                        next_note = stave.notes[separator][index + 1]
+                    tail_type, is_bar = TailDetector.find_tail_type(image,
+                    note, prev_note, next_note, test)
                     note.tail_type = tail_type
                     note.is_bar = is_bar
 

@@ -27,7 +27,7 @@ def __bfs_x_limit(limit_x_0, limit_y_0, tail_direction, limit_x_1, limit_y_1, x_
     #print limit_x_0, limit_y_0, limit_x_1, limit_y_1, x_start, y_start, 'tttt'
     return (right_most, left_most, top_most, bottom_most)
 
-def __bfs_y_limt(x_start, y_start, next_tail_x, next_tail_y, seen, image, test):
+def __bfs_y_limit_right(x_start, y_start, next_tail_x, next_tail_y, seen, image, test):
     queue = [(x_start, y_start)]
     right_most = x_start
     left_most = x_start
@@ -39,7 +39,7 @@ def __bfs_y_limt(x_start, y_start, next_tail_x, next_tail_y, seen, image, test):
         seen.append(current)
         x = current[0]
         y = current[1]
-        children = list(filter(lambda x: (x[0] > x_start and x[0] < next_tail_x), [(x-1, y-1), (x-1, y), (x, y-1), (x+1, y+1), (x+1, y), (x, y+1), (x-1,y+1), (x+1, y-1)]))
+        children = list(filter(lambda x: (x[0] > x_start and x[0] < next_tail_x), [(x, y-1), (x+1, y+1), (x+1, y), (x, y+1), (x+1, y-1)]))
         children = list(filter(lambda x: image[x[1]][x[0]] < COLOR_THRSHOLD_BLACK, children))
         if x > right_most: right_most = x
         if y > bottom_most: y = bottom_most
@@ -49,21 +49,56 @@ def __bfs_y_limt(x_start, y_start, next_tail_x, next_tail_y, seen, image, test):
     #print limit_x_0, limit_y_0, limit_x_1, limit_y_1, x_start, y_start, 'tttt'
     return (right_most, left_most, seen)
 
-def __process_tail_pixels(image, note, next_tail_x, next_tail_y, test):
+def __bfs_y_limit_left(x_start, y_start, prev_tail_x, prev_tail_y, seen, image, test):
+    queue = [(x_start, y_start)]
+    right_most = x_start
+    left_most = x_start
+    top_most = y_start
+    bottom_most = y_start
+    while len(queue) != 0:
+        current = queue.pop(0)
+        if current in seen: continue
+        seen.append(current)
+        x = current[0]
+        y = current[1]
+        children = list(filter(lambda x: (x[0] < x_start and x[0] > prev_tail_x), [(x-1, y-1), (x-1, y), (x, y-1), (x, y+1), (x-1,y+1)]))
+        children = list(filter(lambda x: image[x[1]][x[0]] < COLOR_THRSHOLD_BLACK, children))
+        if x < left_most: left_most = x
+        if y > bottom_most: y = bottom_most
+        if y < top_most: y = top_most
+        queue = queue + children
+
+
+    #print limit_x_0, limit_y_0, limit_x_1, limit_y_1, x_start, y_start, 'tttt'
+    return (right_most, left_most, seen)
+
+
+def __process_tail_pixels(image, note, prev_tail_x, prev_tail_y, next_tail_x, next_tail_y, test):
     current_x = note.tail_x
     current_y = note.tail_y
 
-    tail_cell = []
+    tail_cell_right = []
+    tail_cell_left = []
     seen = []
+    seen_2 = []
     while(image[current_y][current_x] <= 200):
-        right_most, left_most, seen = __bfs_y_limt(current_x, current_y, next_tail_x, next_tail_y, seen, image, test)
+        right_most, left_most, seen = __bfs_y_limit_right(current_x, current_y, next_tail_x, next_tail_y, seen, image, test)
+
+        if (note.y < current_y and note.tail_direction == 1) or (note.y > current_y and note.tail_direction == 0):
+            right_most_2, left_most_2, seen_2 = __bfs_y_limit_left(current_x - 1, current_y, prev_tail_x, prev_tail_y, seen_2, image, test)
+            if(right_most_2 - left_most_2 != 0):
+                tail_cell_left.append((left_most_2, right_most_2))
+                cv2.rectangle(test, (right_most_2, current_y), (left_most_2 + 1, current_y + 1),  (255, 150, 0), 1)
+        #
+        #print right_most_2, left_most_2
         if(right_most - left_most != 0):
-            tail_cell.append((left_most, right_most))
+            tail_cell_right.append((left_most, right_most))
+
         if(note.tail_direction == 0):
             current_y += 1
         else:
             current_y -= 1
-    return tail_cell
+    return tail_cell_right, tail_cell_left
 
 def find_tail_direction(image, row, col, height, width, test):
     """ Determine the tail direction of the given symbol
@@ -109,12 +144,12 @@ def find_tail_direction(image, row, col, height, width, test):
         return 0, upward_x, y - upward_y + 1
     return 1, downward_x, y + downward_y - 1
 
-def find_tail_type(image, note, next_tail_x, next_tail_y, test):
+def find_tail_type(image, note, prev_note, next_note, test):
     """ Find given note's tail type
         :param image: source image
         :param note: note object
-        :param next_tail_x: x position of next note
-        :param next_tail_y: y position of next note
+        :param prev_note: previous note
+        :param next_note: next note
         :param test: DEBUG - used to mark the detected region
     """
     tail_type = note.tail_direction
@@ -122,26 +157,41 @@ def find_tail_type(image, note, next_tail_x, next_tail_y, test):
     tail_y = note.tail_y
     base_x = note.x
     base_y = note.y
-    tail_info = __process_tail_pixels(image, note, next_tail_x, next_tail_y, test)
-    #print tail_info
-    if len(tail_info) == 0:
-        cv2.rectangle(test, (note.tail_x, note.tail_y), (next_tail_x - 5, note.tail_y + 1),  (255, 255, ), 1)
+    prev_tail_x = prev_note.tail_x
+    prev_tail_y = prev_note.tail_y
+    next_tail_x = next_note.tail_x
+    next_tail_y = next_note.tail_y
+
+    tail_info_right, tail_info_left = __process_tail_pixels(image, note, prev_tail_x, prev_tail_y, next_tail_x, next_tail_y, test)
+    #print tail_info_right
+    if len(tail_info_right) == 0 and len(tail_info_left) == 0:
+        cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+5, note.tail_y + 5),  (60, 0, 255), 1)
         return 0, False
     else:
         longest = 0
-        for info in tail_info:
+        prev = (0, 0)
+        #print note
+        tail_info_right = [x for x in tail_info_right if abs(x[0] - x[1]) >= 3]
+        tail_info_left = [x for x in tail_info_left if abs(x[0] - x[1]) >= 3]
+        for index, info in enumerate(tail_info_right):
+            if(abs(prev[1] - info[1]) <= 1):
+                cur_index = tail_info_right.index(info)
+                del tail_info_right[cur_index]
+                continue
             diff = abs(info[0] - info[1])
             if longest < diff:
                 longest = diff
-        if longest < 5:
-            cv2.rectangle(test, (info[0], note.tail_y), (info[1], note.tail_y + 1),  (255, 0, 199), 1)
-            return 0, False
-        elif abs(longest - abs(tail_x - next_tail_x)) < 5 :
-            cv2.rectangle(test, (info[0], note.tail_y), (info[1], note.tail_y + 1),  (255, 0, 0), 1)
-            if(len(tail_info) == 1):
+                prev = info
+                #print '\t', 'passed'
+
+
+        if longest < (abs(next_tail_x - tail_x)/2):
+            cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+5, note.tail_y + 5),  (125, 0, 255), 1)
+            return len(tail_info_right), False
+        else :
+            if(len(tail_info_right) <= 1 and len(tail_info_left) <= 1):
+                cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+5, note.tail_y + 5),  (255, 0, 0), 1)
                 return 1, True
             else:
+                cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+5, note.tail_y + 5),  (100, 102, 255), 1)
                 return 2, True
-        else:
-            cv2.rectangle(test, (info[0], note.tail_y), (info[1], note.tail_y + 1),  (0, 0, 255), 1)
-            return 1, False
