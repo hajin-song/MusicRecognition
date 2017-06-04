@@ -12,7 +12,7 @@ class Canvas extends React.Component{
   $('#' + this.props.canvasID).on('mousemove', (e) => {
    if(e.ctrlKey){
     let coord = getMousePos(this.props.canvasID, e);
-    drawRectangle(this.props.canvasID, coord.x, coord.y , 5, 5);
+    drawRectangle(this.props.canvasID, coord.x, coord.y , 10, 10);
    }
   });
  }

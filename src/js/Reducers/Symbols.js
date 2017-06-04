@@ -2,7 +2,7 @@
 * Symbols.js
 * Symbols Reducer
 * Author: Ha Jin Song
-* Last Modified: 28-May-2017
+* Last Modified: 4-June-2017
 */
 
 import SymbolActions from 'omrActions/Symbols';
@@ -13,8 +13,13 @@ const initialState = {
  normal: { coordinates: [-1,-1,-1,-1], image: "" },
  half: { coordinates: [-1,-1,-1,-1], image: "" },
  whole: {coordinates: [-1,-1,-1,-1], image: "" },
- sharp: { coordinates: [-1,-1,-1,-1], image: "" },
- flat: { coordinates: [-1,-1,-1,-1], image: "" }
+ normal_rest: { coordinates: [-1,-1,-1,-1], image: "" },
+ half_rest: { coordinates: [-1,-1,-1,-1], image: "" },
+ quaver_rest: { coordinates: [-1,-1,-1,-1], image: "" },
+ semi_quaver_rest: { coordinates: [-1,-1,-1,-1], image: "" },
+ demi_semi_quaver_rest: { coordinates: [-1,-1,-1,-1], image: "" },
+ flat: { coordinates: [-1,-1,-1,-1], image: "" },
+ sharp: {coordinates: [-1,-1,-1,-1], image: ""}
 };
 
 
@@ -67,6 +72,36 @@ const symbolReducer = (state = initialState, action) => {
     {},
     state,
     { whole: generateSymbol(action.crop_pane, action.crop_image) }
+   );
+  case SymbolActions.CROP_NORMAL_REST:
+   return Object.assign(
+    {},
+    state,
+    { normal_rest: generateSymbol(action.crop_pane, action.crop_image) }
+   );
+  case SymbolActions.CROP_HALF_REST:
+   return Object.assign(
+    {},
+    state,
+    { half_rest: generateSymbol(action.crop_pane, action.crop_image) }
+   );
+  case SymbolActions.CROP_QUAVER_REST:
+   return Object.assign(
+    {},
+    state,
+    { quaver_rest: generateSymbol(action.crop_pane, action.crop_image) }
+   );
+  case SymbolActions.CROP_SEMI_QUAVER_REST:
+   return Object.assign(
+    {},
+    state,
+    { semi_quaver_rest: generateSymbol(action.crop_pane, action.crop_image) }
+   );
+  case SymbolActions.CROP_DEMI_SEMI_QUAVER_REST:
+   return Object.assign(
+    {},
+    state,
+    { demi_semi_quaver_rest: generateSymbol(action.crop_pane, action.crop_image) }
    );
   case SymbolActions.CROP_FLAT:
    return Object.assign(

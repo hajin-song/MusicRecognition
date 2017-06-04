@@ -14,7 +14,6 @@ import {
  getNoteDuration,
  fillRest,
  generateNotes,
- markRemainders,
  groupBeams,
  groupSlurs,
  drawStaves
@@ -85,8 +84,6 @@ class VexFlowCanvas extends React.Component{
     vexNotes[end]
    ));
   }
-
-  markRemainders(notes, noteIndex);
 
   // Fill up rests;
   var rests = fillRest(remainingTicks);

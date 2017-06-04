@@ -11,6 +11,11 @@ const mapStateToProps = (state) => {
   sheet: state.session.original,
   cropper: state.crop.cropper,
   normal: state.symbols.normal,
+  normal_rest: state.symbols.normal_rest,
+  half_rest: state.symbols.half_rest,
+  quaver_rest: state.symbols.quaver_rest,
+  semi_quaver_rest: state.symbols.semi_quaver_rest,
+  demi_semi_quaver_rest: state.symbols.demi_semi_quaver_rest,
   half: state.symbols.half,
   whole: state.symbols.whole,
   flat: state.symbols.flat,
@@ -20,37 +25,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
  return ({
-  crop_normal: (cropper) => {
+  crop: (cropper, symbol) => {
    dispatch({
-    type: SymbolActions.CROP_NORMAL_NOTE,
-    crop_pane: cropper.getData(),
-    crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
-   });
-  },
-  crop_half: (cropper) => {
-   dispatch({
-    type: SymbolActions.CROP_HALF_NOTE,
-    crop_pane: cropper.getData(),
-    crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
-   });
-  },
-  crop_whole: (cropper) => {
-   dispatch({
-    type: SymbolActions.CROP_WHOLE_NOTE,
-    crop_pane: cropper.getData(),
-    crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
-   });
-  },
-  crop_flat: (cropper) => {
-   dispatch({
-    type: SymbolActions.CROP_FLAT,
-    crop_pane: cropper.getData(),
-    crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
-   });
-  },
-  crop_sharp: (cropper) => {
-   dispatch({
-    type: SymbolActions.CROP_SHARP,
+    type: symbol,
     crop_pane: cropper.getData(),
     crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
    });
@@ -68,19 +45,21 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 const ActionsContainer = ({
- cropper, crop_normal, crop_half, crop_whole, crop_flat, crop_sharp,
+ cropper, crop,
  normal, half, whole, flat, sharp,
+ normal_rest, half_rest, quaver_rest, semi_quaver_rest, demi_semi_quaver_rest,
  detect, toEdit,
 }) => (
  <Actions cropper={cropper}
-  crop_normal={crop_normal}
-  crop_half={crop_half}
-  crop_whole={crop_whole}
-  crop_flat={crop_flat}
-  crop_sharp={crop_sharp}
+  crop={crop}
   normal={normal}
   half={half}
   whole={whole}
+  normal_rest={normal_rest}
+  half_rest={half_rest}
+  quaver_rest={quaver_rest}
+  semi_quaver_rest={semi_quaver_rest}
+  demi_semi_quaver_rest={demi_semi_quaver_rest}
   flat={flat}
   sharp={sharp}
   detect={detect}

@@ -86,7 +86,6 @@ def __findSectionDividers(img, staves):
         for x in range(0, w):
             if all(img[y0:y1, x:x+1] <= 200) and img[y0:y1, x:x+1][0] <= 200:
                 if prev == -1 or abs(x-prev) > 80:
-                    img[y0:y1, x:x+1] = 255
                     stave.sections.append(x)
                     prev = x
 
@@ -97,8 +96,6 @@ def cropStaves():
     FileName = sys.argv[2]
 
     img = Image.openImage(sessionId, FileName)
-    # Blur image - easier processing
-    ret,img = cv2.threshold(img, 200, 255,cv2.THRESH_BINARY)
 
     # imgColor used for debugging purposes
     imgColor = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)

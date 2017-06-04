@@ -96,7 +96,10 @@ app.post('/detect', function(req,res){
    mode: 'text',
    pythonOptions: ['-u'],
    scriptPath: 'python',
-   args: [req.body.normal, req.body.half, req.body.whole, req.body.flat, req.body.sharp, req.session.unique_path, "sheet_without_staves.png"]
+   args: [req.body.normal, req.body.half, req.body.whole,
+    req.body.normal_rest, req.body.half_rest, req.body.quaver_rest,
+    req.body.semi_quaver_rest, req.body.demi_semi_quaver_rest,
+    req.body.flat, req.body.sharp, req.session.unique_path, "sheet_without_staves.png"]
  };
  PythonShell.run('locateSymbols.py', options, function (err, results) {
    if (err) throw err;

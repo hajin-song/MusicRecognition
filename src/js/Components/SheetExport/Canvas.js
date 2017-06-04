@@ -13,7 +13,6 @@ import {
  getNoteDuration,
  fillRest,
  generateNotes,
- markRemainders,
  groupBeams,
  groupSlurs,
  drawStaves,
@@ -111,9 +110,6 @@ class VexFlowCanvas extends React.Component{
      this.vexNotes[index][end]
     ));
    }
-
-   markRemainders(curNotes, noteIndex);
-
 
    // Draww
    Vex.Flow.Formatter.FormatAndDraw(this.context, stave, this.vexNotes[index]);

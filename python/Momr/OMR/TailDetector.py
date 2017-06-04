@@ -45,7 +45,7 @@ def __bfs_y_limit_right(x_start, y_start, next_tail_x, next_tail_y, seen, image,
         if y > bottom_most: y = bottom_most
         if y < top_most: y = top_most
         queue = queue + children
-
+        image[y][x] = 255
     #print limit_x_0, limit_y_0, limit_x_1, limit_y_1, x_start, y_start, 'tttt'
     return (right_most, left_most, seen)
 
@@ -67,6 +67,7 @@ def __bfs_y_limit_left(x_start, y_start, prev_tail_x, prev_tail_y, seen, image, 
         if y > bottom_most: y = bottom_most
         if y < top_most: y = top_most
         queue = queue + children
+        image[y][x] = 255
 
 
     #print limit_x_0, limit_y_0, limit_x_1, limit_y_1, x_start, y_start, 'tttt'
@@ -74,6 +75,16 @@ def __bfs_y_limit_left(x_start, y_start, prev_tail_x, prev_tail_y, seen, image, 
 
 
 def __process_tail_pixels(image, note, prev_tail_x, prev_tail_y, next_tail_x, next_tail_y, test):
+    """
+        :param image: source image
+        :param note: Note being checked
+        :param prev_tail_x: previous note tail's X value
+        :param prev_tail_y: previous note tail's Y value
+        :param next_tail_x: next note tail's X value
+        :param next_tail_y: next note tail's Y value
+        :param test: DEBUG - used to mark the detected region
+        returns tails information of both sides of the given note
+    """
     current_x = note.tail_x
     current_y = note.tail_y
 
@@ -81,24 +92,22 @@ def __process_tail_pixels(image, note, prev_tail_x, prev_tail_y, next_tail_x, ne
     tail_cell_left = []
     seen = []
     seen_2 = []
+    # Travese until end of the tail
     while(image[current_y][current_x] <= 200):
+        # Check if anything is branch out of the tail on current position
         right_most, left_most, seen = __bfs_y_limit_right(current_x, current_y, next_tail_x, next_tail_y, seen, image, test)
-
+        # For the left side, avoid confusing the note body with the tail information
         if (note.y < current_y and note.tail_direction == 1) or (note.y > current_y and note.tail_direction == 0):
             right_most_2, left_most_2, seen_2 = __bfs_y_limit_left(current_x - 1, current_y, prev_tail_x, prev_tail_y, seen_2, image, test)
             if(right_most_2 - left_most_2 != 0):
                 tail_cell_left.append((left_most_2, right_most_2))
-                cv2.rectangle(test, (right_most_2, current_y), (left_most_2 + 1, current_y + 1),  (255, 150, 0), 1)
-        #
-        #print right_most_2, left_most_2
+
         if(right_most - left_most != 0):
             tail_cell_right.append((left_most, right_most))
 
-        if(note.tail_direction == 0):
-            current_y += 1
-        else:
-            current_y -= 1
-    return tail_cell_right, tail_cell_left
+        if(note.tail_direction == 0): current_y += 1
+        else: current_y -= 1
+    return list(set(tail_cell_right)), list(set(tail_cell_left))
 
 def find_tail_direction(image, row, col, height, width, test):
     """ Determine the tail direction of the given symbol
@@ -119,8 +128,7 @@ def find_tail_direction(image, row, col, height, width, test):
 
     x_left += Traverser.rightTraverseSearch(image, x_left, y, test)
     x_right -= Traverser.leftTraverseSearch(image, x_right, y, test)
-    #cv2.rectangle(test, (x_left, y), (x_left + 2, y + 2),  (81, 240, 108), 1)
-    #cv2.rectangle(test, (x_right, y), (x_right + 2, y + 2),  (81, 240, 108), 1)
+
     upward_y = 0
     upward_x = 0
     downward_y = 0
@@ -162,11 +170,13 @@ def find_tail_type(image, note, prev_note, next_note, test):
     next_tail_x = next_note.tail_x
     next_tail_y = next_note.tail_y
 
+    # Check both direction - bar notes can have tail information on both sides
     tail_info_right, tail_info_left = __process_tail_pixels(image, note, prev_tail_x, prev_tail_y, next_tail_x, next_tail_y, test)
+    #print note, tail_info_right, tail_info_left
     #print tail_info_right
     if len(tail_info_right) == 0 and len(tail_info_left) == 0:
-        cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+5, note.tail_y + 5),  (60, 0, 255), 1)
-        return 0, False
+        cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+ 10, note.tail_y + 10),  (0, 102, 255), 1)
+        return 0, 0
     else:
         longest = 0
         prev = (0, 0)
@@ -186,12 +196,15 @@ def find_tail_type(image, note, prev_note, next_note, test):
 
 
         if longest < (abs(next_tail_x - tail_x)/2):
-            cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+5, note.tail_y + 5),  (125, 0, 255), 1)
-            return len(tail_info_right), False
+            cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+10, note.tail_y + 10),  (125, 0, 255), 1)
+            return len(tail_info_right), 0
         else :
             if(len(tail_info_right) <= 1 and len(tail_info_left) <= 1):
-                cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+5, note.tail_y + 5),  (255, 0, 0), 1)
-                return 1, True
+                if(len(tail_info_right) == 0):
+                    cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+10, note.tail_y + 10),  (255, 0, 120), 1)
+                    return len(tail_info_left), 2
+                cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+10, note.tail_y + 10),  (255, 0, 0), 1)
+                return 1, 1
             else:
-                cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+5, note.tail_y + 5),  (100, 102, 255), 1)
-                return 2, True
+                cv2.rectangle(test, (note.tail_x, note.tail_y), (note.tail_x+10, note.tail_y + 10),  (0, 255,0), 1)
+                return max(len(tail_info_right), len(tail_info_left)), 1

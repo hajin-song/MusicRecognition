@@ -31,6 +31,13 @@ class Stave:
         sum(list(map(lambda x: int(x), [len(self.notes[x]) for x in self.notes.keys()])))
         )
 
+    def averageDistane(self):
+        distance = 0
+        for index, line in enumerate(self.lines[:-1]):
+            distance += abs(line[-1] - self.lines[index+1][-1])
+            
+        return distance/(len(self.lines) - 1)
+
     def json(self):
         noteJson = []
         for section in self.notes.keys():

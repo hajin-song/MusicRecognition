@@ -10,6 +10,7 @@ import {
  sortNotes,
  transposeNote,
  convertToNote,
+ ungroupBeams,
 } from 'omrTools/Note';
 
 /**
@@ -50,8 +51,8 @@ function createNote(pitchID, octaveID, durationID, accidentalID, note){
 
  console.log('xx', newNote);
 
- if(note.bar == -1){ newNote['bar'] = -1; }
- if(note.slur == -1){ newNote['slur'] = -1; }
+ if(typeof note.bar === 'undefined' || note.bar == -1){ newNote['bar'] = -1; }
+ if(typeof note.slur === 'undefined' || note.slur == -1){ newNote['slur'] = -1; }
  return Object.assign( {}, note, newNote);
 }
 
@@ -273,6 +274,7 @@ function markAsBarNote(clicked_notes, current_stave, stave_group){
  if(first != last){
   for(var i = first ; i <= last ; i++){
    let note = new_stave.stave.notes[i]
+   ungroupBeams(new_stave.stave.notes, note);
    if(note.duration == 'w' || note.duration == 'h' || note.duration == 'q'){
     alert("Cannot group non-quaver as bar note!");
     return { stave_group: stave_group, current_stave: current_stave };
@@ -315,6 +317,7 @@ function markAsSlur(clicked_notes, current_stave, stave_group){
  if(first != last){
   for(var i = first ; i <= last ; i++){
    let note = new_stave.stave.notes[i]
+   ungroupSlurs(new_stave.staves.notes, note);
    if(note.slur >= 0){
     alert("Cannot allocate one note to multiple slur group!!");
     return { stave_group: stave_group, current_stave: current_stave };
@@ -386,13 +389,19 @@ function processNote(stave_group){
   var prev_prop = { 'bar': false };
   for (var noteIndex = 0 ; noteIndex < stave.notes.length ; noteIndex++){
    var note = stave.notes[noteIndex];
+   if(note.note_type == 0 || note.note_type == 1){
+    console.log("FLAT OR SHARP!");
+    prev_prop['accidental'] = note.note_type == 0 ? 'b' : '#';
+    stave.notes.splice(noteIndex, 1);
+    note = stave.notes[noteIndex]
+   }
    let new_note = convertToNote(note, prev_prop);
    new_note.id = noteIndex;
    stave.notes[noteIndex] = new_note;
-   if(new_note.bar != -1 && new_note.bar != 2){
-    prev_prop = { 'bar': true };
-   }else{
+   if(new_note.bar == -1 || new_note.bar == 2){
     prev_prop = { 'bar': false };
+   }else{
+    prev_prop = { 'bar': true };
    }
   }
  }

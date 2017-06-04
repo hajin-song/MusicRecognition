@@ -1,3 +1,10 @@
+
+
+/**
+ * sortNotes - sort note in order of the value
+ *
+ * @param  {Array.Object} noteList list of notes
+ */
 function sortNotes(noteList){
  return noteList.sort( (a, b) => {
   if(a.id == b.id){ return a.x - b.x; }
@@ -9,44 +16,44 @@ function sortNotes(noteList){
  * convertToNote - Convert python result to note object
  *
  * @param  {Object} pyNote python note object in JSON
- * @return {type}        description
+ * @return {Object}        Note object used by app to generate VexFlow notes
  */
 function convertToNote(pyNote, prev_prop){
  let pitches = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
+ let note_types = ['q', 'q', 'h', 'w', 'q', 'q', 'h', '8', '16', '32'];
  var newNote;
  // note_type, tail_direction, tail_type
  var note_type;
  var is_bar = -1;
+ var is_rest = pyNote.note_type > 4;
+
+ // Get tail type
  if(pyNote.tail_type == 0){
-  note_type = 'q';
+  note_type = note_types[pyNote.note_type];
  }else if (pyNote.tail_type == 1){
-  console.log(pyNote.tail_type, "zzzz");
   note_type = '8';
- }else {
-  console.log("DOCKO");
+ }else if(pyNote.tail_type == 2){
   note_type = '16';
+ }else{
+  note_type = '32';
  }
 
- if(pyNote.is_bar == 'True'){
-  if(note_type == 'q'){
-   note_type = '8';
-  }
-  if(prev_prop.bar){
-   is_bar = 0;
-  }else{
-   is_bar = 1;
-  }
+ // Check if note should be part of bar group
+ if(pyNote.is_bar == 1){
+  if(note_type == 'q' || note_type == 'w' || note_type == 'h'){ note_type = '8'; }
+  if(prev_prop.bar){ is_bar = 0; }
+  else{ is_bar = 1; }
+ }else if(pyNote.is_bar == 2){
+  if(note_type == 'q' || note_type == 'w' || note_type == 'h'){ note_type = '8'; }
+  is_bar = 2;
  }else if(prev_prop.bar){
-  if(note_type == 'q'){
-   note_type = '8';
-  }
+  if(note_type == 'q' || note_type == 'w' || note_type == 'h'){ note_type = '8'; }
   is_bar = 2;
  }
- console.log(pyNote);
- console.log(is_bar);
+
  newNote = {
   'accidental': '',
-  'pitch': 'b',
+  'pitch': 'c',
   'octave': '4',
   'duration': note_type,
   'bar': is_bar,
@@ -54,7 +61,19 @@ function convertToNote(pyNote, prev_prop){
   'x': pyNote.x,
   'articulations': [],
  };
- return newNote;
+
+
+ if(typeof prev_prop.accidental !== 'undefined'){
+  newNote.accidental = prev_prop.accidental;
+ }
+ // If it is rest, set the type to rest
+ // Otherwise, set the pitch and return the ntoe
+ if(is_rest){
+  newNote.type = 'r';
+  return newNote;
+ }else{
+  return transposeNote(newNote, pyNote.pitch);
+ }
 }
 
 /**
@@ -69,7 +88,10 @@ function transposeNote(note, transpose_value){
  // true if transpose direction is upward
 
  let direction = transpose_value > 0;
+
+ // tranpose by half = semi tone
  let acc_value = transpose_value % 1;
+ // Get new accidental
  if(acc_value != 0){
   if(note.accidental == '#' || note.accidental == 'b'){
    if(direction){
@@ -95,12 +117,12 @@ function transposeNote(note, transpose_value){
   }
  }
 
+ // Get new pitch value
  let pitch_value = Math.floor(transpose_value / 1);
- var new_pitch = pitches.indexOf(note.pitch);
- new_pitch += pitch_value;
+ var new_pitch = pitches.indexOf(note.pitch) + pitch_value;
 
  var octave_change = 0;
-
+ // check the change in octave
  while(new_pitch < 0 || new_pitch > pitches.length - 1){
   if(direction){
    new_pitch -= pitches.length;
@@ -110,14 +132,86 @@ function transposeNote(note, transpose_value){
    octave_change -= 1;
   }
  }
- console.log(new_pitch, octave_change, direction);
  note.pitch = pitches[new_pitch];
  note.octave = (parseInt(note.octave) + octave_change).toString();
  return note;
 }
 
+/**
+ * ungroupBeams - Remove beam group that a note is part of
+ *
+ * @param  {Array.Object} notes      List of notes
+ * @param  {Object} target_note targe tnote object
+ */
+function ungroupBeams(notes, target_note){
+ // find the first and last note of the beam
+ var first;
+ var last;
+ var current = $.objectIndex(target_note, notes);
+ var current_note = target_note;
+
+ while(current_note.bar != 2 ){
+  if(current == notes.length - 1){
+   break;
+  }
+  current += 1;
+  current_note = notes[current];
+ }
+ last = current;
+ while(current_note.bar != 1 ){
+  if(current == 0){
+   break;
+  }
+  current -= 1;
+  current_note = notes[current];
+ }
+ first = current;
+
+ for(let note_index = first ; note_index <= last ; note_index++){
+  notes[note_index].bar = -1;
+ }
+}
+
+/**
+ * ungroupSlurs - Remove slur group that a note is part of
+ *
+ * @param  {Array.Object} notes      List of notes
+ * @param  {Object} target_note targe tnote object
+ */
+function ungroupSlurs(notes, target_note){
+ // find the first and last note of the beam
+ var first;
+ var last;
+ var current = $.objectIndex(target_note, notes);
+ var current_note = target_note;
+
+ while(current_note.slur != 2 ){
+  if(current == notes.length - 1){
+   break;
+  }
+  current += 1;
+  current_note = notes[current];
+ }
+ last = current;
+ while(current_note.slur != 1 ){
+  if(current == 0){
+   break;
+  }
+  current -= 1;
+  current_note = notes[current];
+ }
+ first = current;
+
+ for(let note_index = first ; note_index <= last ; note_index++){
+  notes[note_index].slur = -1;
+ }
+}
+
+
 export {
  sortNotes,
  convertToNote,
  transposeNote,
+ ungroupBeams,
+ ungroupSlurs,
 };

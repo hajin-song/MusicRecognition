@@ -72,7 +72,6 @@ function generateNotes(notes, ticks){
   let curNote = notes[noteIndex];
   let noteDuration =  getNoteDuration(curNote);
   if (ticks - noteDuration >= 0){
-   __markAsLegal(noteIndex);
    if(curNote.type === 'r'){
     vexNotes.push(new VF.StaveNote({
      keys:['b/4'],
@@ -152,36 +151,10 @@ function drawStaves(context, x, y, width, bar_annotations){
  return stave;
 }
 
-/**
- * markRemainders - Mark notes outside of ticks as illegal note
- *
- * @param  {Array.Object} notes      List of notes
- * @param  {Number}       legalIndex Last note that got written up in the vex stave
- */
-function markRemainders(notes, legalIndex){
-
- for(legalIndex ; legalIndex < notes.length ; legalIndex++){
-  __markAsIllegal(notes[0].id + legalIndex);
- }
-}
-
-
-function __markAsLegal(noteIndex){
- $('#note-'+noteIndex).removeClass('note--illegal');
-}
-
-function __markAsIllegal(noteIndex){
- $('#note-'+noteIndex).addClass('note--illegal');
-}
-
-
-
-
 export {
  getNoteDuration,
  fillRest,
  generateNotes,
- markRemainders,
  groupBeams,
  groupSlurs,
  drawStaves,

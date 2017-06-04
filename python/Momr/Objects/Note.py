@@ -1,5 +1,5 @@
 class Note:
-    def __init__(self, x, y, note_type, w, h):
+    def __init__(self, x, y, note_type, w, h, top_y, bottom_y):
         self.x = x
         self.y = y
         self.note_type = note_type
@@ -11,6 +11,8 @@ class Note:
         self.tail_type =0
         self.pitch = 0
         self.is_bar = False
+        self.top_y = top_y
+        self.bottom_y = bottom_y
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -34,7 +36,7 @@ class Note:
 
     def json(self):
         return '{' + '"x":{},"y":{},"note_type":{},"tail_direction":{},"tail_type":{}, "pitch":{}, "is_bar":"{}"'.format(
-            self.x, self.y, self.note_type, self.tail_direction, self.tail_type, self.pitch, str(self.is_bar)
+            self.x, self.y, self.note_type, self.tail_direction, self.tail_type, self.pitch, self.is_bar
         ) +'}'
 
     def center(self):
