@@ -21,4 +21,6 @@
     "cropperjs": "^0.8.1",
     "bootstrap": "^3.3.7"
   },
+  "devDependencies": {
+  }
 }

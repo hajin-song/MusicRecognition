@@ -1,3 +1,10 @@
+/**
+* app.js
+* Author: Ha Jin Song
+* Last Modified: 5-June-2017
+* @description Server for the applciation
+*/
+
 const PythonShell = require('python-shell');
 const fs = require('fs');
 const express = require('express');
@@ -6,7 +13,6 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const uuid = require('node-uuid');
 const mkdirp = require('mkdirp');
-
 var session = require('client-sessions');
 
 var app = express();
@@ -17,6 +23,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
+// File uploading
 var storage = multer.diskStorage({
  destination: function(req, file, callback){
   mkdirp('./public/' +  req.session.unique_path);
@@ -29,9 +36,11 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage});
 
+// Asset paths
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 
+// Session string
 app.use(session({
  cookieName: 'session',
  secret: uuid.v4(),
@@ -39,11 +48,13 @@ app.use(session({
  activeDuration: 5 * 60 * 1000
 }));
 
+// root
 app.get('/', function(req, res){
  req.session.unique_path = uuid.v1();
  res.sendFile(path.join(__dirname + '/index.html'));
 });
 
+// uploading sheet
 app.post('/', upload.single('musicSheet'), function(req, res, next){
  var options = {
    mode: 'text',
@@ -60,6 +71,7 @@ app.post('/', upload.single('musicSheet'), function(req, res, next){
  });
 });
 
+// updating the data on server side
 app.post('/update', function(req, res){
  var options = {
    mode: 'text',
@@ -67,15 +79,15 @@ app.post('/update', function(req, res){
    scriptPath: 'python',
    args: [req.body.data, req.session.unique_path, req.body.target]
  };
- console.log(req.body.data);
+
  PythonShell.run('dataUpdator.py', options, function (err, results) {
    if (err) throw err;
-   console.log('results: %j', results);
    // results is an array consisting of messages collected during execution
    res.send(results);
  });
 });
 
+// Updating the image on the server side
 app.post('/editImage', function(req, res){
  var base64Data = req.body.img.replace(/^data:image\/png;base64,/, "");
  fs.writeFile("public/" + req.session.unique_path + "/" + req.body.name, base64Data, 'base64', function(err) {
@@ -84,14 +96,13 @@ app.post('/editImage', function(req, res){
  res.send("Done");
 });
 
+// Retrieve session
 app.get('/session', function(req, res){
  res.send(req.session);
 });
 
+// Symbol Detection
 app.post('/detect', function(req,res){
- console.log(req.body);
- //let coordinates = req.body.normalNote
-
  var options = {
    mode: 'text',
    pythonOptions: ['-u'],
@@ -103,14 +114,14 @@ app.post('/detect', function(req,res){
  };
  PythonShell.run('locateSymbols.py', options, function (err, results) {
    if (err) throw err;
-   console.log('results: %j', results);
-   console.log( "[" + results.join(',') + "]" );
    req.session.stave_group = "[" + results.join(',') + "]";
    // results is an array consisting of messages collected during execution
    res.send(JSON.parse("[" + results.join(',') + "]"));
  });
 });
 
+
+// Initialise
 app.listen(process.env.PORT || 3000, function() {
  console.log("Laucnhing application... listening on port 3000")
 });
