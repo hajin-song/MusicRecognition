@@ -1,3 +1,7 @@
+""" locate_symbols.py: Processes image and detect symbols on the image """
+__author__ = "Ha Jin Song"
+__date__   = "05-June-2017"
+
 import sys
 import cv2
 import numpy as np
@@ -15,6 +19,15 @@ COLOR = [(255,0,0), (0, 255, 0), (0, 0, 255),  (0, 255,255), (255, 0, 255), (120
 THRESHOLD = 0.7
 
 def __check_coliision(x0, y0, x1, y1, w, h):
+    """ Check if two coordinates are overlapping
+        @param x0: First Region's Top Left (x)
+        @param y0: First Region's Top Left (y)
+        @param x1: Second Region's Top Left (x)
+        @param y1: Second Region's Top Left (y)
+        @param w: Width of the regions
+        @param h: Height of the regions
+        @returns: True if collision, else false
+    """
     target_corners = [x0, x0+w, y0, y0+h]
     new_points = [(x1,y1), (x1+w, y1), (x1, y1+h), (x1+w, y1+h)]
     for point in new_points:
@@ -27,22 +40,21 @@ def __check_coliision(x0, y0, x1, y1, w, h):
 
 def __match_template(image, templates, test, test_color):
     """ Perform template matching on an image using the given symbols
-        :param image: np array. Representation of image being templated
-        :param templates: np array. Collection of coordinate for symbols
-        :param test: DEBUG - used to mark the detected region
-        :param test_color: DEBUG - color used to mark the detected region
+        @param image: np array. Representation of image being templated
+        @param templates: np array. Collection of coordinate for symbols
+        @param test: DEBUG - used to mark the detected region
+        @param test_color: DEBUG - color used to mark the detected region
+        @returns: List of detected symbols
+        @rtype: List of Notes
     """
     detected_symbols = []
     for index, note in enumerate(templates):
         if note is None: continue
         symbols = TemplateProcessor.detect_symbols(image, test, note, test_color[index])
-        w, h = note.shape[::-1]
-        if index == 2:
-            color = (255, 0, 255)
-        elif index == 3:
-            color = (0, 255, 0)
-        else:
-            color = (0, 0, 255)
+        h, w = note.shape[::]
+        if index == 2: color = (255, 0, 255)
+        elif index == 3: color = (0, 255, 0)
+        else: color = (0, 0, 255)
         for x in symbols.keys():
             for y in symbols[x].keys():
                 x = int(x)
@@ -54,6 +66,7 @@ def __match_template(image, templates, test, test_color):
                         not_in = False
                         break
                 if not_in:
+                    # Find where the note bodies boudnaries are - used for pitch
                     first = -1
                     last = -1
                     for y_val in range(y, y + h):
@@ -68,9 +81,10 @@ def __match_template(image, templates, test, test_color):
 
 def __process_tail_direction(detected_symbols, image, test):
     """ Detect tail's direction
-        :param detected_symbols: List of Notes. Detected notes
-        :param image: Target Image
-        :param test: DEBUG - used to mark the detected region
+        @param detected_symbols: List of Notes. Detected notes
+        @param image: Target Image
+        @param test: DEBUG - used to mark the detected region
+        @rtype: List of Notes
     """
     for symbol in detected_symbols:
         x = symbol.x
@@ -87,9 +101,12 @@ def __process_tail_direction(detected_symbols, image, test):
 
 def __allocate_note_to_stave(staves, detected_symbols):
     """ Allocates notes to appropriate stave group based on the x and y value
-        :param staves: Stave groups within the sheet
-        :param detected_symbols: List of Notes that needs to be allocated
+        @param staves: Stave groups within the sheet
+        @param detected_symbols: List of Notes that needs to be allocated
     """
+
+    # For all detected symbols, check their x and y value
+    # and add it to the appropriate stave
     for symbol in detected_symbols:
         symbol_x = symbol.x
         symbol_y = symbol.y
@@ -100,7 +117,7 @@ def __allocate_note_to_stave(staves, detected_symbols):
             stave_0_y_1 = current.y1
             stave_1_y_0 = stave.y0
             stave_1_y_1 = stave.y1
-            #print symbol_x, symbol_y, stave_0_y_0, stave_0_y_1, stave_1_y_0, stave_1_y_1
+            # Check if the symbol belongs in the current stave
             if symbol_y <= stave_0_y_1:
                 break
             elif symbol_y > stave_0_y_1 and symbol_y < stave_1_y_0:
@@ -111,27 +128,32 @@ def __allocate_note_to_stave(staves, detected_symbols):
                     break
             current = stave
 
+        # Find the bar seciton it belongs to
         for index, stave_x_0 in enumerate(current.sections[:-1]):
             stave_x_1 = current.sections[index+1]
             if stave_x_0 <= symbol_x and symbol_x <= stave_x_1:
                 break
 
+        # add to the stave
         current.addNote(str(stave_x_0), symbol)
 
 def __process_tail_type(staves, image, test):
     """ traverse through image pixel and categorise the symbol's tail type
-        :param staves: stave groups with note allocated
-        :param image: source image
-        :param test: DEBUG - used to mark the detected region
+        @param staves: stave groups with note allocated
+        @param image: source image
+        @param test: DEBUG - used to mark the detected region
     """
 
     for stave in staves:
-        #stave.notes = sorted(stave.notes, key=lambda x: int(x))
         sorted_section = sorted(stave.notes, key=lambda x: int(x))
         for section_index, separator in enumerate(sorted_section):
             stave.notes[separator] = sorted(stave.notes[separator], key=lambda x: int(x.x))
             for index, note in enumerate(stave.notes[separator]):
                 #print '\t\t', note, index
+                # the tail type may be affected by its immediat neighbouring notes
+                # only perform tail checking on the notes, not accidental symbols
+                # doing this on rest will have no impact as it gets ignored
+                # at the frontend side
                 if note.note_type > 1:
                     if index == (len(stave.notes[separator])-1):
                         next_note = note
@@ -148,14 +170,17 @@ def __process_tail_type(staves, image, test):
                     note.is_bar = is_bar
 
 def __find_note_pitch(staves, test):
+    """ Find the pitch of the notes based on their y position
+        @param staves: stave groups with note allocated
+        @param test: DEBUG - used to mark the detected region
+    """
+
     for stave in staves:
         y0 = stave.y0
         y1 = stave.y1
         #print stave
         for section in stave.notes:
-            #print '\t', section
             for note in stave.notes[section]:
-                note_y = note.center()[1]
                 top = note.top_y
                 bottom = note.bottom_y
                 # Origin is top left corner
@@ -165,19 +190,19 @@ def __find_note_pitch(staves, test):
                     if index == (len(stave.lines) - 1):
                         average_distance = stave.averageDistane()
                         pitchVar = index * 2
-                        note_y = abs(line[-1] - note_y)
-                        while(note_y >= 0):
+                        top = abs(line[-1] - top)
+                        while(top > 0):
                             pitchVar += 1
-                            note_y -= average_distance
+                            top -= average_distance
                         break
                     # Note is below the stave lines
-                    elif index == 0 and note_y > line[-1]:
+                    elif index == 0 and top > line[0]:
                         average_distance = stave.averageDistane()
                         pitchVar = 0
-                        note_y = abs(line[-1] - note_y)
-                        while(note_y >= 0):
+                        bottom = abs(line[0] - bottom)
+                        while(bottom > 0):
                             pitchVar -= 1
-                            note_y -= average_distance
+                            bottom -= average_distance
                         break
                     else:
                         bottom_stave = line[-1]
@@ -218,6 +243,7 @@ def locate_symbols():
     flat = sys.argv[9].split(',')
     sharp = sys.argv[10].split(',')
 
+    # TODO - Can this be done gracefully?
     if int(flat[0]) != -1: note_type.append(img[int(flat[1]):int(flat[3]), int(flat[0]):int(flat[2])].copy())
     else: note_type.append(None)
 

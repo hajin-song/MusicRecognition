@@ -81,12 +81,6 @@ class VexFlowCanvas extends React.Component{
    ));
   }
 
-  // Fill up rests;
-  var rests = fillRest(remainingTicks);
-  rests = rests.map( (rest) => {
-   return new VF.StaveNote({keys: ["b/4"], duration: rest });
-  })
-
   // Draww
   Vex.Flow.Formatter.FormatAndDraw(context, stave, vexNotes);
   vexBeams.map( (vexBeam) => { vexBeam.setContext(context).draw(); });

@@ -261,9 +261,14 @@ function markAsBarNote(clicked_notes, current_stave, stave_group){
 
  // Check if it is valid bar grouping
  if(first != last){
-  for(var i = first ; i <= last ; i++){
+  for(let i = first ; i <= last ; i++){
    let note = new_stave.stave.notes[i]
    ungroupNotes(new_stave.stave.notes, note, 'bar');
+  }
+
+
+  for(var i = first ; i <= last ; i++){
+   let note = new_stave.stave.notes[i]
    if(note.duration == 'w' || note.duration == 'h' || note.duration == 'q'){
     alert("Cannot group non-quaver as bar note!");
     return { stave_group: stave_group, current_stave: current_stave };

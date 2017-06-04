@@ -82,14 +82,12 @@ class VexFlowCanvas extends React.Component{
   this.staves.map( (stave, index) => {
 
    var curNotes = this.notes[index];
-   var remainingTicks = 4;
 
    // Vex Flow notes generated up to tickable count
-   var result = generateNotes(curNotes, remainingTicks);
+   var result = generateNotes(curNotes);
    this.vexNotes.push([]);
-   this.vexNotes[index] = result[2];
+   this.vexNotes[index] = result[1];
    var noteIndex = result[0];
-   remainingTicks = result[1];
 
    // Beams
    var beams = groupNotes(curNotes, noteIndex, 'bar');

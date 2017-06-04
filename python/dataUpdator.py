@@ -1,3 +1,7 @@
+""" dataUpdator.py: Updates the data for the session"""
+__author__ = "Ha Jin Song"
+__date__   = "05-June-2017"
+
 import sys
 import json
 import pickle
@@ -23,7 +27,7 @@ def updateData():
     # FileName = File to process
     fileName = sys.argv[3]
     data = sys.argv[1]
-    
+
     if data=="stave.pkl":
         __updateStave(data, fileName, sessionId)
 

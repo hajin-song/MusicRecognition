@@ -11,8 +11,13 @@ import { PropTypes } from 'prop-types';
 
 class Note extends React.Component{
  componentDidMount(){
+  console.log(this.props.note);
   // Fill edit form fields with note
-  $('#note-pitch-' + this.props.note.id).val(this.props.note.pitch);
+  if(this.props.note.type === "n"){
+   $('#note-pitch-' + this.props.note.id).val(this.props.note.pitch);
+  }else{
+   $('#note-pitch-' + this.props.note.id).val(this.props.note.type);
+  }
   $('#note-accidental-' + this.props.note.id).val(this.props.note.accidental);
   $('#note-octave-' + this.props.note.id).val(this.props.note.octave);
   $('#note-duration-' + this.props.note.id).val(this.props.note.duration);

@@ -30,8 +30,11 @@ function convertToNote(pyNote, prev_prop){
  // note_type, tail_direction, tail_type
  var note_type;
  var is_bar = -1;
- var is_rest = pyNote.note_type > 4;
 
+ var is_rest = pyNote.note_type > 4;
+ if(is_rest){
+  console.log(pyNote);
+ }
  // Get tail type
  if(pyNote.tail_type == 0){
   note_type = note_types[pyNote.note_type];
@@ -44,18 +47,19 @@ function convertToNote(pyNote, prev_prop){
  }
 
  // Check if note should be part of bar group
- if(pyNote.is_bar == 1){
-  if(note_type == 'q' || note_type == 'w' || note_type == 'h'){ note_type = '8'; }
-  if(prev_prop.bar){ is_bar = 0; }
-  else{ is_bar = 1; }
- }else if(pyNote.is_bar == 2){
-  if(note_type == 'q' || note_type == 'w' || note_type == 'h'){ note_type = '8'; }
-  is_bar = 2;
- }else if(prev_prop.bar){
-  if(note_type == 'q' || note_type == 'w' || note_type == 'h'){ note_type = '8'; }
-  is_bar = 2;
+ if(!is_rest){
+  if(pyNote.is_bar == 1){
+   if(note_type == 'q' || note_type == 'w' || note_type == 'h'){ note_type = '8'; }
+   if(prev_prop.bar){ is_bar = 0; }
+   else{ is_bar = 1; }
+  }else if(pyNote.is_bar == 2){
+   if(note_type == 'q' || note_type == 'w' || note_type == 'h'){ note_type = '8'; }
+   is_bar = 2;
+  }else if(prev_prop.bar){
+   if(note_type == 'q' || note_type == 'w' || note_type == 'h'){ note_type = '8'; }
+   is_bar = 2;
+  }
  }
-
  newNote = {
   'accidental': '',
   'pitch': 'c',
@@ -175,6 +179,8 @@ function ungroupNotes(notes, target_note, annotation){
  var last;
  var current = $.objectIndex(target_note, notes);
  var current_note = target_note;
+
+ if(current_note[annotation] == -1) {  return; }
 
  while(current_note[annotation] != 2 ){
   if(current == notes.length - 1){
