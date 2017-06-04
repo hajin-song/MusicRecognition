@@ -10,11 +10,13 @@ import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
 
 import {
+ groupNotes,
+} from 'omrTools/Note';
+
+import {
  getNoteDuration,
  fillRest,
  generateNotes,
- groupBeams,
- groupSlurs,
  drawStaves,
 } from 'omrTools/VexFlowTool';
 
@@ -90,7 +92,7 @@ class VexFlowCanvas extends React.Component{
    remainingTicks = result[1];
 
    // Beams
-   var beams = groupBeams(curNotes, noteIndex);
+   var beams = groupNotes(curNotes, noteIndex, 'bar');
    var vexBeams = [];
    while(beams.length >= 2){
     var start = beams[0];
@@ -99,7 +101,7 @@ class VexFlowCanvas extends React.Component{
     vexBeams.push(new VF.Beam(this.vexNotes[index].slice(start, end+1)));
    }
 
-   var slurs = groupSlurs(curNotes, noteIndex);
+   var slurs = groupNotes(curNotes, noteIndex, 'slur');
    var vexSlurs = [];
    while(slurs.length >= 2){
     var start = slurs[0];

@@ -2,7 +2,7 @@
 * Sheet.js
 * Sheet Reducer
 * Author: Ha Jin Song
-* Last Modified: 28-May-2017
+* Last Modified: 5-June-2017
 */
 
 import SheetActions from 'omrActions/Sheet';
@@ -10,7 +10,7 @@ import {
  sortNotes,
  transposeNote,
  convertToNote,
- ungroupBeams,
+ ungroupNotes,
 } from 'omrTools/Note';
 
 /**
@@ -48,8 +48,6 @@ function createNote(pitchID, octaveID, durationID, accidentalID, note){
    'type': 'n'
   };
  }
-
- console.log('xx', newNote);
 
  if(typeof note.bar === 'undefined' || note.bar == -1){ newNote['bar'] = -1; }
  if(typeof note.slur === 'undefined' || note.slur == -1){ newNote['slur'] = -1; }
@@ -189,35 +187,26 @@ function removeNoteFromSection(note_id, current_stave, stave_group){
  var new_stave = $.objectCopy(current_stave);
 
  let target_note = new_stave.stave.notes[note_id];
- // deleted note was start or end of bar
- if(target_note.bar == 1)
- {
-  let next_note = new_stave.stave.notes[note_id + 1];
-  if (typeof next_note === "undefined" || next_note.bar == 2) { next_note.bar = -1; }
-  else { next_note.bar = 1; }
- }
- // deleted note was end of bar
- else if(target_note.bar == 2)
- {
-  let prev_note = new_stave.stave.notes[note_id - 1];
-  if (typeof prev_note === "undefined" || prev_note.bar == 1) { prev_note.bar = -1; }
-  else { prev_note.bar = 2; }
- }
 
- // do the same for slut
- if(target_note.slur == 1)
- {
-  let next_note = new_stave.stave.notes[note_id + 1];
-  if (typeof next_note === "undefined" || next_note.slur == 2) { next_note.slur = -1; }
-  else { next_note.slur = 1; }
- }
- // deleted note was end of bar
- else if(target_note.bar == 2)
- {
-  let prev_note = new_stave.stave.notes[note_id - 1];
-  if (typeof prev_note === "undefined" || prev_note.slur == 1) { prev_note.slur = -1; }
-  else { prev_note.slur = 2; }
- }
+ let grouping_type = ['bar', 'slur'];
+
+ // Remove groupings properly - split it up
+ grouping_type.map((annotation) => {
+  if(target_note[annotation] == 1)
+  {
+   let next_note = new_stave.stave.notes[note_id + 1];
+   if (typeof next_note === "undefined" || next_note[annotation] == 2) { next_note[annotation] = -1; }
+   else { next_note[annotation] = 1; }
+  }
+  // deleted note was end of bar
+  else if(target_note[annotation] == 2)
+  {
+   let prev_note = new_stave.stave.notes[note_id - 1];
+   if (typeof prev_note === "undefined" || prev_note[annotation] == 1) { prev_note[annotation] = -1; }
+   else { prev_note[annotation] = 2; }
+  }
+
+ });
 
  // remove target note and set new IDs to remaining notes
  new_stave.stave.notes = sortNotes(new_stave.stave.notes);
@@ -274,7 +263,7 @@ function markAsBarNote(clicked_notes, current_stave, stave_group){
  if(first != last){
   for(var i = first ; i <= last ; i++){
    let note = new_stave.stave.notes[i]
-   ungroupBeams(new_stave.stave.notes, note);
+   ungroupNotes(new_stave.stave.notes, note, 'bar');
    if(note.duration == 'w' || note.duration == 'h' || note.duration == 'q'){
     alert("Cannot group non-quaver as bar note!");
     return { stave_group: stave_group, current_stave: current_stave };
@@ -316,8 +305,8 @@ function markAsSlur(clicked_notes, current_stave, stave_group){
  // Check if it is valid bar grouping
  if(first != last){
   for(var i = first ; i <= last ; i++){
-   let note = new_stave.stave.notes[i]
-   ungroupSlurs(new_stave.staves.notes, note);
+   let note = new_stave.stave.notes[i];
+   ungroupNotes(new_stave.stave.notes, note, 'slur');
    if(note.slur >= 0){
     alert("Cannot allocate one note to multiple slur group!!");
     return { stave_group: stave_group, current_stave: current_stave };
@@ -357,27 +346,37 @@ function transpose(stave_group, tone_value){
 
 
 /**
- * setBarAnnotation - Add or remove
+ * setBarAnnotation - Add or remove annotation at Bar level
  *
- * @param  {type} current_stave description
- * @param  {type} stave_group   description
- * @param  {type} annotation    description
- * @return {type}               description
+ * @param  {Object} current_stave Current Stave selected
+ * @param  {Array.<Object>} stave_group   Currently set Stave Groups
+ * @param  {String} annotation    Annotation to toggle
+ * @return {Array.<Object>}       Stave Group with changed bar annotation
  */
 function setBarAnnotation(current_stave, stave_group, annotation){
  let stave_index = $.objectIndex(current_stave.stave, stave_group);
  var new_stave_group = $.arrayCopy(stave_group);
  var new_stave = $.objectCopy(current_stave);
 
- if (typeof new_stave.stave.barAnnotation[current_stave.section[0]][annotation] === "undefined"){
-  new_stave.stave.barAnnotation[current_stave.section[0]][annotation] = true;
+ let target_stave = new_stave.stave;
+ let current_section = current_stave.section[0];
+
+ if (typeof target_stave.barAnnotation[current_section][annotation] === "undefined"){
+  target_stave.barAnnotation[current_section][annotation] = true;
  }else{
-  delete new_stave.stave.barAnnotation[current_stave.section[0]][annotation]
+  delete target_stave.barAnnotation[current_section][annotation]
  }
  new_stave_group[stave_index] = new_stave.stave;
  return { stave_group: new_stave_group, current_stave: new_stave };
 }
 
+
+/**
+ * processNote - process detected symbols
+ *
+ * @param  {Array.<Object>} stave_group Detected notes
+ * @return {Array.<Object>}             processed stave groups
+ */
 function processNote(stave_group){
  for (var stave_index = 0; stave_index < stave_group.length; stave_index++) {
   var stave = stave_group[stave_index];
@@ -390,7 +389,6 @@ function processNote(stave_group){
   for (var noteIndex = 0 ; noteIndex < stave.notes.length ; noteIndex++){
    var note = stave.notes[noteIndex];
    if(note.note_type == 0 || note.note_type == 1){
-    console.log("FLAT OR SHARP!");
     prev_prop['accidental'] = note.note_type == 0 ? 'b' : '#';
     stave.notes.splice(noteIndex, 1);
     note = stave.notes[noteIndex]
@@ -405,7 +403,6 @@ function processNote(stave_group){
    }
   }
  }
- console.log(stave_group);
  return stave_group;
 }
 

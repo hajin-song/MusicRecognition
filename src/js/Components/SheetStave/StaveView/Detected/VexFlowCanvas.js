@@ -11,11 +11,13 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 
 import {
+ groupNotes,
+} from 'omrTools/Note';
+
+import {
  getNoteDuration,
  fillRest,
  generateNotes,
- groupBeams,
- groupSlurs,
  drawStaves
 } from 'omrTools/VexFlowTool';
 
@@ -64,7 +66,7 @@ class VexFlowCanvas extends React.Component{
   remainingTicks = result[1];
 
   // Beams
-  var beams = groupBeams(notes, noteIndex);
+  var beams = groupNotes(notes, noteIndex, 'bar');
   var vexBeams = [];
   while(beams.length >= 2){
    var start = beams[0];
@@ -73,7 +75,7 @@ class VexFlowCanvas extends React.Component{
    vexBeams.push(new VF.Beam(vexNotes.slice(start, end+1)));
   }
 
-  var slurs = groupSlurs(notes, noteIndex);
+  var slurs = groupNotes(notes, noteIndex, 'slur');
   var vexSlurs = [];
   while(slurs.length >= 2){
    var start = slurs[0];

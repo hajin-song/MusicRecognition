@@ -1,4 +1,9 @@
-
+/**
+* Note.js
+* Author: Ha Jin Song
+* Last Modified: 5-June-2017
+* @description Helpers for manipulating Note objects
+*/
 
 /**
  * sortNotes - sort note in order of the value
@@ -79,9 +84,9 @@ function convertToNote(pyNote, prev_prop){
 /**
  * transposeNote - transpose a note to different pitch
  *
- * @param  {type} note            description
- * @param  {type} transpose_value description
- * @return {type}                 description
+ * @param  {Object} note            Note object being transposed
+ * @param  {Number} transpose_value transpose amount
+ * @return {Object}                 New note with transposed pitch and accidental
  */
 function transposeNote(note, transpose_value){
  let pitches = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
@@ -137,55 +142,41 @@ function transposeNote(note, transpose_value){
  return note;
 }
 
+
 /**
- * ungroupBeams - Remove beam group that a note is part of
+ * groupNotes - Collect the beam markers in the notes
  *
  * @param  {Array.Object} notes      List of notes
- * @param  {Object} target_note targe tnote object
+ * @param  {Number}       legalIndex Last note that got written up in the vex stave
+ * @param  {String} annotation annotation type being ungrouped
+ * @return {Array.Number}            List of note indexs
  */
-function ungroupBeams(notes, target_note){
- // find the first and last note of the beam
- var first;
- var last;
- var current = $.objectIndex(target_note, notes);
- var current_note = target_note;
-
- while(current_note.bar != 2 ){
-  if(current == notes.length - 1){
-   break;
+function groupNotes(notes, legal_index, annotation){
+ var grouping = [];
+ for(let note_index = 0 ; note_index < legal_index ; note_index++){
+  var note = notes[note_index];
+  if(note[annotation] > 0){
+   grouping.push(note_index);
   }
-  current += 1;
-  current_note = notes[current];
  }
- last = current;
- while(current_note.bar != 1 ){
-  if(current == 0){
-   break;
-  }
-  current -= 1;
-  current_note = notes[current];
- }
- first = current;
-
- for(let note_index = first ; note_index <= last ; note_index++){
-  notes[note_index].bar = -1;
- }
+ return grouping;
 }
 
 /**
- * ungroupSlurs - Remove slur group that a note is part of
+ * ungroupNotes - Remove beam group that a note is part of
  *
  * @param  {Array.Object} notes      List of notes
  * @param  {Object} target_note targe tnote object
+ * @param  {String} annotation annotation type being ungrouped
  */
-function ungroupSlurs(notes, target_note){
+function ungroupNotes(notes, target_note, annotation){
  // find the first and last note of the beam
  var first;
  var last;
  var current = $.objectIndex(target_note, notes);
  var current_note = target_note;
 
- while(current_note.slur != 2 ){
+ while(current_note[annotation] != 2 ){
   if(current == notes.length - 1){
    break;
   }
@@ -193,7 +184,7 @@ function ungroupSlurs(notes, target_note){
   current_note = notes[current];
  }
  last = current;
- while(current_note.slur != 1 ){
+ while(current_note[annotation] != 1 ){
   if(current == 0){
    break;
   }
@@ -203,7 +194,7 @@ function ungroupSlurs(notes, target_note){
  first = current;
 
  for(let note_index = first ; note_index <= last ; note_index++){
-  notes[note_index].slur = -1;
+  notes[note_index][annotation] = -1;
  }
 }
 
@@ -212,6 +203,6 @@ export {
  sortNotes,
  convertToNote,
  transposeNote,
- ungroupBeams,
- ungroupSlurs,
+ groupNotes,
+ ungroupNotes,
 };
