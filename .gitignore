@@ -2,7 +2,7 @@
 /node_modules/*
 /images/*
 /test_images/*
-/public/*
+/public/**/*
 **/*.pyc
 
 *log*
