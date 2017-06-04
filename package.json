@@ -34,9 +34,10 @@
     "webpack": "^2.6.1"
   },
   "scripts": {
-    "bundle": "webpack --progress --watch --color",
-    "postinstall": "bower install",
-    "start": "node app.js"
+   "heroku-postbuild": "webpack --progress",
+   "bundle": "webpack --progress --watch --color",
+   "postinstall": "bower install",
+   "start": "node app.js"
   },
   "author": "",
   "license": "ISC"
