@@ -26,7 +26,6 @@ const VF = Vex.Flow
 
 class VexFlowCanvas extends React.Component{
  componentDidUpdate(prevProps, prevState){
-  console.log("updating stave view");
   // Set up canvas
   let left = this.props.stave.section[0];
   let width = (this.props.stave.section[1] - left) * 2;
@@ -49,10 +48,6 @@ class VexFlowCanvas extends React.Component{
   context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
   var stave = drawStaves(context, 0, 0, width * 2 - 5, this.props.stave.stave.barAnnotation[this.props.stave.section[0]]);
 
-  console.log(this.props.stave);
-
-  var remainingTicks = 8;
-
   // Order notes so processing is left to right
   let notes = this.props.stave.stave.notes.filter( (section) => {
    let currentSection = this.props.stave.section;
@@ -60,10 +55,9 @@ class VexFlowCanvas extends React.Component{
   });
 
   // Vex Flow notes generated up to tickable count
-  var result = generateNotes(notes, remainingTicks);
-  var vexNotes = result[2];
+  var result = generateNotes(notes);
+  var vexNotes = result[1];
   var noteIndex = result[0];
-  remainingTicks = result[1];
 
   // Beams
   var beams = groupNotes(notes, noteIndex, 'bar');

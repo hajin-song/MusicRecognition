@@ -2,7 +2,7 @@
 * symbols.js
 * symbols Action
 * Author: Ha Jin Song
-* Last Modified: 28-May-2017
+* Last Modified: 5-June-2017
 */
 
 const CROP_NORMAL_NOTE = 'CROP_NORMAL_NOTE';

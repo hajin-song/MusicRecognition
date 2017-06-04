@@ -2,7 +2,7 @@
 * Sheet.js
 * Sheet Action
 * Author: Ha Jin Song
-* Last Modified: 28-May-2017
+* Last Modified: 5-June-2017
 */
 
 const GET_STAVE_GROUPS = 'GET_STAVE_GROUPS'
@@ -43,5 +43,5 @@ export default {
  ANNOTATE,
  SET_REPEAT_START,
  SET_REPEAT_END,
- 
+
 };

@@ -27,7 +27,7 @@ function getNoteDuration(note){
 
 /**
  * fillRest - Fill remaining tick counts with appropriate rest
- *
+ * @deprecated
  * @param  {Number} remainingTicks Number of ticks remaining
  * @return {Array.String}              List of rests to draw in
  */
@@ -57,49 +57,58 @@ function fillRest(remainingTicks){
  return rests;
 }
 
-
 /**
  * generateNotes - Generate Vex Flow notes to draw in - only up to tick counts
  *
  * @param  {Array.Object} notes Notes to put in
- * @param  {Number} ticks Ticks available
  * @return {Array}       [Last Legal Note Index, Remaining Ticks, List of Vex Flow notes]
  */
-function generateNotes(notes, ticks){
+function generateNotes(notes){
  var vexNotes = [];
  var noteIndex = 0;
  for(noteIndex ; noteIndex < notes.length ; noteIndex++){
   let curNote = notes[noteIndex];
   let noteDuration =  getNoteDuration(curNote);
-  if (ticks - noteDuration >= 0){
-   if(curNote.type === 'r'){
-    vexNotes.push(new VF.StaveNote({
-     keys:['b/4'],
-     duration: curNote.duration + 'r'
-    }));
-   }else{
-    var note = new VF.StaveNote({
-     keys:[curNote.pitch + "/" + curNote.octave],
-     duration: curNote.duration,
-     auto_stem: true
-    });
-    if(curNote.accidental != ''){
-     note.addAccidental(0, new VF.Accidental(curNote.accidental));
-    }
-    curNote.articulations.map( (articulation, index) => {
-     note = note.addArticulation(0,
-      new VF.Articulation(articulation).setPosition(3));
-    });
-    vexNotes.push(note);
-   }
-   ticks -= noteDuration;
+
+  if(curNote.type === 'r'){
+   // Generate rest object
+   vexNotes.push(new VF.StaveNote({
+    keys:['b/4'],
+    duration: curNote.duration + 'r'
+   }));
   }else{
-   break;
+   /// Generate basic note object
+   var note = new VF.StaveNote({
+    keys:[curNote.pitch + "/" + curNote.octave],
+    duration: curNote.duration,
+    auto_stem: true
+   });
+   if(curNote.accidental != ''){
+    note.addAccidental(0, new VF.Accidental(curNote.accidental));
+   }
+   // Add articulations
+   curNote.articulations.map( (articulation, index) => {
+    note = note.addArticulation(0,
+     new VF.Articulation(articulation).setPosition(3));
+   });
+   vexNotes.push(note);
   }
+
  }
- return [noteIndex, ticks, vexNotes];
+ return [noteIndex, vexNotes];
 }
 
+
+/**
+ * drawStaves - description
+ *
+ * @param  {Object} context         Canvas Context
+ * @param  {Number} x               Top left corner of the bar (X)
+ * @param  {Number} y               Top left corner of the bar (Y)
+ * @param  {Number} width           Width of the bar
+ * @param  {Object} bar_annotations Annotation on the bar
+ * @return {Object}                 Generated Stave Bar
+ */
 function drawStaves(context, x, y, width, bar_annotations){
  var stave = new VF.Stave(x, y, width);
  //stave.addTimeSignature("4/4");
