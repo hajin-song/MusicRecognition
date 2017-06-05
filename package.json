@@ -36,6 +36,7 @@
   "scripts": {
    "heroku-postbuild": "webpack --progress",
    "bundle": "webpack --progress --watch --color",
+   "build": "webpack --progress --color",
    "postinstall": "bower install",
    "start": "node app.js"
   },

@@ -25,12 +25,22 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
  return ({
-  crop: (cropper, symbol) => {
-   dispatch({
-    type: symbol,
-    crop_pane: cropper.getData(),
-    crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
-   });
+  crop: (cropper, symbol, e) => {
+   e.persist();
+   console.log(e);
+   if(e.ctrlKey){
+    dispatch({
+     type: symbol,
+     crop_pane: [-1,-1,-1,-1],
+     crop_image: ""
+    });
+   }else{
+    dispatch({
+     type: symbol,
+     crop_pane: cropper.getData(),
+     crop_image: cropper.getCroppedCanvas().toDataURL('image/jpeg')
+    });
+   }
   },
   detect: (data) => {
    $.post('/detect', data, (res)=>{
@@ -38,7 +48,7 @@ const mapDispatchToProps = (dispatch) => {
     dispatch(actionUpdateStave);
    });
   },
-  toEdit: () => {
+  toMain: () => {
    $('#crop').css('left', '-100%');
   },
  });
@@ -48,7 +58,7 @@ const ActionsContainer = ({
  cropper, crop,
  normal, half, whole, flat, sharp,
  normal_rest, half_rest, quaver_rest, semi_quaver_rest, demi_semi_quaver_rest,
- detect, toEdit,
+ detect, toMain,
 }) => (
  <Actions cropper={cropper}
   crop={crop}
@@ -63,7 +73,7 @@ const ActionsContainer = ({
   flat={flat}
   sharp={sharp}
   detect={detect}
-  toEdit={toEdit}
+  toMain={toMain}
  />
 );
 

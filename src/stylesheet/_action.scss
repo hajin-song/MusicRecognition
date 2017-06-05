@@ -6,19 +6,28 @@
  width: 100%;
  position:relative;
  padding: 5px 10px;
- text-align: center;
+ border-top: 1px solid black;
+ border-bottom: 1px solid black;
+ margin: 5px 0;
  &__image{
   right: 0;
-  height: auto;
+  top: 0;
+  height: 100%;
   visibility: hidden;
   position: absolute;
-  padding: 5px 0;
-  color: red;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  img{
+   max-height: 100%;
+   width: auto;
+  }
  }
  &__name{
   font-weight: bold;
  }
  &:hover{
+  background: rgba(236, 252, 92, 0.8);
   cursor: pointer;
   .symbol__image{
    visibility: visible;

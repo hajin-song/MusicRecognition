@@ -13,7 +13,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps =(dispatch) => {
  return ({
-  toEdit: () => { $('#export').css('left', '100%'); },
+  toMain: () => { $('#export').css('left', '100%'); },
   transpose: () => {
    var toneValue = prompt("", "Semitone Value")
    if(toneValue != null){
@@ -52,10 +52,10 @@ const mapDispatchToProps =(dispatch) => {
  });
 }
 
-const ActionsContainer = ({ toEdit, transpose, download })=> {
+const ActionsContainer = ({ toMain, transpose, download })=> {
  return(
   <Actions
-   toEdit={toEdit}
+   toMain={toMain}
    transpose={transpose}
    download={download}
   />

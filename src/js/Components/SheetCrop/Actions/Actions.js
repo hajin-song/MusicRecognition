@@ -10,39 +10,39 @@ const Actions = ({
  cropper, crop,
  normal, half, whole,
  normal_rest, half_rest, quaver_rest, semi_quaver_rest, demi_semi_quaver_rest,
- flat, sharp, detect, toEdit,
+ flat, sharp, detect, toMain,
 }) => {
  return(
   <div id='symbols' className='col-xs-3 content__actions content__actions--sheet'>
-   <Symbol name="normal" image={normal.image} onClick={() => {
-    crop(cropper, SymbolActions.CROP_NORMAL_NOTE);
+   <Symbol name="Crochet Note" image={normal.image} onClick={(e) => {
+    crop(cropper, SymbolActions.CROP_NORMAL_NOTE, e);
    }} />
-   <Symbol name="half" image={half.image} onClick={ () => {
-    crop(cropper, SymbolActions.CROP_HALF_NOTE);
+   <Symbol name="Minim Note" image={half.image} onClick={ (e) => {
+    crop(cropper, SymbolActions.CROP_HALF_NOTE, e);
    }} />
-   <Symbol name="whole" image={whole.image} onClick={ () => {
-    crop(cropper, SymbolActions.CROP_WHOLE_NOTE);
+   <Symbol name="Semibreve Note" image={whole.image} onClick={ (e) => {
+    crop(cropper, SymbolActions.CROP_WHOLE_NOTE, e);
    }} />
-   <Symbol name="normal rest" image={normal_rest.image} onClick={ () => {
-    crop(cropper, SymbolActions.CROP_NORMAL_REST);
+   <Symbol name="Crochet Rest" image={normal_rest.image} onClick={ (e) => {
+    crop(cropper, SymbolActions.CROP_NORMAL_REST, e);
    }} />
-   <Symbol name="half rest" image={half_rest.image} onClick={ () => {
-    crop(cropper, SymbolActions.CROP_HALF_REST);
+   <Symbol name="Minim Rest" image={half_rest.image} onClick={ (e) => {
+    crop(cropper, SymbolActions.CROP_HALF_REST, e);
    }} />
-   <Symbol name="quaver rest" image={quaver_rest.image} onClick={ () => {
-    crop(cropper, SymbolActions.CROP_QUAVER_REST);
+   <Symbol name="Semibreve Rest" image={quaver_rest.image} onClick={ (e) => {
+    crop(cropper, SymbolActions.CROP_QUAVER_REST, e);
    }} />
-   <Symbol name="semi quaver rest" image={semi_quaver_rest.image} onClick={ () => {
-    crop(cropper, SymbolActions.CROP_SEMI_QUAVER_REST);
+   <Symbol name="Semi Quaver Rest" image={semi_quaver_rest.image} onClick={ (e) => {
+    crop(cropper, SymbolActions.CROP_SEMI_QUAVER_REST, e);
    }} />
-   <Symbol name="demi semi quaver rest" image={demi_semi_quaver_rest.image} onClick={ () => {
-    crop(cropper, SymbolActions.CROP_DEMI_SEMI_QUAVER_REST);
+   <Symbol name="Demi Semi Quaver Rest" image={demi_semi_quaver_rest.image} onClick={ (e) => {
+    crop(cropper, SymbolActions.CROP_DEMI_SEMI_QUAVER_REST, e);
    }} />
-   <Symbol name="flat" image={flat.image} onClick={ () => {
-    crop(cropper, SymbolActions.CROP_FLAT);
+   <Symbol name="Flat" image={flat.image} onClick={ (e) => {
+    crop(cropper, SymbolActions.CROP_FLAT, e);
    }} />
-   <Symbol name="sharp" image={sharp.image} onClick={ () => {
-    crop(cropper, SymbolActions.CROP_SHARP);
+   <Symbol name="Sharp" image={sharp.image} onClick={ (e) => {
+    crop(cropper, SymbolActions.CROP_SHARP, e);
    }} />
    <Action className="action" text="Detect" onClick={()=>{
     let data = {
@@ -59,7 +59,7 @@ const Actions = ({
     };
     detect(data);
    }}/>
-   <Action className="action" text="To Edit" onClick={toEdit} />
+   <Action className="action" text="To Main" onClick={toMain} />
   </div>
  );
 }
@@ -76,7 +76,7 @@ Actions.propTypes = {
  sharp: PropTypes.object,
  flat: PropTypes.object,
  detect: PropTypes.func,
- toEdit: PropTypes.func,
+ toMain: PropTypes.func,
 }
 
 export default Actions;

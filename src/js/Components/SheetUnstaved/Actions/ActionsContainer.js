@@ -19,15 +19,15 @@ const mapDispatchToProps =(dispatch) => {
      data: $('#unstave-canvas')[0].toDataURL('image/png', 1.0)
     });
    },
-  toEdit: () => { $('#unstaved').css('left', '100%'); },
+  toMain: () => { $('#unstaved').css('left', '100%'); },
  });
 }
 
-const ActionsContainer = ({ saveChanges, toEdit })=> {
+const ActionsContainer = ({ saveChanges, toMain })=> {
  return(
   <Actions
    saveChanges={saveChanges}
-   toEdit={toEdit}
+   toMain={toMain}
   />
  );
 }
