@@ -5,6 +5,7 @@
 ## Dependencies
 
 - Python - 2.7.12
+- OpenCV - 2.4.11
 - Node - 6.10.0
 - NPM - 3.10.10
 - Bower - 1.8.0

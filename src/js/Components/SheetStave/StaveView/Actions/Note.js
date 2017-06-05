@@ -13,7 +13,8 @@ class Note extends React.Component{
  componentDidMount(){
   console.log(this.props.note);
   // Fill edit form fields with note
-  if(this.props.note.type === "n"){
+  if(typeof this.props.note.type === "undefined" ||
+     this.props.note.type === "n"){
    $('#note-pitch-' + this.props.note.id).val(this.props.note.pitch);
   }else{
    $('#note-pitch-' + this.props.note.id).val(this.props.note.type);

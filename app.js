@@ -18,7 +18,8 @@ var session = require('client-sessions');
 var app = express();
 
 app.use(bodyParser.urlencoded({
- extended: true
+ extended: true,
+ limit: '50mb',
 }));
 
 app.use(bodyParser.json());

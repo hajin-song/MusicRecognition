@@ -191,7 +191,7 @@ def __find_note_pitch(staves, test):
                         average_distance = stave.averageDistane()
                         pitchVar = index * 2
                         top = abs(line[-1] - top)
-                        while(top > 0):
+                        while(top >= 0):
                             pitchVar += 1
                             top -= average_distance
                         break
@@ -200,7 +200,7 @@ def __find_note_pitch(staves, test):
                         average_distance = stave.averageDistane()
                         pitchVar = 0
                         bottom = abs(line[0] - bottom)
-                        while(bottom > 0):
+                        while(bottom >= 0):
                             pitchVar -= 1
                             bottom -= average_distance
                         break
